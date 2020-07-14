@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "430900541644",
+    "firebase_url": "https://readytonote-4109e.firebaseio.com",
+    "project_id": "readytonote-4109e",
+    "storage_bucket": "readytonote-4109e.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:430900541644:android:49e17658be84e8bc712a69",
+        "android_client_info": {
+          "package_name": "com.chs.readytonote"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "430900541644-8gbm84tuliu6a80up3cgvh009nkjmflh.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD0nB9G5OuLWz3SOUNaOwDLlbsi-TgvnzA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "430900541644-8gbm84tuliu6a80up3cgvh009nkjmflh.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
