@@ -1,47 +1,86 @@
 package com.chs.readytonote.ui
 
+import android.app.Activity
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
+import android.widget.Toast
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
+import com.chs.readytonote.NoteRepository
 import com.chs.readytonote.R
 import com.chs.readytonote.adapter.NoteAdapter
-import com.chs.readytonote.dto.Note
+import com.chs.readytonote.dao.NoteDao
+import com.chs.readytonote.database.NotesDatabases
+import com.chs.readytonote.entities.Note
+import com.chs.readytonote.viewmodel.MainViewModel
+import com.chs.readytonote.viewmodel.MainViewModelFactory
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlin.properties.Delegates
 
 class MainActivity : AppCompatActivity() {
-
+    private val REQUEST_CODE_ADD_NOTE:Int = 1
+    private val REQUEST_CODE_UPDATE_NOTE:Int = 2
     private lateinit var notesAdapter:NoteAdapter
-    private var lstDummy = ArrayList<Note>(10)
+    private lateinit var viewModel:MainViewModel
+    private var noteClickPosition by Delegates.notNull<Int>()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        initDummy()
+        viewModel = ViewModelProvider(this,MainViewModelFactory(application))
+            .get(MainViewModel::class.java)
         initRecyclerView()
         initClick()
     }
 
     private fun initClick(){
         imgAddNoteMain.setOnClickListener {
-            startActivity(Intent(this,
-                CreateNoteActivity::class.java))
+            startActivityForResult(Intent(this,
+                CreateNoteActivity::class.java),REQUEST_CODE_ADD_NOTE)
         }
+    }
+
+    private fun getNote(){
+        // Viewmodel을 통한 getAllNotes 하면 insert된 List<Note>를 최신화 시키지 못함
+         NoteRepository(application).notes.observe(this, Observer<List<Note>> {
+            notesAdapter.setData(it)
+            Rv_notes.smoothScrollToPosition(0)
+
+//            if(noteList.isEmpty()){
+//                noteList.addAll(it)
+//            } else{
+//                noteList.add(0,it[0])
+//                notesAdapter.notifyItemInserted(0)
+
+//            }
+        })
+
     }
 
     private fun initRecyclerView(){
         Rv_notes.apply {
-            this.setHasFixedSize(true)
             this.layoutManager = StaggeredGridLayoutManager(2,StaggeredGridLayoutManager.VERTICAL)
+            notesAdapter = NoteAdapter{note, position ->
+                noteClickPosition = position
+                val intent:Intent = Intent(this@MainActivity,CreateNoteActivity::class.java)
+                intent.putExtra("isViewOrUpdate",true)
+                intent.putExtra("note",note)
+                startActivityForResult(intent,REQUEST_CODE_UPDATE_NOTE)
+
+            }
             this.adapter = notesAdapter
+            this.setHasFixedSize(true)
+            getNote()
         }
     }
 
-    private fun initDummy(){
-        lstDummy.add(Note("장보기","우유,에센뽀득,드빈치 치즈,올리고당,클라우드 드래프트 한박스","2020 7월 14 19:07"))
-        lstDummy.add(Note("Test2","테스트입니다2\n 아이고난!","2020 7월 16 19:52"))
-        lstDummy.add(Note("Test1","테스트입니다3\n 아이고난!","1996 8월 29 19:07"))
-        lstDummy.add(Note("Test2","테스트입니다4","2020 7월 16 19:52"))
-        notesAdapter = NoteAdapter(lstDummy)
-        notesAdapter.notifyDataSetChanged()
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if(requestCode == REQUEST_CODE_ADD_NOTE && resultCode == Activity.RESULT_OK){
+            getNote()
+        }
     }
 }

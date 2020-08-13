@@ -106,8 +106,31 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/inputNoteSubtitle" />
 
+            <ImageView
+                android:id="@+id/imageNote"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:layout_marginTop="15dp"
+                android:adjustViewBounds="true"
+                android:visibility="gone"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/inputNoteSubtitle" />
+
+            <TextView
+                android:id="@+id/txtWebUrl"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:layout_marginTop="15dp"
+                android:layout_weight="1"
+                android:autoLink="web"
+                android:textSize="13sp"
+                android:visibility="gone"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/imageNote" />
             <EditText
-                android:id="@+id/inputNote"
+                android:id="@+id/inputNoteText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="12dp"
@@ -128,7 +151,8 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.6"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/inputNoteSubtitle" />
+                app:layout_constraintTop_toBottomOf="@+id/txtWebUrl" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
+    <include layout="@layout/layout_miscellaneous" />
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
