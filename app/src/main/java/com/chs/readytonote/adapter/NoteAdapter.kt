@@ -12,11 +12,11 @@ import com.chs.readytonote.databinding.ItemContainerNoteBinding
 import com.chs.readytonote.entities.Note
 import kotlinx.android.synthetic.main.item_container_note.view.*
 
-class NoteAdapter(private val clickListener:(note:Note,position:Int) -> Unit)
+class NoteAdapter(private val item:List<Note>
+                  ,private val clickListener:(note:Note,position:Int) -> Unit)
     :RecyclerView.Adapter<NoteAdapter.NoteViewHolder>(){
     class NoteViewHolder(val binding:ItemContainerNoteBinding):RecyclerView.ViewHolder(binding.root)
 
-    private var item:List<Note> = emptyList()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NoteViewHolder {
         val view = LayoutInflater.from(parent.context)
@@ -37,7 +37,7 @@ class NoteAdapter(private val clickListener:(note:Note,position:Int) -> Unit)
             gradientDrawable.setColor(Color.parseColor("#333333"))
         }
 
-        if(item[position].imgPath != ""){
+        if(! item[position].imgPath.isNullOrEmpty()){
             holder.itemView.imageNote.setImageBitmap(BitmapFactory.decodeFile(item[position].imgPath))
             holder.itemView.imageNote.visibility = View.VISIBLE
         } else { holder.itemView.imageNote.visibility = View.GONE }
@@ -45,9 +45,5 @@ class NoteAdapter(private val clickListener:(note:Note,position:Int) -> Unit)
 
     override fun getItemCount() = item.size
 
-    fun setData(getNote:List<Note>){
-        item = getNote
-        notifyDataSetChanged()
-    }
 
 }

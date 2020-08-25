@@ -8,9 +8,13 @@ import com.chs.readytonote.entities.Note
 
 class NoteRepository (application: Application){
 
-    private var dao:NoteDao =  NotesDatabases.getInstance(application)!!.todoDao()
+    private var dao:NoteDao
+    init{
+        val db =  NotesDatabases.getInstance(application)!!
+        dao = db.todoDao()
+    }
 
-    var notes:LiveData<List<Note>> = dao.getAllNotes()
+    fun getNotes() = dao.getAllNotes()
 
     suspend fun insert(note:Note){
         dao.insertNote(note)

@@ -12,11 +12,11 @@ import com.chs.readytonote.entities.Note
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class MainViewModel(application: Application):ViewModel() {
+class MainViewModel(application: Application):AndroidViewModel(application) {
 
     private var repository:NoteRepository = NoteRepository(application)
 
-    fun getAllNotes():LiveData<List<Note>> = repository.notes
+    fun getAllNotes() = repository.getNotes()
 
     fun insert(note: Note) = viewModelScope.launch(Dispatchers.IO) {
         repository.insert(note)

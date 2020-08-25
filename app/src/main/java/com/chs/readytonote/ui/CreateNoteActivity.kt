@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.GradientDrawable
@@ -11,6 +12,7 @@ import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.MediaStore
+import android.util.Log
 import android.util.Patterns
 import android.view.LayoutInflater
 import android.view.View
@@ -32,6 +34,7 @@ import com.chs.readytonote.viewmodel.MainViewModel
 import com.chs.readytonote.viewmodel.MainViewModelFactory
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import kotlinx.android.synthetic.main.activity_create_note.view.*
+import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.layout_add_url.*
 import kotlinx.android.synthetic.main.layout_add_url.view.*
 import kotlinx.android.synthetic.main.layout_miscellaneous.*
@@ -50,12 +53,11 @@ class CreateNoteActivity : AppCompatActivity() {
     private lateinit var imagePath:String
     private lateinit var webLink:String
     private lateinit var dialogUrlAdd:AlertDialog
+    private lateinit var alreadyAvailableNote:Note
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_create_note)
-//        val dao = NotesDatabases.getInstance(this).todoDao()
-//        val repository = NoteRepository(dao)
-//        val factory = MainViewModelFactory(repository)
         viewModel = ViewModelProvider(this,MainViewModelFactory(application))
             .get(MainViewModel::class.java)
         initView()
@@ -65,31 +67,8 @@ class CreateNoteActivity : AppCompatActivity() {
     private fun initClick(){
         imgSave.setOnClickListener {
             saveNote()
-            setResult(Activity.RESULT_OK, Intent())
         }
         imgBack.setOnClickListener {
-            finish()
-        }
-    }
-
-    private fun saveNote(){
-        if(inputNoteTitle.text.trim().isNullOrEmpty()){
-            Toast.makeText(this, "Note title can't be empty!", Toast.LENGTH_SHORT).show()
-        } else if(inputNoteSubtitle.text.trim().isNullOrEmpty()
-            && inputNoteText.text.trim().isNullOrEmpty()){
-            Toast.makeText(this, "Note can't be empty!", Toast.LENGTH_SHORT).show()
-        } else{
-            webLink = if(txtWebUrl.visibility == View.VISIBLE){
-                txtWebUrl.text.toString()
-            } else { "" }
-
-            val note = Note(title = inputNoteTitle.text.toString(),
-                dateTime = txtDateTime.text.toString(),
-                subtitle = inputNoteSubtitle.text.toString(),
-                noteText = inputNoteText.text.toString(),
-                imgPath = imagePath,color = noteColor,webLink = webLink)
-            viewModel.insert(note)
-            CloseKeyboard()
             finish()
         }
     }
@@ -97,6 +76,13 @@ class CreateNoteActivity : AppCompatActivity() {
     private fun initView(){
         noteColor = "#333333"
         imagePath = ""
+
+        if(intent.getBooleanExtra("isViewOrUpdate",false)){
+
+            alreadyAvailableNote = intent.getParcelableExtra<Note>("note")
+            setViewOrUpdateNote()
+        }
+
         txtDateTime.text = SimpleDateFormat("yyyy년 MM월 dd일 E요일 HH:mm", Locale.KOREA).format(Date())
         bottomSheetBehavior = BottomSheetBehavior.from(layoutMiscellaneous)
         layoutMiscellaneous.findViewById<TextView>(R.id.textMiscellaneous).setOnClickListener {
@@ -109,6 +95,49 @@ class CreateNoteActivity : AppCompatActivity() {
 
         initMiscellaneous()
         setSubtitleIndicator()
+    }
+
+    private fun saveNote(){
+        if(inputNoteTitle.text.trim().isNullOrEmpty()){
+            Toast.makeText(this, "Note title can't be empty!", Toast.LENGTH_SHORT).show()
+        } else if(inputNoteSubtitle.text.trim().isNullOrEmpty()
+            && inputNoteText.text.trim().isNullOrEmpty()){
+            Toast.makeText(this, "Note can't be empty!", Toast.LENGTH_SHORT).show()
+        } else{
+            webLink = if(txtWebUrl.visibility == View.VISIBLE){
+                txtWebUrl.text.toString()
+            } else ""
+
+            Log.d("ImagePath",imagePath)
+            val note = Note(title = inputNoteTitle.text.toString(),
+                dateTime = txtDateTime.text.toString(),
+                subtitle = inputNoteSubtitle.text.toString(),
+                noteText = inputNoteText.text.toString(),
+                imgPath = imagePath,color = noteColor,webLink = webLink)
+            if(::alreadyAvailableNote.isInitialized && alreadyAvailableNote != null){
+                note.id = alreadyAvailableNote.id
+            }
+            viewModel.insert(note)
+            closeKeyboard()
+            setResult(Activity.RESULT_OK, Intent())
+            finish()
+        }
+    }
+
+    private fun setViewOrUpdateNote(){
+        inputNoteTitle.setText(alreadyAvailableNote.title)
+        inputNoteSubtitle.setText(alreadyAvailableNote.subtitle)
+        inputNoteText.setText(alreadyAvailableNote.noteText)
+        if(! alreadyAvailableNote.imgPath.isNullOrEmpty()){
+            imageNote.visibility = View.VISIBLE
+            imageNote.setImageBitmap(BitmapFactory.decodeFile(alreadyAvailableNote.imgPath))
+            imagePath = alreadyAvailableNote.imgPath!!
+        }
+        if(! alreadyAvailableNote.webLink.isNullOrEmpty()){
+            txtWebUrl.text = alreadyAvailableNote.webLink
+            txtWebUrl.visibility = View.VISIBLE
+        }
+
     }
 
     private fun setSubtitleIndicator(){
@@ -127,6 +156,7 @@ class CreateNoteActivity : AppCompatActivity() {
                 imageColorBlack.setImageResource(0)
                 setSubtitleIndicator()
             }
+
             imageColorYellow.setOnClickListener {
                 noteColor = "#FDBE3B"
                 imageColorDefault.setImageResource(0)
@@ -136,6 +166,7 @@ class CreateNoteActivity : AppCompatActivity() {
                 imageColorBlack.setImageResource(0)
                 setSubtitleIndicator()
             }
+
             imageColorRed.setOnClickListener {
                 noteColor = "#FF4842"
                 imageColorDefault.setImageResource(0)
@@ -145,6 +176,7 @@ class CreateNoteActivity : AppCompatActivity() {
                 imageColorBlack.setImageResource(0)
                 setSubtitleIndicator()
             }
+
             imageColorBlue.setOnClickListener {
                 noteColor = "#3A52FC"
                 imageColorDefault.setImageResource(0)
@@ -154,6 +186,7 @@ class CreateNoteActivity : AppCompatActivity() {
                 imageColorBlack.setImageResource(0)
                 setSubtitleIndicator()
             }
+
             imageColorBlack.setOnClickListener {
                 noteColor = "#000000"
                 imageColorDefault.setImageResource(0)
@@ -164,6 +197,7 @@ class CreateNoteActivity : AppCompatActivity() {
                 setSubtitleIndicator()
             }
         }
+
         layoutAddImage.setOnClickListener {
             if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.M){
                 if (checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) ==
@@ -177,6 +211,16 @@ class CreateNoteActivity : AppCompatActivity() {
             bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
             showAddUrlDialog()
         }
+        if(::alreadyAvailableNote.isInitialized &&! alreadyAvailableNote.color.isNullOrEmpty()){
+            when(alreadyAvailableNote.color){
+                "#333333"->layoutMiscellaneous.imageColorDefault.performClick()
+                "#FDBE3B"->layoutMiscellaneous.imageColorYellow.performClick()
+                "#FF4842"->layoutMiscellaneous.imageColorRed.performClick()
+                "#3A52FC"->layoutMiscellaneous.imageColorBlue.performClick()
+                "#000000"->layoutMiscellaneous.imageColorBlack.performClick()
+            }
+        }
+
     }
 
     private fun showAddUrlDialog(){
@@ -245,7 +289,7 @@ class CreateNoteActivity : AppCompatActivity() {
         }
     }
 
-    fun CloseKeyboard()
+    private fun closeKeyboard()
     {
         var view = this.currentFocus
         if(view != null) {

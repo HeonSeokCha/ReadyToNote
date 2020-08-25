@@ -21,11 +21,16 @@ import kotlinx.android.synthetic.main.activity_main.*
 import kotlin.properties.Delegates
 
 class MainActivity : AppCompatActivity() {
-    private val REQUEST_CODE_ADD_NOTE:Int = 1
-    private val REQUEST_CODE_UPDATE_NOTE:Int = 2
+    companion object{
+        private const val REQUEST_CODE_ADD_NOTE:Int = 1
+        private const val REQUEST_CODE_UPDATE_NOTE:Int = 2
+        private const val REQUST_CODE_SHOW_NOTE = 3
+    }
+
     private lateinit var notesAdapter:NoteAdapter
+    private lateinit var noteList:MutableList<Note>
     private lateinit var viewModel:MainViewModel
-    private var noteClickPosition by Delegates.notNull<Int>()
+    private var noteClickPosition:Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,44 +48,53 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun getNote(){
-        // Viewmodel을 통한 getAllNotes 하면 insert된 List<Note>를 최신화 시키지 못함
-         NoteRepository(application).notes.observe(this, Observer<List<Note>> {
-            notesAdapter.setData(it)
-            Rv_notes.smoothScrollToPosition(0)
-
-//            if(noteList.isEmpty()){
-//                noteList.addAll(it)
-//            } else{
-//                noteList.add(0,it[0])
-//                notesAdapter.notifyItemInserted(0)
-
-//            }
+    private fun getNote(requestCode: Int){
+        Log.d("ReqCode",requestCode.toString())
+        viewModel.getAllNotes().observe(this, Observer {
+            when(requestCode) {
+                REQUST_CODE_SHOW_NOTE -> {
+                    noteList.addAll(it)
+                    notesAdapter.notifyDataSetChanged()
+                }
+                REQUEST_CODE_ADD_NOTE -> {
+                    noteList.add(0,it[0])
+                    notesAdapter.notifyItemInserted(0)
+                    Rv_notes.smoothScrollToPosition(0)
+                }
+                REQUEST_CODE_UPDATE_NOTE -> {
+                    Log.d("noteClickPosition",noteClickPosition.toString())
+                    noteList.removeAt(noteClickPosition)
+                    noteList.add(noteClickPosition,it[noteClickPosition])
+                    notesAdapter.notifyItemChanged(noteClickPosition)
+                    Log.d("NoteTlqkfdk",noteList[noteClickPosition].imgPath)
+                }
+            }
         })
-
     }
 
     private fun initRecyclerView(){
         Rv_notes.apply {
             this.layoutManager = StaggeredGridLayoutManager(2,StaggeredGridLayoutManager.VERTICAL)
-            notesAdapter = NoteAdapter{note, position ->
+            noteList = mutableListOf()
+            notesAdapter = NoteAdapter(noteList){ note, position ->
                 noteClickPosition = position
                 val intent:Intent = Intent(this@MainActivity,CreateNoteActivity::class.java)
                 intent.putExtra("isViewOrUpdate",true)
                 intent.putExtra("note",note)
                 startActivityForResult(intent,REQUEST_CODE_UPDATE_NOTE)
-
             }
             this.adapter = notesAdapter
             this.setHasFixedSize(true)
-            getNote()
+            getNote(REQUST_CODE_SHOW_NOTE)
         }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if(requestCode == REQUEST_CODE_ADD_NOTE && resultCode == Activity.RESULT_OK){
-            getNote()
+            getNote(REQUEST_CODE_ADD_NOTE)
+        } else if(requestCode == REQUEST_CODE_UPDATE_NOTE && resultCode == RESULT_OK){
+            getNote(REQUEST_CODE_UPDATE_NOTE)
         }
     }
 }

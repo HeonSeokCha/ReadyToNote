@@ -6,6 +6,7 @@ import com.chs.readytonote.entities.Note
 
 @Dao
 interface NoteDao {
+
     @Query("SELECT * FROM notes ORDER BY id DESC")
     fun getAllNotes():LiveData<List<Note>>
 
