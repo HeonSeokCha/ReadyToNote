@@ -37,6 +37,7 @@ import kotlinx.android.synthetic.main.activity_create_note.view.*
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.layout_add_url.*
 import kotlinx.android.synthetic.main.layout_add_url.view.*
+import kotlinx.android.synthetic.main.layout_delete_note.view.*
 import kotlinx.android.synthetic.main.layout_miscellaneous.*
 import kotlinx.android.synthetic.main.layout_miscellaneous.view.*
 
@@ -53,6 +54,7 @@ class CreateNoteActivity : AppCompatActivity() {
     private lateinit var imagePath:String
     private lateinit var webLink:String
     private lateinit var dialogUrlAdd:AlertDialog
+    private lateinit var dialogDelete:AlertDialog
     private lateinit var alreadyAvailableNote:Note
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -64,27 +66,17 @@ class CreateNoteActivity : AppCompatActivity() {
         initClick()
     }
 
-    private fun initClick(){
-        imgSave.setOnClickListener {
-            saveNote()
-        }
-        imgBack.setOnClickListener {
-            finish()
-        }
-    }
-
     private fun initView(){
         noteColor = "#333333"
         imagePath = ""
+        txtDateTime.text = SimpleDateFormat("yyyy년 MM월 dd일 E요일 HH:mm", Locale.KOREA).format(Date())
+        bottomSheetBehavior = BottomSheetBehavior.from(layoutMiscellaneous)
 
         if(intent.getBooleanExtra("isViewOrUpdate",false)){
-
             alreadyAvailableNote = intent.getParcelableExtra<Note>("note")
             setViewOrUpdateNote()
         }
 
-        txtDateTime.text = SimpleDateFormat("yyyy년 MM월 dd일 E요일 HH:mm", Locale.KOREA).format(Date())
-        bottomSheetBehavior = BottomSheetBehavior.from(layoutMiscellaneous)
         layoutMiscellaneous.findViewById<TextView>(R.id.textMiscellaneous).setOnClickListener {
             if(bottomSheetBehavior.state != BottomSheetBehavior.STATE_EXPANDED){
                 bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
@@ -95,6 +87,39 @@ class CreateNoteActivity : AppCompatActivity() {
 
         initMiscellaneous()
         setSubtitleIndicator()
+    }
+
+    private fun initClick(){
+        imgSave.setOnClickListener {
+            saveNote()
+        }
+
+        imgBack.setOnClickListener {
+            finish()
+        }
+
+        layoutAddImage.setOnClickListener {
+            if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.M){
+                if (checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) ==
+                    PackageManager.PERMISSION_DENIED){
+                    val permissions = arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE)
+                    requestPermissions(permissions, PERMISSION_CODE)
+                } else pickImageFromGallery()
+            } else pickImageFromGallery()
+        }
+
+        layoutAddUrl.setOnClickListener {
+            bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+            showAddUrlDialog()
+        }
+
+        if(::alreadyAvailableNote.isInitialized){
+            layoutDeleteNote.visibility = View.VISIBLE
+            layoutDeleteNote.setOnClickListener {
+                bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+                showDeleteDialog()
+            }
+        }
     }
 
     private fun saveNote(){
@@ -122,6 +147,14 @@ class CreateNoteActivity : AppCompatActivity() {
             setResult(Activity.RESULT_OK, Intent())
             finish()
         }
+    }
+
+    private fun deleteNote(note:Note){
+        viewModel.delete(note)
+        val intent:Intent = Intent()
+        intent.putExtra("isNoteDelete",true)
+        setResult(Activity.RESULT_OK,intent)
+        finish()
     }
 
     private fun setViewOrUpdateNote(){
@@ -198,19 +231,7 @@ class CreateNoteActivity : AppCompatActivity() {
             }
         }
 
-        layoutAddImage.setOnClickListener {
-            if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.M){
-                if (checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) ==
-                    PackageManager.PERMISSION_DENIED){
-                    val permissions = arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE)
-                    requestPermissions(permissions, PERMISSION_CODE)
-                } else pickImageFromGallery()
-            } else pickImageFromGallery()
-        }
-        layoutAddUrl.setOnClickListener {
-            bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
-            showAddUrlDialog()
-        }
+
         if(::alreadyAvailableNote.isInitialized &&! alreadyAvailableNote.color.isNullOrEmpty()){
             when(alreadyAvailableNote.color){
                 "#333333"->layoutMiscellaneous.imageColorDefault.performClick()
@@ -256,6 +277,25 @@ class CreateNoteActivity : AppCompatActivity() {
         dialogUrlAdd.show()
     }
 
+    private fun showDeleteDialog(){
+        val builder:AlertDialog.Builder = AlertDialog.Builder(this)
+        val view = LayoutInflater.from(this).inflate(R.layout.layout_delete_note,
+            (findViewById<ViewGroup>(R.id.layoutDeleteNoteContainer)))
+        builder.setView(view)
+        dialogDelete = builder.create()
+        if(dialogDelete.window!=null){
+            dialogDelete.window!!.setBackgroundDrawable(ColorDrawable(0))
+        }
+        view.txtDeleteNote.setOnClickListener {
+            dialogDelete.dismiss()
+            deleteNote(alreadyAvailableNote)
+        }
+        view.textDeleteCancel.setOnClickListener {
+            dialogDelete.dismiss()
+        }
+        dialogDelete.show()
+    }
+
     private fun pickImageFromGallery(){
         val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
         if(intent.resolveActivity(packageManager)!= null){
@@ -270,8 +310,8 @@ class CreateNoteActivity : AppCompatActivity() {
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         when(requestCode){
             PERMISSION_CODE -> {
-                if (grantResults.isNotEmpty() && grantResults[0] ==
-                    PackageManager.PERMISSION_GRANTED){
+                if (grantResults.isNotEmpty() &&
+                    grantResults[0] == PackageManager.PERMISSION_GRANTED){
                     pickImageFromGallery()
                 }
                 else Toast.makeText(this, "Permission denied", Toast.LENGTH_SHORT).show()

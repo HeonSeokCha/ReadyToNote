@@ -30,7 +30,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var notesAdapter:NoteAdapter
     private lateinit var noteList:MutableList<Note>
     private lateinit var viewModel:MainViewModel
-    private var noteClickPosition:Int = 0
+    private var noteClickPosition = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,10 +48,9 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun getNote(requestCode: Int){
-        Log.d("ReqCode",requestCode.toString())
+    private fun getNote(requestCode: Int,isNoteDelete:Boolean){
         viewModel.getAllNotes().observe(this, Observer {
-            when(requestCode) {
+            when (requestCode) {
                 REQUST_CODE_SHOW_NOTE -> {
                     noteList.addAll(it)
                     notesAdapter.notifyDataSetChanged()
@@ -62,11 +61,13 @@ class MainActivity : AppCompatActivity() {
                     Rv_notes.smoothScrollToPosition(0)
                 }
                 REQUEST_CODE_UPDATE_NOTE -> {
-                    Log.d("noteClickPosition",noteClickPosition.toString())
                     noteList.removeAt(noteClickPosition)
-                    noteList.add(noteClickPosition,it[noteClickPosition])
-                    notesAdapter.notifyItemChanged(noteClickPosition)
-                    Log.d("NoteTlqkfdk",noteList[noteClickPosition].imgPath)
+                    if(isNoteDelete){
+                        notesAdapter.notifyItemRemoved(noteClickPosition)
+                    } else{
+                        noteList.add(noteClickPosition,it[noteClickPosition])
+                        notesAdapter.notifyItemChanged(noteClickPosition)
+                    }
                 }
             }
         })
@@ -77,6 +78,7 @@ class MainActivity : AppCompatActivity() {
             this.layoutManager = StaggeredGridLayoutManager(2,StaggeredGridLayoutManager.VERTICAL)
             noteList = mutableListOf()
             notesAdapter = NoteAdapter(noteList){ note, position ->
+                Log.d("Position",position.toString())
                 noteClickPosition = position
                 val intent:Intent = Intent(this@MainActivity,CreateNoteActivity::class.java)
                 intent.putExtra("isViewOrUpdate",true)
@@ -85,16 +87,18 @@ class MainActivity : AppCompatActivity() {
             }
             this.adapter = notesAdapter
             this.setHasFixedSize(true)
-            getNote(REQUST_CODE_SHOW_NOTE)
+            getNote(REQUST_CODE_SHOW_NOTE,false)
         }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if(requestCode == REQUEST_CODE_ADD_NOTE && resultCode == Activity.RESULT_OK){
-            getNote(REQUEST_CODE_ADD_NOTE)
+            getNote(REQUEST_CODE_ADD_NOTE,false)
         } else if(requestCode == REQUEST_CODE_UPDATE_NOTE && resultCode == RESULT_OK){
-            getNote(REQUEST_CODE_UPDATE_NOTE)
+            if(data!=null){
+                getNote(REQUEST_CODE_UPDATE_NOTE,data!!.getBooleanExtra("isNoteDelete",false))
+            }
         }
     }
 }

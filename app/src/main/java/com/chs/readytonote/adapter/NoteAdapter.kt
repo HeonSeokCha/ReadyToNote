@@ -12,8 +12,8 @@ import com.chs.readytonote.databinding.ItemContainerNoteBinding
 import com.chs.readytonote.entities.Note
 import kotlinx.android.synthetic.main.item_container_note.view.*
 
-class NoteAdapter(private val item:List<Note>
-                  ,private val clickListener:(note:Note,position:Int) -> Unit)
+class NoteAdapter(private var item:List<Note>,
+                  private val clickListener:(note:Note,position:Int) -> Unit)
     :RecyclerView.Adapter<NoteAdapter.NoteViewHolder>(){
     class NoteViewHolder(val binding:ItemContainerNoteBinding):RecyclerView.ViewHolder(binding.root)
 
@@ -22,14 +22,14 @@ class NoteAdapter(private val item:List<Note>
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.item_container_note,parent,false)
         val viewHolder = NoteViewHolder(ItemContainerNoteBinding.bind(view))
+        view.setOnClickListener {
+            clickListener.invoke(item[viewHolder.adapterPosition],viewHolder.adapterPosition)
+        }
         return viewHolder
     }
 
     override fun onBindViewHolder(holder: NoteViewHolder, position: Int) {
         holder.binding.model = item[position]
-        holder.itemView.layoutNote.setOnClickListener {
-            clickListener.invoke(item[position],position)
-        }
         var gradientDrawable: GradientDrawable = (holder.itemView.layoutNote.background as GradientDrawable)
         if(item[position].color != ""){
             gradientDrawable.setColor(Color.parseColor(item[position].color))
