@@ -5,7 +5,7 @@ This is Simple Todo Note.
 
 * Application Screen
 <div>
-<img width="300" src="https://user-images.githubusercontent.com/55890012/90141556-3ae39080-ddb6-11ea-918f-55427dbc136b.png">
+<img width="300" src="https://user-images.githubusercontent.com/55890012/91217748-f7dcd200-e752-11ea-8b95-0713b4498c01.png">
 <img width="300" src="https://user-images.githubusercontent.com/55890012/90141695-6cf4f280-ddb6-11ea-8243-9ec94724ef9c.png">
 
 </div>
