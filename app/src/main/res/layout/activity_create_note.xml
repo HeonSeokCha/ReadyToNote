@@ -29,7 +29,7 @@
                 android:layout_marginTop="20dp"
                 android:contentDescription="@string/app_name"
                 android:src="@drawable/ic_back"
-                android:tint="@color/colorIcons"
+                app:tint="@color/colorIcons"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -41,9 +41,9 @@
                 android:background="@drawable/background_done_btn"
                 android:padding="4dp"
                 android:src="@drawable/ic_done"
-                android:tint="@color/colorIcons"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/imgBack" />
+                app:layout_constraintTop_toTopOf="@+id/imgBack"
+                app:tint="@color/colorIcons" />
 
             <EditText
                 android:id="@+id/inputNoteTitle"
@@ -112,11 +112,25 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="12dp"
+                android:visibility="gone"
                 android:layout_marginTop="15dp"
                 android:adjustViewBounds="true"
-                android:visibility="gone"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/inputNoteSubtitle" />
+
+            <ImageView
+                android:id="@+id/imageDelete"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                android:src="@drawable/ic_delete"
+                android:visibility="gone"
+                android:padding="3dp"
+                app:tint="@color/colorWhite"
+                android:background="@drawable/background_delete"
+                app:layout_constraintEnd_toEndOf="@+id/imageNote"
+                app:layout_constraintTop_toTopOf="@+id/imageNote" />
 
             <TextView
                 android:id="@+id/txtWebUrl"
@@ -125,11 +139,24 @@
                 android:layout_marginStart="12dp"
                 android:layout_marginTop="15dp"
                 android:layout_weight="1"
+                android:visibility="gone"
                 android:autoLink="web"
                 android:textSize="13sp"
-                android:visibility="gone"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/imageNote" />
+
+            <ImageView
+                android:id="@+id/imageDeleteUrl"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:visibility="gone"
+                android:layout_marginEnd="12dp"
+                android:src="@drawable/ic_delete"
+                app:tint="@color/colorDelete"
+                app:layout_constraintBottom_toBottomOf="@+id/txtWebUrl"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/txtWebUrl" />
+
             <EditText
                 android:id="@+id/inputNoteText"
                 android:layout_width="match_parent"

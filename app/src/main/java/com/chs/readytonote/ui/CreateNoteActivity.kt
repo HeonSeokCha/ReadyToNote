@@ -99,6 +99,7 @@ class CreateNoteActivity : AppCompatActivity() {
         }
 
         layoutAddImage.setOnClickListener {
+            bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
             if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.M){
                 if (checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) ==
                     PackageManager.PERMISSION_DENIED){
@@ -119,6 +120,18 @@ class CreateNoteActivity : AppCompatActivity() {
                 bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
                 showDeleteDialog()
             }
+        }
+
+        imageDelete.setOnClickListener {
+            imagePath = ""
+            imageNote.visibility = View.GONE
+            imageDelete.visibility = View.GONE
+        }
+
+        imageDeleteUrl.setOnClickListener {
+            webLink = ""
+            txtWebUrl.visibility = View.GONE
+            imageDeleteUrl.visibility = View.GONE
         }
     }
 
@@ -165,10 +178,12 @@ class CreateNoteActivity : AppCompatActivity() {
             imageNote.visibility = View.VISIBLE
             imageNote.setImageBitmap(BitmapFactory.decodeFile(alreadyAvailableNote.imgPath))
             imagePath = alreadyAvailableNote.imgPath!!
+            imageDelete.visibility = View.VISIBLE
         }
         if(! alreadyAvailableNote.webLink.isNullOrEmpty()){
             txtWebUrl.text = alreadyAvailableNote.webLink
             txtWebUrl.visibility = View.VISIBLE
+            imageDeleteUrl.visibility = View.VISIBLE
         }
 
     }
@@ -267,9 +282,11 @@ class CreateNoteActivity : AppCompatActivity() {
                     txtWebUrl.text = view.inputUrl.text
                     txtWebUrl.visibility = View.VISIBLE
                     dialogUrlAdd.dismiss()
+                    imageDeleteUrl.visibility = View.VISIBLE
                 }
             }
         }
+
         view.textCancel.setOnClickListener {
             dialogUrlAdd.dismiss()
         }
@@ -325,7 +342,7 @@ class CreateNoteActivity : AppCompatActivity() {
             imageNote.visibility = View.VISIBLE
             imageNote.setImageURI(data!!.data)
             imagePath = getRealPathFromURI(this,data!!.data!!)!!
-            bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+            imageDelete.visibility = View.VISIBLE
         }
     }
 
