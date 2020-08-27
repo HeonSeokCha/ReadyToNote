@@ -167,7 +167,7 @@
                 android:layout_marginBottom="15dp"
                 android:background="@null"
                 android:gravity="top"
-                android:hint="Type note here..."
+                android:hint="Type note here...."
                 android:importantForAutofill="no"
                 android:includeFontPadding="false"
                 android:inputType="textMultiLine"
