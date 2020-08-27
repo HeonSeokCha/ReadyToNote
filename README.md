@@ -6,6 +6,6 @@ This is Simple Todo Note.
 * Application Screen
 <div>
 <img width="300" src="https://user-images.githubusercontent.com/55890012/91351092-a9970400-e822-11ea-9aa4-7ceef762efc9.png">
-<img width="300" src="https://user-images.githubusercontent.com/55890012/91351125-b87db680-e822-11ea-8846-7821b6f3e3fb.png">
+<img width="300" src="https://user-images.githubusercontent.com/55890012/91454328-c895a480-e8bb-11ea-9722-71d1cdef5505.png">
 
 </div>
