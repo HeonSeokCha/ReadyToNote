@@ -262,7 +262,7 @@ class CreateNoteActivity : AppCompatActivity() {
     private fun showAddUrlDialog(){
         val builder:AlertDialog.Builder = AlertDialog.Builder(this)
         val view = LayoutInflater.from(this).inflate(R.layout.layout_add_url,
-            (findViewById<ViewGroup>(R.id.layoutAddUrlContainer)))
+            (findViewById(R.id.layoutAddUrlContainer)))
         builder.setView(view)
         dialogUrlAdd = builder.create()
         if(dialogUrlAdd.window!=null){
@@ -297,7 +297,7 @@ class CreateNoteActivity : AppCompatActivity() {
     private fun showDeleteDialog(){
         val builder:AlertDialog.Builder = AlertDialog.Builder(this)
         val view = LayoutInflater.from(this).inflate(R.layout.layout_delete_note,
-            (findViewById<ViewGroup>(R.id.layoutDeleteNoteContainer)))
+            (findViewById(R.id.layoutDeleteNoteContainer)))
         builder.setView(view)
         dialogDelete = builder.create()
         if(dialogDelete.window!=null){
@@ -341,17 +341,15 @@ class CreateNoteActivity : AppCompatActivity() {
         if(resultCode==Activity.RESULT_OK && requestCode == IMAGE_PICK_CODE){
             imageNote.visibility = View.VISIBLE
             imageNote.setImageURI(data!!.data)
-            imagePath = getRealPathFromURI(this,data!!.data!!)!!
+            imagePath = getRealPathFromURI(this, data.data!!)!!
             imageDelete.visibility = View.VISIBLE
         }
     }
 
-    private fun closeKeyboard()
-    {
-        var view = this.currentFocus
-        if(view != null) {
+    private fun closeKeyboard() {
+        if(this.currentFocus != null) {
             val inputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-            inputMethodManager.hideSoftInputFromWindow(view.windowToken, 0)
+            inputMethodManager.hideSoftInputFromWindow(this.currentFocus!!.windowToken, 0)
         }
     }
 

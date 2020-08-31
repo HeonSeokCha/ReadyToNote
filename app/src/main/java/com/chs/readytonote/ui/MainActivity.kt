@@ -4,21 +4,23 @@ import android.app.Activity
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.widget.Toast
+import androidx.core.widget.addTextChangedListener
+import androidx.core.widget.doAfterTextChanged
+import androidx.core.widget.doOnTextChanged
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
-import com.chs.readytonote.NoteRepository
 import com.chs.readytonote.R
 import com.chs.readytonote.adapter.NoteAdapter
-import com.chs.readytonote.dao.NoteDao
-import com.chs.readytonote.database.NotesDatabases
 import com.chs.readytonote.entities.Note
 import com.chs.readytonote.viewmodel.MainViewModel
 import com.chs.readytonote.viewmodel.MainViewModelFactory
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlin.properties.Delegates
+import kotlinx.android.synthetic.main.activity_main.view.*
 
 class MainActivity : AppCompatActivity() {
     companion object{
@@ -39,6 +41,7 @@ class MainActivity : AppCompatActivity() {
             .get(MainViewModel::class.java)
         initRecyclerView()
         initClick()
+        searchNote()
     }
 
     private fun initClick(){
@@ -78,9 +81,8 @@ class MainActivity : AppCompatActivity() {
             this.layoutManager = StaggeredGridLayoutManager(2,StaggeredGridLayoutManager.VERTICAL)
             noteList = mutableListOf()
             notesAdapter = NoteAdapter(noteList){ note, position ->
-                Log.d("Position",position.toString())
                 noteClickPosition = position
-                val intent:Intent = Intent(this@MainActivity,CreateNoteActivity::class.java)
+                val intent = Intent(this@MainActivity,CreateNoteActivity::class.java)
                 intent.putExtra("isViewOrUpdate",true)
                 intent.putExtra("note",note)
                 startActivityForResult(intent,REQUEST_CODE_UPDATE_NOTE)
@@ -89,6 +91,20 @@ class MainActivity : AppCompatActivity() {
             this.setHasFixedSize(true)
             getNote(REQUST_CODE_SHOW_NOTE,false)
         }
+    }
+
+    private fun searchNote(){
+        inputSearch.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(p0: Editable?) {
+                if(noteList.isNotEmpty()){
+                    notesAdapter.search(p0.toString())
+                }
+            }
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                notesAdapter.cancelTimer()
+            }
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
+        })
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
