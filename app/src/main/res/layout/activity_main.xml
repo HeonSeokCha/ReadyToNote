@@ -71,6 +71,7 @@
         android:id="@+id/coordinatorLayout"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:layout_marginTop="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -94,6 +95,7 @@
             app:backgroundTint="@color/colorQuickActionBackground"
             app:fabAlignmentMode="center"
             app:fabCradleMargin="8dp"
+            app:hideOnScroll="true"
             app:fabCradleRoundedCornerRadius="8dp" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -102,8 +104,8 @@
             android:layout_height="wrap_content"
             android:src="@drawable/ic_add"
             app:backgroundTint="@color/colorAccent"
-            app:fabSize="normal"
             app:borderWidth="0dp"
+            app:fabSize="normal"
             app:layout_anchor="@id/bottomAppBar" />
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 

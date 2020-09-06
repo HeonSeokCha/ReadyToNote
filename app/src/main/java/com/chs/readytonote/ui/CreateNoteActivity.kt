@@ -16,7 +16,8 @@ import android.util.Log
 import android.util.Patterns
 import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
+import android.view.animation.Animation
+import android.view.animation.AnimationUtils
 import android.view.inputmethod.InputMethodManager
 import android.widget.TextView
 import android.widget.Toast
@@ -33,9 +34,6 @@ import com.chs.readytonote.getRealPathFromURI
 import com.chs.readytonote.viewmodel.MainViewModel
 import com.chs.readytonote.viewmodel.MainViewModelFactory
 import com.google.android.material.bottomsheet.BottomSheetBehavior
-import kotlinx.android.synthetic.main.activity_create_note.view.*
-import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.layout_add_url.*
 import kotlinx.android.synthetic.main.layout_add_url.view.*
 import kotlinx.android.synthetic.main.layout_delete_note.view.*
 import kotlinx.android.synthetic.main.layout_miscellaneous.*
@@ -56,6 +54,11 @@ class CreateNoteActivity : AppCompatActivity() {
     private lateinit var dialogUrlAdd:AlertDialog
     private lateinit var dialogDelete:AlertDialog
     private lateinit var alreadyAvailableNote:Note
+    private val rotateOpen:Animation by lazy { AnimationUtils.loadAnimation(this,R.anim.fab_open)}
+    private val rotateClose:Animation by lazy { AnimationUtils.loadAnimation(this,R.anim.fab_close)}
+    private val fromBottom:Animation by lazy { AnimationUtils.loadAnimation(this,R.anim.from_bottom_anim)}
+    private val toBottom:Animation by lazy { AnimationUtils.loadAnimation(this,R.anim.to_bottom_anim)}
+    private var fabClicked:Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -64,6 +67,7 @@ class CreateNoteActivity : AppCompatActivity() {
             .get(MainViewModel::class.java)
         initView()
         initClick()
+        initFab()
     }
 
     private fun initView(){
@@ -174,6 +178,7 @@ class CreateNoteActivity : AppCompatActivity() {
         inputNoteTitle.setText(alreadyAvailableNote.title)
         inputNoteSubtitle.setText(alreadyAvailableNote.subtitle)
         inputNoteText.setText(alreadyAvailableNote.noteText)
+
         if(! alreadyAvailableNote.imgPath.isNullOrEmpty()){
             imageNote.visibility = View.VISIBLE
             imageNote.setImageBitmap(BitmapFactory.decodeFile(alreadyAvailableNote.imgPath))
@@ -259,6 +264,32 @@ class CreateNoteActivity : AppCompatActivity() {
 
     }
 
+    private fun initFab(){
+        fab_list.setOnClickListener {
+            when(fabClicked){
+                false ->{
+                    fab_addImage.visibility = View.VISIBLE
+                    fab_addImage.startAnimation(fromBottom)
+                    fab_addUrl.visibility = View.VISIBLE
+                    fab_addUrl.startAnimation(fromBottom)
+                    fab_del.visibility = View.VISIBLE
+                    fab_del.startAnimation(fromBottom)
+                    fabClicked = true
+                }
+                true ->{
+                    fab_addImage.visibility = View.GONE
+                    fab_addImage.startAnimation(toBottom)
+                    fab_addUrl.visibility = View.GONE
+                    fab_addUrl.startAnimation(toBottom)
+                    fab_del.visibility = View.GONE
+                    fab_del.startAnimation(toBottom)
+                    fabClicked = false
+                }
+            }
+
+        }
+    }
+
     private fun showAddUrlDialog(){
         val builder:AlertDialog.Builder = AlertDialog.Builder(this)
         val view = LayoutInflater.from(this).inflate(R.layout.layout_add_url,
@@ -279,6 +310,7 @@ class CreateNoteActivity : AppCompatActivity() {
                     Toast.makeText(this@CreateNoteActivity, "Enter valid URL", Toast.LENGTH_SHORT).show()
                 }
                 else -> {
+                    closeKeyboard()
                     txtWebUrl.text = view.inputUrl.text
                     txtWebUrl.visibility = View.VISIBLE
                     dialogUrlAdd.dismiss()
@@ -317,8 +349,6 @@ class CreateNoteActivity : AppCompatActivity() {
         val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
         if(intent.resolveActivity(packageManager)!= null){
             intent.type = "image/*"
-            val mimeTypes = arrayOf("image/jpeg", "image/png","image/jpg")
-            intent.putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes)
             intent.flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
             startActivityForResult(intent, IMAGE_PICK_CODE)
         }

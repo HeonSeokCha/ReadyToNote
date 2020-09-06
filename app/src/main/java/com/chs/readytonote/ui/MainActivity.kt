@@ -89,8 +89,8 @@ class MainActivity : AppCompatActivity() {
             }
             this.adapter = notesAdapter
             this.setHasFixedSize(true)
-            getNote(REQUST_CODE_SHOW_NOTE,false)
         }
+        getNote(REQUST_CODE_SHOW_NOTE,false)
     }
 
     private fun searchNote(){
