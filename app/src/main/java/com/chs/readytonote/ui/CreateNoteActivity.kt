@@ -16,8 +16,6 @@ import android.util.Log
 import android.util.Patterns
 import android.view.LayoutInflater
 import android.view.View
-import android.view.animation.Animation
-import android.view.animation.AnimationUtils
 import android.view.inputmethod.InputMethodManager
 import android.widget.TextView
 import android.widget.Toast
@@ -54,11 +52,6 @@ class CreateNoteActivity : AppCompatActivity() {
     private lateinit var dialogUrlAdd:AlertDialog
     private lateinit var dialogDelete:AlertDialog
     private lateinit var alreadyAvailableNote:Note
-    private val rotateOpen:Animation by lazy { AnimationUtils.loadAnimation(this,R.anim.fab_open)}
-    private val rotateClose:Animation by lazy { AnimationUtils.loadAnimation(this,R.anim.fab_close)}
-    private val fromBottom:Animation by lazy { AnimationUtils.loadAnimation(this,R.anim.from_bottom_anim)}
-    private val toBottom:Animation by lazy { AnimationUtils.loadAnimation(this,R.anim.to_bottom_anim)}
-    private var fabClicked:Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -67,7 +60,6 @@ class CreateNoteActivity : AppCompatActivity() {
             .get(MainViewModel::class.java)
         initView()
         initClick()
-        initFab()
     }
 
     private fun initView(){
@@ -251,7 +243,6 @@ class CreateNoteActivity : AppCompatActivity() {
             }
         }
 
-
         if(::alreadyAvailableNote.isInitialized &&! alreadyAvailableNote.color.isNullOrEmpty()){
             when(alreadyAvailableNote.color){
                 "#333333"->layoutMiscellaneous.imageColorDefault.performClick()
@@ -260,33 +251,6 @@ class CreateNoteActivity : AppCompatActivity() {
                 "#3A52FC"->layoutMiscellaneous.imageColorBlue.performClick()
                 "#000000"->layoutMiscellaneous.imageColorBlack.performClick()
             }
-        }
-
-    }
-
-    private fun initFab(){
-        fab_list.setOnClickListener {
-            when(fabClicked){
-                false ->{
-                    fab_addImage.visibility = View.VISIBLE
-                    fab_addImage.startAnimation(fromBottom)
-                    fab_addUrl.visibility = View.VISIBLE
-                    fab_addUrl.startAnimation(fromBottom)
-                    fab_del.visibility = View.VISIBLE
-                    fab_del.startAnimation(fromBottom)
-                    fabClicked = true
-                }
-                true ->{
-                    fab_addImage.visibility = View.GONE
-                    fab_addImage.startAnimation(toBottom)
-                    fab_addUrl.visibility = View.GONE
-                    fab_addUrl.startAnimation(toBottom)
-                    fab_del.visibility = View.GONE
-                    fab_del.startAnimation(toBottom)
-                    fabClicked = false
-                }
-            }
-
         }
     }
 
@@ -300,7 +264,6 @@ class CreateNoteActivity : AppCompatActivity() {
             dialogUrlAdd.window!!.setBackgroundDrawable(ColorDrawable(0))
         }
         view.inputUrl.requestFocus()
-
         view.textAdd.setOnClickListener {
             when {
                 view.inputUrl.text.toString().trim().isEmpty() -> {
@@ -318,11 +281,9 @@ class CreateNoteActivity : AppCompatActivity() {
                 }
             }
         }
-
         view.textCancel.setOnClickListener {
             dialogUrlAdd.dismiss()
         }
-
         dialogUrlAdd.show()
     }
 

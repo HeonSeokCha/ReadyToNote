@@ -5,7 +5,6 @@ import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,15 +14,15 @@ import com.chs.readytonote.databinding.ItemContainerNoteBinding
 import com.chs.readytonote.entities.Note
 import kotlinx.android.synthetic.main.item_container_note.view.*
 import java.util.*
-import kotlin.concurrent.timer
+import kotlin.concurrent.schedule
 
 class NoteAdapter(private var item:MutableList<Note>,
                   private val clickListener:(note:Note,position:Int) -> Unit)
     :RecyclerView.Adapter<NoteAdapter.NoteViewHolder>(){
     class NoteViewHolder(val binding:ItemContainerNoteBinding):RecyclerView.ViewHolder(binding.root)
 
-    private lateinit var timerTask: Timer
-    private val searchList:MutableList<Note> = item
+    private lateinit var timerTask:Timer
+    private val searchList:MutableList<Note> by lazy { item }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NoteViewHolder {
         val view = LayoutInflater.from(parent.context)
@@ -53,26 +52,21 @@ class NoteAdapter(private var item:MutableList<Note>,
     override fun getItemCount() = item.size
 
     fun search(searchKeyword:String){
-        timerTask = Timer()
-        timerTask.schedule(object:TimerTask(){
-            override fun run() {
-                if (searchKeyword.isNotEmpty()) {
-                    var temp = mutableListOf<Note>()
-                    for(i in searchList){
-                        if(i.title!!.toLowerCase().contains(searchKeyword.toLowerCase())
-                            || i.subtitle!!.toLowerCase().contains(searchKeyword.toLowerCase())){
-                            temp.add(i)
-                        }
-                        item = temp
+        timerTask.schedule(500){
+            if (searchKeyword.isNotEmpty()) {
+                var temp = mutableListOf<Note>()
+                for(i in searchList){
+                    if(i.title!!.toLowerCase().contains(searchKeyword.toLowerCase())
+                        || i.subtitle!!.toLowerCase().contains(searchKeyword.toLowerCase())){
+                        temp.add(i)
                     }
-                } else {
-                    item = searchList
+                    item = temp
                 }
-                Handler(Looper.getMainLooper()).post {
-                    notifyDataSetChanged()
-                }
+            } else { item = searchList }
+            Handler(Looper.getMainLooper()).post {
+                notifyDataSetChanged()
             }
-        },500)
+        }
     }
 
     fun cancelTimer(){
