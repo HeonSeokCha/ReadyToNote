@@ -9,26 +9,26 @@ import androidx.room.PrimaryKey
 @Entity(tableName = "notes")
 data class Note(
     @ColumnInfo(name = "title")
-    val title:String?,
+    val title: String?,
 
     @ColumnInfo(name = "date_time")
-    val dateTime:String?,
+    val dateTime: String?,
 
     @ColumnInfo(name = "subtitle")
-    val subtitle:String?,
+    val subtitle: String?,
 
     @ColumnInfo(name = "note_text")
-    val noteText:String?,
+    val noteText: String?,
 
     @ColumnInfo(name = "image_path")
-    val imgPath:String?,
+    val imgPath: String?,
 
     @ColumnInfo(name = "color")
-    val color:String?,
+    val color: String?,
 
     @ColumnInfo(name = "web_link")
-    val webLink:String?):Parcelable{
-    @PrimaryKey(autoGenerate = true) var id:Int = 0
+    val webLink: String?): Parcelable{
+    @PrimaryKey(autoGenerate = true) var id: Int = 0
 
     constructor(parcel: Parcel) : this(
         parcel.readString(),

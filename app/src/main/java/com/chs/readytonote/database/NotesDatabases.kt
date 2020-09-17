@@ -10,16 +10,16 @@ import com.chs.readytonote.entities.Note
 @Database(entities = [Note::class],version = 1,exportSchema = false)
 abstract class NotesDatabases : RoomDatabase() {
 
-    abstract fun todoDao():NoteDao
+    abstract fun todoDao(): NoteDao
 
     companion object{
         @Volatile
-        private var INSTANCE:NotesDatabases? = null
+        private var INSTANCE: NotesDatabases? = null
 
             fun getInstance(context: Context):NotesDatabases{
                 synchronized(this){
                     var instance = INSTANCE
-                    if(instance==null){
+                    if(instance == null){
                         instance = Room.databaseBuilder(context.applicationContext,
                         NotesDatabases::class.java, "notes_db").build()
                     }

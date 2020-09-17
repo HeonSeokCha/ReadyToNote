@@ -24,14 +24,14 @@ import kotlinx.android.synthetic.main.activity_main.view.*
 
 class MainActivity : AppCompatActivity() {
     companion object{
-        private const val REQUEST_CODE_ADD_NOTE:Int = 1
-        private const val REQUEST_CODE_UPDATE_NOTE:Int = 2
+        private const val REQUEST_CODE_ADD_NOTE = 1
+        private const val REQUEST_CODE_UPDATE_NOTE = 2
         private const val REQUST_CODE_SHOW_NOTE = 3
     }
 
-    private lateinit var notesAdapter:NoteAdapter
-    private lateinit var noteList:MutableList<Note>
-    private lateinit var viewModel:MainViewModel
+    private lateinit var notesAdapter: NoteAdapter
+    private lateinit var noteList: MutableList<Note>
+    private lateinit var viewModel: MainViewModel
     private var noteClickPosition = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -44,14 +44,14 @@ class MainActivity : AppCompatActivity() {
         searchNote()
     }
 
-    private fun initClick(){
+    private fun initClick() {
         imgAddNoteMain.setOnClickListener {
             startActivityForResult(Intent(this,
                 CreateNoteActivity::class.java),REQUEST_CODE_ADD_NOTE)
         }
     }
 
-    private fun getNote(requestCode: Int,isNoteDelete:Boolean){
+    private fun getNote(requestCode: Int,isNoteDelete:Boolean) {
         viewModel.getAllNotes().observe(this, Observer {
             when (requestCode) {
                 REQUST_CODE_SHOW_NOTE -> {
@@ -76,7 +76,7 @@ class MainActivity : AppCompatActivity() {
         })
     }
 
-    private fun initRecyclerView(){
+    private fun initRecyclerView() {
         Rv_notes.apply {
             this.layoutManager = StaggeredGridLayoutManager(2,StaggeredGridLayoutManager.VERTICAL)
             noteList = mutableListOf()
@@ -93,7 +93,7 @@ class MainActivity : AppCompatActivity() {
         getNote(REQUST_CODE_SHOW_NOTE,false)
     }
 
-    private fun searchNote(){
+    private fun searchNote() {
         inputSearch.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(p0: Editable?) {
                 if(noteList.isNotEmpty()){

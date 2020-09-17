@@ -44,14 +44,14 @@ class CreateNoteActivity : AppCompatActivity() {
         private const val PERMISSION_CODE = 1001
     }
 
-    private lateinit var viewModel:MainViewModel
-    private lateinit var bottomSheetBehavior:BottomSheetBehavior<ConstraintLayout>
-    private lateinit var noteColor:String
-    private lateinit var imagePath:String
-    private lateinit var webLink:String
-    private lateinit var dialogUrlAdd:AlertDialog
-    private lateinit var dialogDelete:AlertDialog
-    private lateinit var alreadyAvailableNote:Note
+    private lateinit var viewModel: MainViewModel
+    private lateinit var bottomSheetBehavior: BottomSheetBehavior<ConstraintLayout>
+    private lateinit var noteColor: String
+    private lateinit var imagePath: String
+    private lateinit var webLink: String
+    private lateinit var dialogUrlAdd: AlertDialog
+    private lateinit var dialogDelete: AlertDialog
+    private lateinit var alreadyAvailableNote: Note
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -62,21 +62,21 @@ class CreateNoteActivity : AppCompatActivity() {
         initClick()
     }
 
-    private fun initView(){
+    private fun initView() {
         noteColor = "#333333"
         imagePath = ""
         txtDateTime.text = SimpleDateFormat("yyyy년 MM월 dd일 E요일 HH:mm", Locale.KOREA).format(Date())
         bottomSheetBehavior = BottomSheetBehavior.from(layoutMiscellaneous)
 
-        if(intent.getBooleanExtra("isViewOrUpdate",false)){
+        if(intent.getBooleanExtra("isViewOrUpdate",false)) {
             alreadyAvailableNote = intent.getParcelableExtra<Note>("note")
             setViewOrUpdateNote()
         }
 
         layoutMiscellaneous.findViewById<TextView>(R.id.textMiscellaneous).setOnClickListener {
-            if(bottomSheetBehavior.state != BottomSheetBehavior.STATE_EXPANDED){
+            if(bottomSheetBehavior.state != BottomSheetBehavior.STATE_EXPANDED) {
                 bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
-            } else{
+            } else {
                 bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
             }
         }
@@ -96,7 +96,7 @@ class CreateNoteActivity : AppCompatActivity() {
 
         layoutAddImage.setOnClickListener {
             bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
-            if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.M){
+            if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.M) {
                 if (checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) ==
                     PackageManager.PERMISSION_DENIED){
                     val permissions = arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE)
@@ -110,7 +110,7 @@ class CreateNoteActivity : AppCompatActivity() {
             showAddUrlDialog()
         }
 
-        if(::alreadyAvailableNote.isInitialized){
+        if(::alreadyAvailableNote.isInitialized) {
             layoutDeleteNote.visibility = View.VISIBLE
             layoutDeleteNote.setOnClickListener {
                 bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
@@ -132,23 +132,22 @@ class CreateNoteActivity : AppCompatActivity() {
     }
 
     private fun saveNote(){
-        if(inputNoteTitle.text.trim().isNullOrEmpty()){
+        if(inputNoteTitle.text.trim().isNullOrEmpty()) {
             Toast.makeText(this, "Note title can't be empty!", Toast.LENGTH_SHORT).show()
         } else if(inputNoteSubtitle.text.trim().isNullOrEmpty()
-            && inputNoteText.text.trim().isNullOrEmpty()){
+            && inputNoteText.text.trim().isNullOrEmpty()) {
             Toast.makeText(this, "Note can't be empty!", Toast.LENGTH_SHORT).show()
         } else{
             webLink = if(txtWebUrl.visibility == View.VISIBLE){
                 txtWebUrl.text.toString()
             } else ""
 
-            Log.d("ImagePath",imagePath)
             val note = Note(title = inputNoteTitle.text.toString(),
                 dateTime = txtDateTime.text.toString(),
                 subtitle = inputNoteSubtitle.text.toString(),
                 noteText = inputNoteText.text.toString(),
                 imgPath = imagePath,color = noteColor,webLink = webLink)
-            if(::alreadyAvailableNote.isInitialized && alreadyAvailableNote != null){
+            if(::alreadyAvailableNote.isInitialized && alreadyAvailableNote != null) {
                 note.id = alreadyAvailableNote.id
             }
             viewModel.insert(note)
@@ -158,26 +157,26 @@ class CreateNoteActivity : AppCompatActivity() {
         }
     }
 
-    private fun deleteNote(note:Note){
+    private fun deleteNote(note:Note) {
         viewModel.delete(note)
-        val intent:Intent = Intent()
+        val intent = Intent()
         intent.putExtra("isNoteDelete",true)
         setResult(Activity.RESULT_OK,intent)
         finish()
     }
 
-    private fun setViewOrUpdateNote(){
+    private fun setViewOrUpdateNote() {
         inputNoteTitle.setText(alreadyAvailableNote.title)
         inputNoteSubtitle.setText(alreadyAvailableNote.subtitle)
         inputNoteText.setText(alreadyAvailableNote.noteText)
 
-        if(! alreadyAvailableNote.imgPath.isNullOrEmpty()){
+        if(! alreadyAvailableNote.imgPath.isNullOrEmpty()) {
             imageNote.visibility = View.VISIBLE
             imageNote.setImageBitmap(BitmapFactory.decodeFile(alreadyAvailableNote.imgPath))
             imagePath = alreadyAvailableNote.imgPath!!
             imageDelete.visibility = View.VISIBLE
         }
-        if(! alreadyAvailableNote.webLink.isNullOrEmpty()){
+        if(! alreadyAvailableNote.webLink.isNullOrEmpty()) {
             txtWebUrl.text = alreadyAvailableNote.webLink
             txtWebUrl.visibility = View.VISIBLE
             imageDeleteUrl.visibility = View.VISIBLE
@@ -185,13 +184,13 @@ class CreateNoteActivity : AppCompatActivity() {
 
     }
 
-    private fun setSubtitleIndicator(){
+    private fun setSubtitleIndicator() {
         var gradientDrawable:GradientDrawable = (viewSubtitleIndicator.background as GradientDrawable)
         gradientDrawable.setColor(Color.parseColor(noteColor))
     }
 
-    private fun initMiscellaneous(){
-        with(layoutMiscellaneous){
+    private fun initMiscellaneous() {
+        with(layoutMiscellaneous) {
             imageColorDefault.setOnClickListener {
                 noteColor = "#333333"
                 imageColorDefault.setImageResource(R.drawable.ic_done)
@@ -243,8 +242,9 @@ class CreateNoteActivity : AppCompatActivity() {
             }
         }
 
-        if(::alreadyAvailableNote.isInitialized &&! alreadyAvailableNote.color.isNullOrEmpty()){
-            when(alreadyAvailableNote.color){
+        if(::alreadyAvailableNote.isInitialized
+            &&! alreadyAvailableNote.color.isNullOrEmpty()) {
+            when(alreadyAvailableNote.color) {
                 "#333333"->layoutMiscellaneous.imageColorDefault.performClick()
                 "#FDBE3B"->layoutMiscellaneous.imageColorYellow.performClick()
                 "#FF4842"->layoutMiscellaneous.imageColorRed.performClick()
@@ -254,13 +254,13 @@ class CreateNoteActivity : AppCompatActivity() {
         }
     }
 
-    private fun showAddUrlDialog(){
+    private fun showAddUrlDialog() {
         val builder:AlertDialog.Builder = AlertDialog.Builder(this)
         val view = LayoutInflater.from(this).inflate(R.layout.layout_add_url,
             (findViewById(R.id.layoutAddUrlContainer)))
         builder.setView(view)
         dialogUrlAdd = builder.create()
-        if(dialogUrlAdd.window!=null){
+        if(dialogUrlAdd.window!=null) {
             dialogUrlAdd.window!!.setBackgroundDrawable(ColorDrawable(0))
         }
         view.inputUrl.requestFocus()
@@ -287,13 +287,13 @@ class CreateNoteActivity : AppCompatActivity() {
         dialogUrlAdd.show()
     }
 
-    private fun showDeleteDialog(){
+    private fun showDeleteDialog() {
         val builder:AlertDialog.Builder = AlertDialog.Builder(this)
         val view = LayoutInflater.from(this).inflate(R.layout.layout_delete_note,
             (findViewById(R.id.layoutDeleteNoteContainer)))
         builder.setView(view)
         dialogDelete = builder.create()
-        if(dialogDelete.window!=null){
+        if(dialogDelete.window != null) {
             dialogDelete.window!!.setBackgroundDrawable(ColorDrawable(0))
         }
         view.txtDeleteNote.setOnClickListener {
@@ -306,7 +306,7 @@ class CreateNoteActivity : AppCompatActivity() {
         dialogDelete.show()
     }
 
-    private fun pickImageFromGallery(){
+    private fun pickImageFromGallery() {
         val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
         if(intent.resolveActivity(packageManager)!= null){
             intent.type = "image/*"
@@ -316,7 +316,7 @@ class CreateNoteActivity : AppCompatActivity() {
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
-        when(requestCode){
+        when(requestCode) {
             PERMISSION_CODE -> {
                 if (grantResults.isNotEmpty() &&
                     grantResults[0] == PackageManager.PERMISSION_GRANTED){
@@ -329,7 +329,7 @@ class CreateNoteActivity : AppCompatActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if(resultCode==Activity.RESULT_OK && requestCode == IMAGE_PICK_CODE){
+        if(resultCode==Activity.RESULT_OK && requestCode == IMAGE_PICK_CODE) {
             imageNote.visibility = View.VISIBLE
             imageNote.setImageURI(data!!.data)
             imagePath = getRealPathFromURI(this, data.data!!)!!
