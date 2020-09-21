@@ -138,15 +138,19 @@ class CreateNoteActivity : AppCompatActivity() {
             && inputNoteText.text.trim().isNullOrEmpty()) {
             Toast.makeText(this, "Note can't be empty!", Toast.LENGTH_SHORT).show()
         } else{
-            webLink = if(txtWebUrl.visibility == View.VISIBLE){
+            webLink = if(txtWebUrl.visibility == View.VISIBLE) {
                 txtWebUrl.text.toString()
             } else ""
 
-            val note = Note(title = inputNoteTitle.text.toString(),
+            val note = Note(
+                title = inputNoteTitle.text.toString(),
                 dateTime = txtDateTime.text.toString(),
                 subtitle = inputNoteSubtitle.text.toString(),
                 noteText = inputNoteText.text.toString(),
-                imgPath = imagePath,color = noteColor,webLink = webLink)
+                imgPath = imagePath,
+                color = noteColor,
+                webLink = webLink,
+            )
             if(::alreadyAvailableNote.isInitialized && alreadyAvailableNote != null) {
                 note.id = alreadyAvailableNote.id
             }
@@ -308,7 +312,7 @@ class CreateNoteActivity : AppCompatActivity() {
 
     private fun pickImageFromGallery() {
         val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
-        if(intent.resolveActivity(packageManager)!= null){
+        if(intent.resolveActivity(packageManager)!= null) {
             intent.type = "image/*"
             intent.flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
             startActivityForResult(intent, IMAGE_PICK_CODE)
@@ -319,7 +323,7 @@ class CreateNoteActivity : AppCompatActivity() {
         when(requestCode) {
             PERMISSION_CODE -> {
                 if (grantResults.isNotEmpty() &&
-                    grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                    grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     pickImageFromGallery()
                 }
                 else Toast.makeText(this, "Permission denied", Toast.LENGTH_SHORT).show()

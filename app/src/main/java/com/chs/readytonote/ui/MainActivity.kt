@@ -78,7 +78,6 @@ class MainActivity : AppCompatActivity() {
 
     private fun initRecyclerView() {
         Rv_notes.apply {
-            this.layoutManager = StaggeredGridLayoutManager(2,StaggeredGridLayoutManager.VERTICAL)
             noteList = mutableListOf()
             notesAdapter = NoteAdapter(noteList){ note, position ->
                 noteClickPosition = position
@@ -87,6 +86,7 @@ class MainActivity : AppCompatActivity() {
                 intent.putExtra("note",note)
                 startActivityForResult(intent,REQUEST_CODE_UPDATE_NOTE)
             }
+            this.layoutManager = StaggeredGridLayoutManager(2,StaggeredGridLayoutManager.VERTICAL)
             this.adapter = notesAdapter
             this.setHasFixedSize(true)
         }
@@ -96,7 +96,7 @@ class MainActivity : AppCompatActivity() {
     private fun searchNote() {
         inputSearch.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(p0: Editable?) {
-                if(noteList.isNotEmpty()){
+                if(noteList.isNotEmpty()) {
                     notesAdapter.search(p0.toString())
                 }
             }
@@ -109,10 +109,10 @@ class MainActivity : AppCompatActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if(requestCode == REQUEST_CODE_ADD_NOTE && resultCode == Activity.RESULT_OK){
+        if(requestCode == REQUEST_CODE_ADD_NOTE && resultCode == Activity.RESULT_OK) {
             getNote(REQUEST_CODE_ADD_NOTE,false)
-        } else if(requestCode == REQUEST_CODE_UPDATE_NOTE && resultCode == RESULT_OK){
-            if(data!=null){
+        } else if(requestCode == REQUEST_CODE_UPDATE_NOTE && resultCode == RESULT_OK) {
+            if(data!=null) {
                 getNote(REQUEST_CODE_UPDATE_NOTE,data!!.getBooleanExtra("isNoteDelete",false))
             }
         }
