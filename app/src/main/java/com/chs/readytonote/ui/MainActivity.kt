@@ -79,13 +79,16 @@ class MainActivity : AppCompatActivity() {
     private fun initRecyclerView() {
         Rv_notes.apply {
             noteList = mutableListOf()
-            notesAdapter = NoteAdapter(noteList){ note, position ->
+            notesAdapter = NoteAdapter(noteList, clickListener = { note, position ->
                 noteClickPosition = position
-                val intent = Intent(this@MainActivity,CreateNoteActivity::class.java)
-                intent.putExtra("isViewOrUpdate",true)
-                intent.putExtra("note",note)
-                startActivityForResult(intent,REQUEST_CODE_UPDATE_NOTE)
-            }
+                val intent = Intent(this@MainActivity, CreateNoteActivity::class.java)
+                intent.putExtra("isViewOrUpdate", true)
+                intent.putExtra("note", note)
+                startActivityForResult(intent, REQUEST_CODE_UPDATE_NOTE)
+            }, longClickListener = { note ->
+                note.id
+                Toast.makeText(this@MainActivity, "LogClicked ${note.id}", Toast.LENGTH_SHORT).show()
+            })
             this.layoutManager = StaggeredGridLayoutManager(2,StaggeredGridLayoutManager.VERTICAL)
             this.adapter = notesAdapter
             this.setHasFixedSize(true)
@@ -103,7 +106,7 @@ class MainActivity : AppCompatActivity() {
             override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
                 notesAdapter.cancelTimer()
             }
-            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) { }
         })
     }
 

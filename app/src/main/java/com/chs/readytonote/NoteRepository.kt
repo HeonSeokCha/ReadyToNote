@@ -7,23 +7,23 @@ import com.chs.readytonote.entities.Note
 
 class NoteRepository (application: Application){
 
-    private var dao:NoteDao
-    init{
+    private var dao: NoteDao
+    init {
         val db =  NotesDatabases.getInstance(application)!!
         dao = db.todoDao()
     }
 
     fun getNotes() = dao.getAllNotes()
 
-    suspend fun insert(note:Note){
+    suspend fun insert(note:Note) {
         dao.insertNote(note)
     }
 
-    suspend fun delete(note:Note){
+    suspend fun delete(note:Note) {
         dao.deleteNote(note)
     }
 
-    suspend fun allDelete(){
+    suspend fun allDelete() {
         dao.deleteAll()
     }
 }
