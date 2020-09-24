@@ -50,7 +50,10 @@ class NoteAdapter(private var item: MutableList<Note>,
         }
 
         if(! item[position].imgPath.isNullOrEmpty()) {
-            holder.itemView.imageNote.setImageBitmap(BitmapFactory.decodeFile(item[position].imgPath))
+            val options = BitmapFactory.Options()
+            options.inSampleSize = 2
+            holder.itemView.imageNote.setImageBitmap(
+                BitmapFactory.decodeFile(item[position].imgPath, options))
             holder.itemView.imageNote.visibility = View.VISIBLE
         } else {
             holder.itemView.imageNote.visibility = View.GONE
