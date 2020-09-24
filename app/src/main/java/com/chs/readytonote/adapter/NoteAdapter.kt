@@ -8,6 +8,7 @@ import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.chs.readytonote.R
 import com.chs.readytonote.databinding.ItemContainerNoteBinding
@@ -19,12 +20,13 @@ import kotlin.concurrent.schedule
 class NoteAdapter(private var item: MutableList<Note>,
                   private val clickListener: (note:Note,position:Int) -> Unit,
                   private val longClickListener: (note:Note) -> Unit)
-    : RecyclerView.Adapter<NoteAdapter.NoteViewHolder>() {
-    class NoteViewHolder(val binding: ItemContainerNoteBinding)
+    : ListAdapter<Note,NoteAdapter.NoteViewHolder>(NoteDiffUtilCallback()) {
+    inner class NoteViewHolder(val binding: ItemContainerNoteBinding)
         : RecyclerView.ViewHolder(binding.root)
 
     private lateinit var timerTask: Timer
     private val searchList: MutableList<Note> by lazy { item }
+    private val options: BitmapFactory.Options by lazy { BitmapFactory.Options() }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NoteViewHolder {
         val view = LayoutInflater.from(parent.context)
@@ -50,7 +52,6 @@ class NoteAdapter(private var item: MutableList<Note>,
         }
 
         if(! item[position].imgPath.isNullOrEmpty()) {
-            val options = BitmapFactory.Options()
             options.inSampleSize = 2
             holder.itemView.imageNote.setImageBitmap(
                 BitmapFactory.decodeFile(item[position].imgPath, options))
@@ -63,6 +64,7 @@ class NoteAdapter(private var item: MutableList<Note>,
     override fun getItemCount() = item.size
 
     fun search(searchKeyword: String) {
+        timerTask = Timer()
         timerTask.schedule(500){
             if (searchKeyword.isNotEmpty()) {
                 var temp = mutableListOf<Note>()
