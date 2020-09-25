@@ -5,6 +5,7 @@ import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,15 +18,13 @@ import kotlinx.android.synthetic.main.item_container_note.view.*
 import java.util.*
 import kotlin.concurrent.schedule
 
-class NoteAdapter(private var item: MutableList<Note>,
-                  private val clickListener: (note:Note,position:Int) -> Unit,
-                  private val longClickListener: (note:Note) -> Unit)
+class NoteAdapter(private val clickListener: (note:Note,position:Int) -> Unit)
     : ListAdapter<Note,NoteAdapter.NoteViewHolder>(NoteDiffUtilCallback()) {
-    inner class NoteViewHolder(val binding: ItemContainerNoteBinding)
+    class NoteViewHolder(val binding: ItemContainerNoteBinding)
         : RecyclerView.ViewHolder(binding.root)
 
     private lateinit var timerTask: Timer
-    private val searchList: MutableList<Note> by lazy { item }
+    private val searchList: MutableList<Note> by lazy { currentList }
     private val options: BitmapFactory.Options by lazy { BitmapFactory.Options() }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NoteViewHolder {
@@ -33,35 +32,30 @@ class NoteAdapter(private var item: MutableList<Note>,
             .inflate(R.layout.item_container_note,parent,false)
         val viewHolder = NoteViewHolder(ItemContainerNoteBinding.bind(view))
         view.setOnClickListener {
-            clickListener.invoke(item[viewHolder.adapterPosition],viewHolder.adapterPosition)
-        }
-        view.setOnLongClickListener {
-            longClickListener.invoke(item[viewHolder.adapterPosition])
-            return@setOnLongClickListener true
+            clickListener.invoke(getItem(viewHolder.adapterPosition),viewHolder.adapterPosition)
         }
         return viewHolder
     }
-
     override fun onBindViewHolder(holder: NoteViewHolder, position: Int) {
-        holder.binding.model = item[position]
+        holder.binding.model = getItem(position)
         var gradientDrawable: GradientDrawable = (holder.itemView.layoutNote.background as GradientDrawable)
-        if (item[position].color != "") {
-            gradientDrawable.setColor(Color.parseColor(item[position].color))
+        if (getItem(position).color != "") {
+            gradientDrawable.setColor(Color.parseColor(getItem(position).color))
         } else {
             gradientDrawable.setColor(Color.parseColor("#333333"))
         }
 
-        if(! item[position].imgPath.isNullOrEmpty()) {
+        if(! getItem(position).imgPath.isNullOrEmpty()) {
             options.inSampleSize = 2
             holder.itemView.imageNote.setImageBitmap(
-                BitmapFactory.decodeFile(item[position].imgPath, options))
+                BitmapFactory.decodeFile(getItem(position).imgPath, options))
             holder.itemView.imageNote.visibility = View.VISIBLE
         } else {
             holder.itemView.imageNote.visibility = View.GONE
         }
     }
 
-    override fun getItemCount() = item.size
+    override fun getItemCount() = currentList.size
 
     fun search(searchKeyword: String) {
         timerTask = Timer()
@@ -73,9 +67,9 @@ class NoteAdapter(private var item: MutableList<Note>,
                         || i.subtitle!!.toLowerCase().contains(searchKeyword.toLowerCase())) {
                         temp.add(i)
                     }
-                    item = temp
+                    submitList(temp)
                 }
-            } else item = searchList
+            } else submitList(searchList)
             Handler(Looper.getMainLooper()).post {
                 notifyDataSetChanged()
             }

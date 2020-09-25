@@ -5,10 +5,10 @@ import com.chs.readytonote.entities.Note
 
 class NoteDiffUtilCallback: DiffUtil.ItemCallback<Note>() {
     override fun areItemsTheSame(oldItem: Note, newItem: Note): Boolean {
-        return oldItem.dateTime == newItem.dateTime
+        return oldItem.title == newItem.title
     }
 
     override fun areContentsTheSame(oldItem: Note, newItem: Note): Boolean {
-        return oldItem == newItem
+        return areItemsTheSame(oldItem,newItem)
     }
 }

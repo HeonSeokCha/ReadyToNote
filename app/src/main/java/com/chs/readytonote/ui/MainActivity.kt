@@ -52,14 +52,13 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun getNote(requestCode: Int,isNoteDelete:Boolean) {
-        viewModel.getAllNotes().observe(this, Observer {
+        viewModel.getAllNotes().observe(this, Observer {note->
             when (requestCode) {
                 REQUST_CODE_SHOW_NOTE -> {
-                    noteList.addAll(it)
-                    notesAdapter.notifyDataSetChanged()
+                    noteList = note as MutableList<Note>
                 }
                 REQUEST_CODE_ADD_NOTE -> {
-                    noteList.add(0,it[0])
+                    noteList.add(0,note[0])
                     notesAdapter.notifyItemInserted(0)
                     Rv_notes.smoothScrollToPosition(0)
                 }
@@ -68,30 +67,27 @@ class MainActivity : AppCompatActivity() {
                     if(isNoteDelete){
                         notesAdapter.notifyItemRemoved(noteClickPosition)
                     } else{
-                        noteList.add(noteClickPosition,it[noteClickPosition])
+                        noteList.add(noteClickPosition,note[noteClickPosition])
                         notesAdapter.notifyItemChanged(noteClickPosition)
                     }
                 }
             }
+            notesAdapter.submitList(noteList)
         })
     }
 
     private fun initRecyclerView() {
         Rv_notes.apply {
             noteList = mutableListOf()
-            notesAdapter = NoteAdapter(noteList, clickListener = { note, position ->
+            notesAdapter = NoteAdapter(clickListener = { note, position ->
                 noteClickPosition = position
                 val intent = Intent(this@MainActivity, CreateNoteActivity::class.java)
                 intent.putExtra("isViewOrUpdate", true)
                 intent.putExtra("note", note)
                 startActivityForResult(intent, REQUEST_CODE_UPDATE_NOTE)
-            }, longClickListener = { note ->
-                note.id
-                Toast.makeText(this@MainActivity, "LogClicked ${note.id}", Toast.LENGTH_SHORT).show()
             })
             this.layoutManager = StaggeredGridLayoutManager(2,StaggeredGridLayoutManager.VERTICAL)
             this.adapter = notesAdapter
-            this.setHasFixedSize(true)
         }
         getNote(REQUST_CODE_SHOW_NOTE,false)
     }
