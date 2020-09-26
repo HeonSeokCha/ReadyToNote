@@ -64,9 +64,10 @@ class MainActivity : AppCompatActivity() {
                 }
                 REQUEST_CODE_UPDATE_NOTE -> {
                     noteList.removeAt(noteClickPosition)
-                    if(isNoteDelete){
+                    if(isNoteDelete) {
                         notesAdapter.notifyItemRemoved(noteClickPosition)
-                    } else{
+                    } else {
+                        Rv_notes.smoothScrollToPosition(noteClickPosition)
                         noteList.add(noteClickPosition,note[noteClickPosition])
                         notesAdapter.notifyItemChanged(noteClickPosition)
                     }
