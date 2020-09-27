@@ -35,6 +35,8 @@ import kotlinx.android.synthetic.main.layout_add_url.view.*
 import kotlinx.android.synthetic.main.layout_delete_note.view.*
 import kotlinx.android.synthetic.main.layout_miscellaneous.*
 import kotlinx.android.synthetic.main.layout_miscellaneous.view.*
+import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers.Main
 
 class CreateNoteActivity : AppCompatActivity() {
 
@@ -169,22 +171,23 @@ class CreateNoteActivity : AppCompatActivity() {
     }
 
     private fun setViewOrUpdateNote() {
-        inputNoteTitle.setText(alreadyAvailableNote.title)
-        inputNoteSubtitle.setText(alreadyAvailableNote.subtitle)
-        inputNoteText.setText(alreadyAvailableNote.noteText)
+        CoroutineScope(Main).launch {
+            inputNoteTitle.setText(alreadyAvailableNote.title)
+            inputNoteSubtitle.setText(alreadyAvailableNote.subtitle)
+            inputNoteText.setText(alreadyAvailableNote.noteText)
 
-        if(! alreadyAvailableNote.imgPath.isNullOrEmpty()) {
-            imageNote.visibility = View.VISIBLE
-            imageNote.setImageBitmap(BitmapFactory.decodeFile(alreadyAvailableNote.imgPath))
-            imagePath = alreadyAvailableNote.imgPath!!
-            imageDelete.visibility = View.VISIBLE
+            if(! alreadyAvailableNote.imgPath.isNullOrEmpty()) {
+                imageNote.visibility = View.VISIBLE
+                imageNote.setImageBitmap(BitmapFactory.decodeFile(alreadyAvailableNote.imgPath))
+                imagePath = alreadyAvailableNote.imgPath!!
+                imageDelete.visibility = View.VISIBLE
+            }
+            if(! alreadyAvailableNote.webLink.isNullOrEmpty()) {
+                txtWebUrl.text = alreadyAvailableNote.webLink
+                txtWebUrl.visibility = View.VISIBLE
+                imageDeleteUrl.visibility = View.VISIBLE
+            }
         }
-        if(! alreadyAvailableNote.webLink.isNullOrEmpty()) {
-            txtWebUrl.text = alreadyAvailableNote.webLink
-            txtWebUrl.visibility = View.VISIBLE
-            imageDeleteUrl.visibility = View.VISIBLE
-        }
-
     }
 
     private fun setSubtitleIndicator() {
