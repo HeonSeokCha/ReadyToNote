@@ -35,8 +35,6 @@ import kotlinx.android.synthetic.main.layout_add_url.view.*
 import kotlinx.android.synthetic.main.layout_delete_note.view.*
 import kotlinx.android.synthetic.main.layout_miscellaneous.*
 import kotlinx.android.synthetic.main.layout_miscellaneous.view.*
-import kotlinx.coroutines.*
-import kotlinx.coroutines.Dispatchers.Main
 
 class CreateNoteActivity : AppCompatActivity() {
 
@@ -171,7 +169,7 @@ class CreateNoteActivity : AppCompatActivity() {
     }
 
     private fun setViewOrUpdateNote() {
-        CoroutineScope(Main).launch {
+
             inputNoteTitle.setText(alreadyAvailableNote.title)
             inputNoteSubtitle.setText(alreadyAvailableNote.subtitle)
             inputNoteText.setText(alreadyAvailableNote.noteText)
@@ -187,7 +185,6 @@ class CreateNoteActivity : AppCompatActivity() {
                 txtWebUrl.visibility = View.VISIBLE
                 imageDeleteUrl.visibility = View.VISIBLE
             }
-        }
     }
 
     private fun setSubtitleIndicator() {

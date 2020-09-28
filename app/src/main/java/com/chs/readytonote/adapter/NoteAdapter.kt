@@ -5,7 +5,6 @@ import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -18,21 +17,24 @@ import kotlinx.android.synthetic.main.item_container_note.view.*
 import java.util.*
 import kotlin.concurrent.schedule
 
-class NoteAdapter(private val clickListener: (note:Note,position:Int) -> Unit)
-    : ListAdapter<Note,NoteAdapter.NoteViewHolder>(NoteDiffUtilCallback()) {
+
+class NoteAdapter(private val clickListener: (note: Note, position: Int) -> Unit)
+    : ListAdapter<Note, NoteAdapter.NoteViewHolder>(NoteDiffUtilCallback()) {
     class NoteViewHolder(val binding: ItemContainerNoteBinding)
         : RecyclerView.ViewHolder(binding.root)
+
 
     private lateinit var timerTask: Timer
     private val searchList: MutableList<Note> by lazy { currentList }
     private val options: BitmapFactory.Options by lazy { BitmapFactory.Options() }
+    private lateinit var temp:MutableList<Note>
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NoteViewHolder {
         val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.item_container_note,parent,false)
+            .inflate(R.layout.item_container_note, parent, false)
         val viewHolder = NoteViewHolder(ItemContainerNoteBinding.bind(view))
         view.setOnClickListener {
-            clickListener.invoke(getItem(viewHolder.adapterPosition),viewHolder.adapterPosition)
+            clickListener.invoke(getItem(viewHolder.adapterPosition), viewHolder.adapterPosition)
         }
         return viewHolder
     }
@@ -48,7 +50,8 @@ class NoteAdapter(private val clickListener: (note:Note,position:Int) -> Unit)
         if(! getItem(position).imgPath.isNullOrEmpty()) {
             options.inSampleSize = 2
             holder.itemView.imageNote.setImageBitmap(
-                BitmapFactory.decodeFile(getItem(position).imgPath, options))
+                BitmapFactory.decodeFile(getItem(position).imgPath, options)
+            )
             holder.itemView.imageNote.visibility = View.VISIBLE
         } else {
             holder.itemView.imageNote.visibility = View.GONE
@@ -61,7 +64,7 @@ class NoteAdapter(private val clickListener: (note:Note,position:Int) -> Unit)
         timerTask = Timer()
         timerTask.schedule(500){
             if (searchKeyword.isNotEmpty()) {
-                var temp = mutableListOf<Note>()
+                temp = mutableListOf()
                 for (i in searchList) {
                     if(i.title!!.toLowerCase().contains(searchKeyword.toLowerCase())
                         || i.subtitle!!.toLowerCase().contains(searchKeyword.toLowerCase())) {
