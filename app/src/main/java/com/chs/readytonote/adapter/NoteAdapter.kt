@@ -8,6 +8,7 @@ import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.selection.ItemDetailsLookup
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.chs.readytonote.R
@@ -18,28 +19,35 @@ import java.util.*
 import kotlin.concurrent.schedule
 
 
-class NoteAdapter(private val clickListener: (note: Note, position: Int) -> Unit)
+class NoteAdapter(private val clickListener: (note: Note, position: Int,view:View) -> Unit)
     : ListAdapter<Note, NoteAdapter.NoteViewHolder>(NoteDiffUtilCallback()) {
     class NoteViewHolder(val binding: ItemContainerNoteBinding)
-        : RecyclerView.ViewHolder(binding.root)
+        : RecyclerView.ViewHolder(binding.root) {
+        fun getItemDetails(): ItemDetailsLookup.ItemDetails<String> =
+            object : ItemDetailsLookup.ItemDetails<String>() {
+                override fun getPosition(): Int = adapterPosition
+                override fun getSelectionKey(): String? = itemId.toString()
+            }
+    }
 
 
     private lateinit var timerTask: Timer
+    private lateinit var temp:MutableList<Note>
     private val searchList: MutableList<Note> by lazy { currentList }
     private val options: BitmapFactory.Options by lazy { BitmapFactory.Options() }
-    private lateinit var temp:MutableList<Note>
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NoteViewHolder {
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.item_container_note, parent, false)
         val viewHolder = NoteViewHolder(ItemContainerNoteBinding.bind(view))
         view.setOnClickListener {
-            clickListener.invoke(getItem(viewHolder.adapterPosition), viewHolder.adapterPosition)
+            clickListener.invoke(getItem(viewHolder.adapterPosition), viewHolder.adapterPosition,viewHolder.itemView)
         }
         return viewHolder
     }
     override fun onBindViewHolder(holder: NoteViewHolder, position: Int) {
         holder.binding.model = getItem(position)
+        holder.getItemDetails().position
         var gradientDrawable: GradientDrawable = (holder.itemView.layoutNote.background as GradientDrawable)
         if (getItem(position).color != "") {
             gradientDrawable.setColor(Color.parseColor(getItem(position).color))

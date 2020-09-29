@@ -1,6 +1,7 @@
 package com.chs.readytonote.ui
 
 import android.app.Activity
+import android.app.ActivityOptions
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -21,6 +22,7 @@ import com.chs.readytonote.viewmodel.MainViewModel
 import com.chs.readytonote.viewmodel.MainViewModelFactory
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.activity_main.view.*
+import kotlinx.android.synthetic.main.item_container_note.view.*
 
 class MainActivity : AppCompatActivity() {
     companion object{
@@ -80,12 +82,14 @@ class MainActivity : AppCompatActivity() {
     private fun initRecyclerView() {
         Rv_notes.apply {
             noteList = mutableListOf()
-            notesAdapter = NoteAdapter(clickListener = { note, position ->
+            notesAdapter = NoteAdapter(clickListener = { note, position, view ->
                 noteClickPosition = position
                 val intent = Intent(this@MainActivity, CreateNoteActivity::class.java)
                 intent.putExtra("isViewOrUpdate", true)
                 intent.putExtra("note", note)
-                startActivityForResult(intent, REQUEST_CODE_UPDATE_NOTE)
+                val option = ActivityOptions.
+                makeSceneTransitionAnimation(this@MainActivity, view.imageNote, "imageNote")
+                startActivityForResult(intent, REQUEST_CODE_UPDATE_NOTE,option.toBundle())
             })
             this.layoutManager = StaggeredGridLayoutManager(2,StaggeredGridLayoutManager.VERTICAL)
             this.adapter = notesAdapter

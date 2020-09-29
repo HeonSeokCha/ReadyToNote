@@ -27,8 +27,10 @@ data class Note(
     val color: String?,
 
     @ColumnInfo(name = "web_link")
-    val webLink: String?): Parcelable{
-    @PrimaryKey(autoGenerate = true) var id: Int = 0
+    val webLink: String?,
+): Parcelable {
+    @PrimaryKey(autoGenerate = true)
+    var id: Int = 0
 
     constructor(parcel: Parcel) : this(
         parcel.readString(),
@@ -37,7 +39,7 @@ data class Note(
         parcel.readString(),
         parcel.readString(),
         parcel.readString(),
-        parcel.readString()
+        parcel.readString(),
     ) {
         id = parcel.readInt()
     }
