@@ -42,6 +42,7 @@ class MainActivity : AppCompatActivity() {
         viewModel = ViewModelProvider(this,MainViewModelFactory(application))
             .get(MainViewModel::class.java)
         initRecyclerView()
+        initView()
         initClick()
         searchNote()
     }
@@ -51,6 +52,31 @@ class MainActivity : AppCompatActivity() {
             startActivityForResult(Intent(this,
                 CreateNoteActivity::class.java),REQUEST_CODE_ADD_NOTE)
         }
+    }
+    private fun initView(){
+        bottomAppBar.replaceMenu(R.menu.main_note)
+        bottomAppBar.setOnMenuItemClickListener {
+            viewModel.allDelete()
+            return@setOnMenuItemClickListener true
+        }
+    }
+
+    private fun initRecyclerView() {
+        Rv_notes.apply {
+            noteList = mutableListOf()
+            notesAdapter = NoteAdapter(clickListener = { note, position, view ->
+                noteClickPosition = position
+                val intent = Intent(this@MainActivity, CreateNoteActivity::class.java)
+                intent.putExtra("isViewOrUpdate", true)
+                intent.putExtra("note", note)
+                val option = ActivityOptions.
+                makeSceneTransitionAnimation(this@MainActivity, view.imageNote, "imageNote")
+                startActivityForResult(intent, REQUEST_CODE_UPDATE_NOTE,option.toBundle())
+            })
+            this.layoutManager = StaggeredGridLayoutManager(2,StaggeredGridLayoutManager.VERTICAL)
+            this.adapter = notesAdapter
+        }
+        getNote(REQUST_CODE_SHOW_NOTE,false)
     }
 
     private fun getNote(requestCode: Int,isNoteDelete:Boolean) {
@@ -77,24 +103,6 @@ class MainActivity : AppCompatActivity() {
             }
             notesAdapter.submitList(noteList)
         })
-    }
-
-    private fun initRecyclerView() {
-        Rv_notes.apply {
-            noteList = mutableListOf()
-            notesAdapter = NoteAdapter(clickListener = { note, position, view ->
-                noteClickPosition = position
-                val intent = Intent(this@MainActivity, CreateNoteActivity::class.java)
-                intent.putExtra("isViewOrUpdate", true)
-                intent.putExtra("note", note)
-                val option = ActivityOptions.
-                makeSceneTransitionAnimation(this@MainActivity, view.imageNote, "imageNote")
-                startActivityForResult(intent, REQUEST_CODE_UPDATE_NOTE,option.toBundle())
-            })
-            this.layoutManager = StaggeredGridLayoutManager(2,StaggeredGridLayoutManager.VERTICAL)
-            this.adapter = notesAdapter
-        }
-        getNote(REQUST_CODE_SHOW_NOTE,false)
     }
 
     private fun searchNote() {

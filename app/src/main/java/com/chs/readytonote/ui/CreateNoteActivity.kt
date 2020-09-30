@@ -90,7 +90,7 @@ class CreateNoteActivity : AppCompatActivity() {
         }
 
         imgBack.setOnClickListener {
-            finish()
+            onBackPressed()
         }
 
         layoutAddImage.setOnClickListener {
