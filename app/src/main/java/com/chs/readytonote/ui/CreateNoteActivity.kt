@@ -64,7 +64,7 @@ class CreateNoteActivity : AppCompatActivity() {
     private fun initView() {
         noteColor = "#333333"
         imagePath = ""
-        txtDateTime.text = SimpleDateFormat("yyyy년 MM월 dd일 E요일 HH:mm", Locale.KOREA).format(Date())
+        txtDateTime.text = SimpleDateFormat("yyyy년 MM월 dd일 E요일", Locale.KOREA).format(Date())
         bottomSheetBehavior = BottomSheetBehavior.from(layoutMiscellaneous)
 
         if(intent.getBooleanExtra("isViewOrUpdate",false)) {

@@ -7,11 +7,6 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
-import android.widget.Toast
-import androidx.core.widget.addTextChangedListener
-import androidx.core.widget.doAfterTextChanged
-import androidx.core.widget.doOnTextChanged
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
@@ -21,7 +16,7 @@ import com.chs.readytonote.entities.Note
 import com.chs.readytonote.viewmodel.MainViewModel
 import com.chs.readytonote.viewmodel.MainViewModelFactory
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.activity_main.view.*
+
 import kotlinx.android.synthetic.main.item_container_note.view.*
 
 class MainActivity : AppCompatActivity() {
@@ -57,7 +52,8 @@ class MainActivity : AppCompatActivity() {
         bottomAppBar.replaceMenu(R.menu.main_note)
         bottomAppBar.setOnMenuItemClickListener {
             viewModel.allDelete()
-            return@setOnMenuItemClickListener true
+            getNote(REQUST_CODE_SHOW_NOTE,false)
+            return@setOnMenuItemClickListener false
         }
     }
 
@@ -86,9 +82,11 @@ class MainActivity : AppCompatActivity() {
                     noteList = note as MutableList<Note>
                 }
                 REQUEST_CODE_ADD_NOTE -> {
-                    noteList.add(0,note[0])
-                    notesAdapter.notifyItemInserted(0)
-                    Rv_notes.smoothScrollToPosition(0)
+                    if(note.isNotEmpty()) {
+                        noteList.add(0,note[0])
+                        notesAdapter.notifyItemInserted(0)
+                        Rv_notes.smoothScrollToPosition(0)
+                    }
                 }
                 REQUEST_CODE_UPDATE_NOTE -> {
                     noteList.removeAt(noteClickPosition)
