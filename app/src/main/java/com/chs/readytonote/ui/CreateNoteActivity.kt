@@ -178,7 +178,7 @@ class CreateNoteActivity : AppCompatActivity() {
 
         if(! alreadyAvailableNote.imgPath.isNullOrEmpty()) {
             imageNote.visibility = View.VISIBLE
-            imageNote.setImageBitmap(calcRotate(alreadyAvailableNote.imgPath!!,options))
+            imageNote.setImageBitmap(calcRotate(alreadyAvailableNote.imgPath!!))
             imagePath = alreadyAvailableNote.imgPath!!
             imageDelete.visibility = View.VISIBLE
         }

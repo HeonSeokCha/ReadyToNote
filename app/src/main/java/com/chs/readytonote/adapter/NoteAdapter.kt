@@ -59,7 +59,7 @@ class NoteAdapter(private val clickListener: (note: Note, position: Int,view:Vie
 
         if(! getItem(position).imgPath.isNullOrEmpty()) {
             holder.itemView.imageNote.setImageBitmap(
-                calcRotate(getItem(position).imgPath!!,options)
+                calcRotate(getItem(position).imgPath!!,2)
             )
             holder.itemView.imageNote.visibility = View.VISIBLE
         } else {
