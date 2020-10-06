@@ -12,6 +12,7 @@ import androidx.recyclerview.selection.ItemDetailsLookup
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.chs.readytonote.R
+import com.chs.readytonote.calcRotate
 import com.chs.readytonote.databinding.ItemContainerNoteBinding
 import com.chs.readytonote.entities.Note
 import kotlinx.android.synthetic.main.item_container_note.view.*
@@ -46,6 +47,7 @@ class NoteAdapter(private val clickListener: (note: Note, position: Int,view:Vie
         return viewHolder
     }
     override fun onBindViewHolder(holder: NoteViewHolder, position: Int) {
+        options.inSampleSize = 2
         holder.binding.model = getItem(position)
         holder.getItemDetails().position
         var gradientDrawable: GradientDrawable = (holder.itemView.layoutNote.background as GradientDrawable)
@@ -56,9 +58,8 @@ class NoteAdapter(private val clickListener: (note: Note, position: Int,view:Vie
         }
 
         if(! getItem(position).imgPath.isNullOrEmpty()) {
-            options.inSampleSize = 2
             holder.itemView.imageNote.setImageBitmap(
-                BitmapFactory.decodeFile(getItem(position).imgPath, options)
+                calcRotate(getItem(position).imgPath!!,options)
             )
             holder.itemView.imageNote.visibility = View.VISIBLE
         } else {
@@ -92,4 +93,5 @@ class NoteAdapter(private val clickListener: (note: Note, position: Int,view:Vie
             timerTask.cancel()
         }
     }
+
 }

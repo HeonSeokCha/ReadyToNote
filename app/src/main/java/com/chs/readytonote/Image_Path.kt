@@ -2,12 +2,16 @@ package com.chs.readytonote
 
 import android.content.Context
 import android.database.Cursor
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.Matrix
+import android.media.ExifInterface
 import android.net.Uri
 import android.provider.MediaStore
 import androidx.loader.content.CursorLoader
 
 
-fun getRealPathFromURI(context: Context, contentUri: Uri): String? {
+internal fun getRealPathFromURI(context: Context, contentUri: Uri): String? {
     val proj = arrayOf(MediaStore.Images.Media.DATA)
     val loader = CursorLoader(context, contentUri, proj, null, null, null)
     val cursor: Cursor? = loader.loadInBackground()
@@ -16,4 +20,17 @@ fun getRealPathFromURI(context: Context, contentUri: Uri): String? {
     val result = cursor.getString(column_index)
     cursor.close()
     return result
+}
+
+internal fun calcRotate(file:String,options:BitmapFactory.Options) : Bitmap {
+    val bitmap = BitmapFactory.decodeFile(file,options)
+    val exif = ExifInterface(file)
+    val orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL)
+    val matrix = Matrix()
+    when(orientation) {
+        ExifInterface.ORIENTATION_ROTATE_90 -> matrix.postRotate(90F)
+        ExifInterface.ORIENTATION_ROTATE_180 -> matrix.postRotate(180F)
+        ExifInterface.ORIENTATION_ROTATE_270 -> matrix.postRotate(270F)
+    }
+    return Bitmap.createBitmap(bitmap, 0,0 , bitmap.width, bitmap.height, matrix, true)
 }

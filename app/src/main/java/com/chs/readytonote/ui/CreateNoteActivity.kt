@@ -27,6 +27,7 @@ import kotlinx.android.synthetic.main.activity_create_note.*
 import java.text.SimpleDateFormat
 import java.util.*
 import androidx.core.content.ContextCompat.checkSelfPermission
+import com.chs.readytonote.calcRotate
 import com.chs.readytonote.getRealPathFromURI
 import com.chs.readytonote.viewmodel.MainViewModel
 import com.chs.readytonote.viewmodel.MainViewModelFactory
@@ -51,6 +52,7 @@ class CreateNoteActivity : AppCompatActivity() {
     private lateinit var dialogUrlAdd: AlertDialog
     private lateinit var dialogDelete: AlertDialog
     private lateinit var alreadyAvailableNote: Note
+    private val options: BitmapFactory.Options by lazy { BitmapFactory.Options() }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -169,22 +171,22 @@ class CreateNoteActivity : AppCompatActivity() {
     }
 
     private fun setViewOrUpdateNote() {
+        inputNoteTitle.setText(alreadyAvailableNote.title)
+        inputNoteSubtitle.setText(alreadyAvailableNote.subtitle)
+        inputNoteText.setText(alreadyAvailableNote.noteText)
+        options.inSampleSize = 1
 
-            inputNoteTitle.setText(alreadyAvailableNote.title)
-            inputNoteSubtitle.setText(alreadyAvailableNote.subtitle)
-            inputNoteText.setText(alreadyAvailableNote.noteText)
-
-            if(! alreadyAvailableNote.imgPath.isNullOrEmpty()) {
-                imageNote.visibility = View.VISIBLE
-                imageNote.setImageBitmap(BitmapFactory.decodeFile(alreadyAvailableNote.imgPath))
-                imagePath = alreadyAvailableNote.imgPath!!
-                imageDelete.visibility = View.VISIBLE
-            }
-            if(! alreadyAvailableNote.webLink.isNullOrEmpty()) {
-                txtWebUrl.text = alreadyAvailableNote.webLink
-                txtWebUrl.visibility = View.VISIBLE
-                imageDeleteUrl.visibility = View.VISIBLE
-            }
+        if(! alreadyAvailableNote.imgPath.isNullOrEmpty()) {
+            imageNote.visibility = View.VISIBLE
+            imageNote.setImageBitmap(calcRotate(alreadyAvailableNote.imgPath!!,options))
+            imagePath = alreadyAvailableNote.imgPath!!
+            imageDelete.visibility = View.VISIBLE
+        }
+        if(! alreadyAvailableNote.webLink.isNullOrEmpty()) {
+            txtWebUrl.text = alreadyAvailableNote.webLink
+            txtWebUrl.visibility = View.VISIBLE
+            imageDeleteUrl.visibility = View.VISIBLE
+        }
     }
 
     private fun setSubtitleIndicator() {
