@@ -35,7 +35,6 @@ class NoteAdapter(private val clickListener: (note: Note, position: Int,view:Vie
     private lateinit var timerTask: Timer
     private lateinit var temp:MutableList<Note>
     private val searchList: MutableList<Note> by lazy { currentList }
-    private val options: BitmapFactory.Options by lazy { BitmapFactory.Options() }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NoteViewHolder {
         val view = LayoutInflater.from(parent.context)
@@ -47,7 +46,6 @@ class NoteAdapter(private val clickListener: (note: Note, position: Int,view:Vie
         return viewHolder
     }
     override fun onBindViewHolder(holder: NoteViewHolder, position: Int) {
-        options.inSampleSize = 2
         holder.binding.model = getItem(position)
         holder.getItemDetails().position
         var gradientDrawable: GradientDrawable = (holder.itemView.layoutNote.background as GradientDrawable)
@@ -93,5 +91,4 @@ class NoteAdapter(private val clickListener: (note: Note, position: Int,view:Vie
             timerTask.cancel()
         }
     }
-
 }

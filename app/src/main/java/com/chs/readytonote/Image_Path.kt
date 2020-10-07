@@ -22,17 +22,24 @@ internal fun getRealPathFromURI(context: Context, contentUri: Uri): String? {
     return result
 }
 
-internal fun calcRotate(file:String,inSampleSize: Int = 1) : Bitmap {
-    val options = BitmapFactory.Options()
-    options.inSampleSize = inSampleSize
+internal fun calcRotate(file: String,inSampleSize: Int = 1) : Bitmap {
+    val options = BitmapFactory.Options().apply {
+        this.inSampleSize = inSampleSize
+    }
     val bitmap = BitmapFactory.decodeFile(file,options)
     val exif = ExifInterface(file)
-    val orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL)
     val matrix = Matrix()
+    val orientation = exif.getAttributeInt (
+        ExifInterface.TAG_ORIENTATION,
+        ExifInterface.ORIENTATION_NORMAL,
+    )
     when(orientation) {
         ExifInterface.ORIENTATION_ROTATE_90 -> matrix.postRotate(90F)
         ExifInterface.ORIENTATION_ROTATE_180 -> matrix.postRotate(180F)
         ExifInterface.ORIENTATION_ROTATE_270 -> matrix.postRotate(270F)
     }
-    return Bitmap.createBitmap(bitmap, 0,0 , bitmap.width, bitmap.height, matrix, true)
+    return Bitmap.createBitmap(bitmap, 0,0 ,
+        bitmap.width, bitmap.height,
+        matrix, true,
+    )
 }
