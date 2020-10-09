@@ -38,7 +38,6 @@ import kotlinx.android.synthetic.main.layout_miscellaneous.*
 import kotlinx.android.synthetic.main.layout_miscellaneous.view.*
 
 class CreateNoteActivity : AppCompatActivity() {
-
     companion object {
         private const val IMAGE_PICK_CODE = 1000
         private const val PERMISSION_CODE = 1001
@@ -52,7 +51,6 @@ class CreateNoteActivity : AppCompatActivity() {
     private lateinit var dialogUrlAdd: AlertDialog
     private lateinit var dialogDelete: AlertDialog
     private lateinit var alreadyAvailableNote: Note
-    private val options: BitmapFactory.Options by lazy { BitmapFactory.Options() }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -66,22 +64,22 @@ class CreateNoteActivity : AppCompatActivity() {
     private fun initView() {
         noteColor = "#333333"
         imagePath = ""
-        txtDateTime.text = SimpleDateFormat("yyyy년 MM월 dd일 E요일", Locale.KOREA).format(Date())
+        txtDateTime.text = SimpleDateFormat("yyyy년 MM월 dd일 E요일",
+            Locale.KOREA).format(Date())
         bottomSheetBehavior = BottomSheetBehavior.from(layoutMiscellaneous)
 
         if(intent.getBooleanExtra("isViewOrUpdate",false)) {
             alreadyAvailableNote = intent.getParcelableExtra<Note>("note")
             setViewOrUpdateNote()
         }
-
-        layoutMiscellaneous.findViewById<TextView>(R.id.textMiscellaneous).setOnClickListener {
+        layoutMiscellaneous.findViewById<TextView>(R.id.textMiscellaneous)
+            .setOnClickListener {
             if(bottomSheetBehavior.state != BottomSheetBehavior.STATE_EXPANDED) {
                 bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
             } else {
                 bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
             }
         }
-
         initMiscellaneous()
         setSubtitleIndicator()
     }
@@ -174,15 +172,14 @@ class CreateNoteActivity : AppCompatActivity() {
         inputNoteTitle.setText(alreadyAvailableNote.title)
         inputNoteSubtitle.setText(alreadyAvailableNote.subtitle)
         inputNoteText.setText(alreadyAvailableNote.noteText)
-        options.inSampleSize = 1
 
-        if(! alreadyAvailableNote.imgPath.isNullOrEmpty()) {
+        if(alreadyAvailableNote.imgPath!!.isNotEmpty()) {
             imageNote.visibility = View.VISIBLE
             imageNote.setImageBitmap(calcRotate(alreadyAvailableNote.imgPath!!))
             imagePath = alreadyAvailableNote.imgPath!!
             imageDelete.visibility = View.VISIBLE
         }
-        if(! alreadyAvailableNote.webLink.isNullOrEmpty()) {
+        if(alreadyAvailableNote.webLink!!.isNotEmpty()) {
             txtWebUrl.text = alreadyAvailableNote.webLink
             txtWebUrl.visibility = View.VISIBLE
             imageDeleteUrl.visibility = View.VISIBLE
@@ -190,7 +187,7 @@ class CreateNoteActivity : AppCompatActivity() {
     }
 
     private fun setSubtitleIndicator() {
-        var gradientDrawable:GradientDrawable = (viewSubtitleIndicator.background as GradientDrawable)
+        var gradientDrawable= (viewSubtitleIndicator.background as GradientDrawable)
         gradientDrawable.setColor(Color.parseColor(noteColor))
     }
 
@@ -348,5 +345,4 @@ class CreateNoteActivity : AppCompatActivity() {
             inputMethodManager.hideSoftInputFromWindow(this.currentFocus!!.windowToken, 0)
         }
     }
-
 }

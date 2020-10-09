@@ -23,7 +23,7 @@ class MainActivity : AppCompatActivity() {
     companion object{
         private const val REQUEST_CODE_ADD_NOTE = 1
         private const val REQUEST_CODE_UPDATE_NOTE = 2
-        private const val REQUST_CODE_SHOW_NOTE = 3
+        private const val REQUEST_CODE_SHOW_NOTE = 3
     }
 
     private lateinit var notesAdapter: NoteAdapter
@@ -52,7 +52,7 @@ class MainActivity : AppCompatActivity() {
         bottomAppBar.replaceMenu(R.menu.main_note)
         bottomAppBar.setOnMenuItemClickListener {
             viewModel.allDelete()
-            getNote(REQUST_CODE_SHOW_NOTE,false)
+            getNote(REQUEST_CODE_SHOW_NOTE,false)
             return@setOnMenuItemClickListener false
         }
     }
@@ -72,13 +72,13 @@ class MainActivity : AppCompatActivity() {
             this.layoutManager = StaggeredGridLayoutManager(2,StaggeredGridLayoutManager.VERTICAL)
             this.adapter = notesAdapter
         }
-        getNote(REQUST_CODE_SHOW_NOTE,false)
+        getNote(REQUEST_CODE_SHOW_NOTE,false)
     }
 
     private fun getNote(requestCode: Int,isNoteDelete:Boolean) {
         viewModel.getAllNotes().observe(this, Observer {note->
             when (requestCode) {
-                REQUST_CODE_SHOW_NOTE -> {
+                REQUEST_CODE_SHOW_NOTE -> {
                     noteList = note as MutableList<Note>
                 }
                 REQUEST_CODE_ADD_NOTE -> {

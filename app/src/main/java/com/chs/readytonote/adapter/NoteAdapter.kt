@@ -1,6 +1,5 @@
 package com.chs.readytonote.adapter
 
-import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
 import android.os.Handler
