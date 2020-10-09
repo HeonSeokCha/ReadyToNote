@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.selection.ItemDetailsLookup
+import androidx.recyclerview.selection.SelectionTracker
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.chs.readytonote.R
@@ -23,10 +24,10 @@ class NoteAdapter(private val clickListener: (note: Note, position: Int,view:Vie
     : ListAdapter<Note, NoteAdapter.NoteViewHolder>(NoteDiffUtilCallback()) {
     class NoteViewHolder(val binding: ItemContainerNoteBinding)
         : RecyclerView.ViewHolder(binding.root) {
-        fun getItemDetails(): ItemDetailsLookup.ItemDetails<String> =
-            object : ItemDetailsLookup.ItemDetails<String>() {
+        fun getItemDetails(): ItemDetailsLookup.ItemDetails<Long> =
+            object : ItemDetailsLookup.ItemDetails<Long>() {
                 override fun getPosition(): Int = adapterPosition
-                override fun getSelectionKey(): String? = itemId.toString()
+                override fun getSelectionKey(): Long? = itemId
             }
     }
 
@@ -34,18 +35,32 @@ class NoteAdapter(private val clickListener: (note: Note, position: Int,view:Vie
     private lateinit var timerTask: Timer
     private lateinit var temp:MutableList<Note>
     private val searchList: MutableList<Note> by lazy { currentList }
+    private lateinit var selectionTracker: SelectionTracker<Long>
+    init {
+        setHasStableIds(true)
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NoteViewHolder {
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.item_container_note, parent, false)
         val viewHolder = NoteViewHolder(ItemContainerNoteBinding.bind(view))
         view.setOnClickListener {
-            clickListener.invoke(getItem(viewHolder.adapterPosition), viewHolder.adapterPosition,viewHolder.itemView)
+            if(viewHolder.itemView.txtTitle.isActivated){
+                viewHolder.itemView.txtTitle.isActivated = false
+            } else {
+                clickListener.invoke(getItem(viewHolder.adapterPosition), viewHolder.adapterPosition,viewHolder.itemView)
+            }
+        }
+        view.setOnLongClickListener {
+            selectionTracker.select(viewHolder.adapterPosition.toLong())
+            viewHolder.itemView.txtTitle.isActivated = selectionTracker.isSelected(viewHolder.adapterPosition.toLong())
+            return@setOnLongClickListener true
         }
         return viewHolder
     }
     override fun onBindViewHolder(holder: NoteViewHolder, position: Int) {
         holder.binding.model = getItem(position)
+        holder
         holder.getItemDetails().position
         var gradientDrawable: GradientDrawable = (holder.itemView.layoutNote.background as GradientDrawable)
         if (getItem(position).color != "") {
@@ -65,6 +80,14 @@ class NoteAdapter(private val clickListener: (note: Note, position: Int,view:Vie
     }
 
     override fun getItemCount() = currentList.size
+
+    override fun getItemId(position: Int): Long {
+        return position.toLong()
+    }
+
+    fun setTracker(selectionTracker: SelectionTracker<Long>){
+        this.selectionTracker = selectionTracker
+    }
 
     fun search(searchKeyword: String) {
         timerTask = Timer()
