@@ -46,25 +46,22 @@ class NoteAdapter(private val clickListener: (note: Note, position: Int,view:Vie
             .inflate(R.layout.item_container_note, parent, false)
         val viewHolder = NoteViewHolder(ItemContainerNoteBinding.bind(view))
         view.layoutNote.setOnClickListener {
-            Log.d("Clicked","item")
-            clickListener.invoke(getItem(viewHolder.adapterPosition), viewHolder.adapterPosition,viewHolder.itemView)
+            clickListener.invoke(
+                getItem(viewHolder.adapterPosition),
+                viewHolder.adapterPosition,
+                viewHolder.itemView,
+            )
         }
+
         view.layoutNote.setOnLongClickListener {
-            selectionTracker.select(viewHolder.adapterPosition.toLong())
-            viewHolder.itemView.img_check.visibility =
-            if(viewHolder.itemView.img_check.visibility == View.GONE) {
-                View.VISIBLE
-            } else {
-                View.GONE
-            }
+//            selectionTracker.select(viewHolder.adapterPosition.toLong())
+            viewHolder.itemView.img_check.visibility = View.VISIBLE
             return@setOnLongClickListener true
         }
         return viewHolder
     }
     override fun onBindViewHolder(holder: NoteViewHolder, position: Int) {
         holder.binding.model = getItem(position)
-        holder
-        holder.getItemDetails().position
         var gradientDrawable: GradientDrawable = (holder.itemView.layoutNote.background as GradientDrawable)
         if (getItem(position).color != "") {
             gradientDrawable.setColor(Color.parseColor(getItem(position).color))
@@ -83,7 +80,6 @@ class NoteAdapter(private val clickListener: (note: Note, position: Int,view:Vie
     }
 
     override fun getItemCount() = currentList.size
-
     override fun getItemId(position: Int): Long {
         return position.toLong()
     }

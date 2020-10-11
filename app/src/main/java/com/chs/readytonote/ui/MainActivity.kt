@@ -76,7 +76,7 @@ class MainActivity : AppCompatActivity() {
                     view.imageNote,
                     "imageNote"
                 )
-                startActivityForResult(intent, REQUEST_CODE_UPDATE_NOTE, option.toBundle())
+                startActivityForResult(intent, REQUEST_CODE_UPDATE_NOTE)
             })
             this.layoutManager = StaggeredGridLayoutManager(2,StaggeredGridLayoutManager.VERTICAL)
             this.adapter = notesAdapter
@@ -89,13 +89,13 @@ class MainActivity : AppCompatActivity() {
             ).withSelectionPredicate(
                 SelectionPredicates.createSelectAnything()
             ).build()
-            notesAdapter.setTracker(noteSelectionTracker)
+//            notesAdapter.setTracker(noteSelectionTracker)
         }
         getNote(REQUST_CODE_SHOW_NOTE,false)
     }
 
     private fun getNote(requestCode: Int,isNoteDelete:Boolean) {
-        viewModel.getAllNotes().observe(this, Observer {note->
+        viewModel.getAllNotes().observe(this, Observer { note->
             when (requestCode) {
                 REQUST_CODE_SHOW_NOTE -> {
                     noteList = note as MutableList<Note>
