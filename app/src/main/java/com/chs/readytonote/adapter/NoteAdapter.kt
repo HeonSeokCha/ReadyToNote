@@ -4,6 +4,7 @@ import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -44,16 +45,18 @@ class NoteAdapter(private val clickListener: (note: Note, position: Int,view:Vie
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.item_container_note, parent, false)
         val viewHolder = NoteViewHolder(ItemContainerNoteBinding.bind(view))
-        view.setOnClickListener {
-            if(viewHolder.itemView.txtTitle.isActivated){
-                viewHolder.itemView.txtTitle.isActivated = false
-            } else {
-                clickListener.invoke(getItem(viewHolder.adapterPosition), viewHolder.adapterPosition,viewHolder.itemView)
-            }
+        view.layoutNote.setOnClickListener {
+            Log.d("Clicked","item")
+            clickListener.invoke(getItem(viewHolder.adapterPosition), viewHolder.adapterPosition,viewHolder.itemView)
         }
-        view.setOnLongClickListener {
+        view.layoutNote.setOnLongClickListener {
             selectionTracker.select(viewHolder.adapterPosition.toLong())
-            viewHolder.itemView.txtTitle.isActivated = selectionTracker.isSelected(viewHolder.adapterPosition.toLong())
+            viewHolder.itemView.img_check.visibility =
+            if(viewHolder.itemView.img_check.visibility == View.GONE) {
+                View.VISIBLE
+            } else {
+                View.GONE
+            }
             return@setOnLongClickListener true
         }
         return viewHolder
