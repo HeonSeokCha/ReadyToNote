@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -26,14 +27,11 @@ import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.item_container_note.view.*
 
 class MainActivity : AppCompatActivity() {
-    companion object{
-        private const val REQUEST_CODE_ADD_NOTE = 1
-        private const val REQUEST_CODE_UPDATE_NOTE = 2
-        private const val REQUST_CODE_SHOW_NOTE = 3
+    companion object {
+        private const val REQUST_CODE_SHOW_NOTE = 1
     }
 
     private lateinit var notesAdapter: NoteAdapter
-    private lateinit var noteList: MutableList<Note>
     private lateinit var viewModel: MainViewModel
     private var noteClickPosition = 0
 
@@ -51,83 +49,53 @@ class MainActivity : AppCompatActivity() {
     private fun initClick() {
         imgAddNoteMain.setOnClickListener {
             startActivityForResult(Intent(this,
-                CreateNoteActivity::class.java),REQUEST_CODE_ADD_NOTE)
+                CreateNoteActivity::class.java),REQUST_CODE_SHOW_NOTE)
         }
     }
     private fun initView(){
         bottomAppBar.replaceMenu(R.menu.main_note)
         bottomAppBar.setOnMenuItemClickListener {
             viewModel.allDelete()
-            getNote(REQUST_CODE_SHOW_NOTE,false)
+            getNote()
             return@setOnMenuItemClickListener false
         }
     }
 
     private fun initRecyclerView() {
         Rv_notes.apply {
-            noteList = mutableListOf()
-            notesAdapter = NoteAdapter(clickListener = { note, position, view ->
+            notesAdapter = NoteAdapter(clickListener = { note, position ->
                 noteClickPosition = position
                 val intent = Intent(this@MainActivity, CreateNoteActivity::class.java)
                 intent.putExtra("isViewOrUpdate", true)
                 intent.putExtra("note", note)
-                val option = ActivityOptions.makeSceneTransitionAnimation(
-                    this@MainActivity,
-                    view.imageNote,
-                    "imageNote"
-                )
-                startActivityForResult(intent, REQUEST_CODE_UPDATE_NOTE)
+                startActivityForResult(intent,REQUST_CODE_SHOW_NOTE)
             })
             this.layoutManager = StaggeredGridLayoutManager(2,StaggeredGridLayoutManager.VERTICAL)
             this.adapter = notesAdapter
-            val noteSelectionTracker = SelectionTracker.Builder<Long>(
-                "note-content",
-                Rv_notes,
-                StableIdKeyProvider(Rv_notes),
-                NoteDetailsLookup(Rv_notes),
-                StorageStrategy.createLongStorage()
-            ).withSelectionPredicate(
-                SelectionPredicates.createSelectAnything()
-            ).build()
+//            val noteSelectionTracker = SelectionTracker.Builder<Long>(
+//                "note-content",
+//                Rv_notes,
+//                StableIdKeyProvider(Rv_notes),
+//                NoteDetailsLookup(Rv_notes),
+//                StorageStrategy.createLongStorage()
+//            ).withSelectionPredicate(
+//                SelectionPredicates.createSelectAnything()
+//            ).build()
 //            notesAdapter.setTracker(noteSelectionTracker)
         }
-        getNote(REQUST_CODE_SHOW_NOTE,false)
+        getNote()
     }
 
-    private fun getNote(requestCode: Int,isNoteDelete:Boolean) {
-        viewModel.getAllNotes().observe(this, Observer { note->
-            when (requestCode) {
-                REQUST_CODE_SHOW_NOTE -> {
-                    noteList = note as MutableList<Note>
-                }
-                REQUEST_CODE_ADD_NOTE -> {
-                    if(note.isNotEmpty()) {
-                        noteList.add(0,note[0])
-                        notesAdapter.notifyItemInserted(0)
-                        Rv_notes.smoothScrollToPosition(0)
-                    }
-                }
-                REQUEST_CODE_UPDATE_NOTE -> {
-                    noteList.removeAt(noteClickPosition)
-                    if(isNoteDelete) {
-                        notesAdapter.notifyItemRemoved(noteClickPosition)
-                    } else {
-                        Rv_notes.smoothScrollToPosition(noteClickPosition)
-                        noteList.add(noteClickPosition,note[noteClickPosition])
-                        notesAdapter.notifyItemChanged(noteClickPosition)
-                    }
-                }
-            }
-            notesAdapter.submitList(noteList)
+    private fun getNote() {
+        viewModel.getAllNotes().observe(this, Observer { note ->
+            notesAdapter.submitList(note)
         })
     }
 
     private fun searchNote() {
         inputSearch.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(p0: Editable?) {
-                if(noteList.isNotEmpty()) {
-                    notesAdapter.search(p0.toString())
-                }
+                notesAdapter.search(p0.toString())
             }
             override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
                 notesAdapter.cancelTimer()
@@ -138,12 +106,6 @@ class MainActivity : AppCompatActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if(requestCode == REQUEST_CODE_ADD_NOTE && resultCode == Activity.RESULT_OK) {
-            getNote(REQUEST_CODE_ADD_NOTE,false)
-        } else if(requestCode == REQUEST_CODE_UPDATE_NOTE && resultCode == RESULT_OK) {
-            if(data!=null) {
-                getNote(REQUEST_CODE_UPDATE_NOTE,data!!.getBooleanExtra("isNoteDelete",false))
-            }
-        }
+        getNote()
     }
 }

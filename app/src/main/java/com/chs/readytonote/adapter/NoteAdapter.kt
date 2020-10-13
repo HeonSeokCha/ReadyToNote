@@ -21,7 +21,7 @@ import java.util.*
 import kotlin.concurrent.schedule
 
 
-class NoteAdapter(private val clickListener: (note: Note, position: Int,view:View) -> Unit)
+class NoteAdapter(private val clickListener: (note: Note, position: Int) -> Unit)
     : ListAdapter<Note, NoteAdapter.NoteViewHolder>(NoteDiffUtilCallback()) {
     class NoteViewHolder(val binding: ItemContainerNoteBinding)
         : RecyclerView.ViewHolder(binding.root) {
@@ -32,14 +32,13 @@ class NoteAdapter(private val clickListener: (note: Note, position: Int,view:Vie
             }
     }
 
-
     private lateinit var timerTask: Timer
     private lateinit var temp:MutableList<Note>
     private val searchList: MutableList<Note> by lazy { currentList }
     private lateinit var selectionTracker: SelectionTracker<Long>
-    init {
-        setHasStableIds(true)
-    }
+//    init {
+//        setHasStableIds(true)
+//    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NoteViewHolder {
         val view = LayoutInflater.from(parent.context)
@@ -49,7 +48,6 @@ class NoteAdapter(private val clickListener: (note: Note, position: Int,view:Vie
             clickListener.invoke(
                 getItem(viewHolder.adapterPosition),
                 viewHolder.adapterPosition,
-                viewHolder.itemView,
             )
         }
 
@@ -69,7 +67,7 @@ class NoteAdapter(private val clickListener: (note: Note, position: Int,view:Vie
             gradientDrawable.setColor(Color.parseColor("#333333"))
         }
 
-        if(! getItem(position).imgPath.isNullOrEmpty()) {
+        if(getItem(position).imgPath!!.isNotEmpty()) {
             holder.itemView.imageNote.setImageBitmap(
                 calcRotate(getItem(position).imgPath!!,2)
             )
@@ -79,10 +77,7 @@ class NoteAdapter(private val clickListener: (note: Note, position: Int,view:Vie
         }
     }
 
-    override fun getItemCount() = currentList.size
-    override fun getItemId(position: Int): Long {
-        return position.toLong()
-    }
+    override fun getItemId(position: Int): Long = position.toLong()
 
     fun setTracker(selectionTracker: SelectionTracker<Long>){
         this.selectionTracker = selectionTracker

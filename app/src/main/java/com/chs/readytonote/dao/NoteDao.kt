@@ -8,7 +8,7 @@ import com.chs.readytonote.entities.Note
 interface NoteDao {
 
     @Query("SELECT * FROM notes ORDER BY id DESC")
-    fun getAllNotes(): LiveData<List<Note>>
+    fun getAllNotes(): LiveData<MutableList<Note>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertNote(note: Note)
