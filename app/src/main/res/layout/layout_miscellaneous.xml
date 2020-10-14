@@ -126,10 +126,10 @@
             android:layout_height="22dp"
             android:layout_marginStart="24dp"
             android:src="@drawable/ic_image"
-            android:tint="@color/colorIcons"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="@color/colorIcons" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -160,7 +160,7 @@
             android:layout_height="22dp"
             android:layout_marginStart="24dp"
             android:src="@drawable/ic_web_link"
-            android:tint="@color/colorIcons"
+            app:tint="@color/colorIcons"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -179,13 +179,14 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/layoutDeleteNote"
-        android:visibility="gone"
         android:layout_width="match_parent"
         android:layout_height="35dp"
         android:layout_margin="10dp"
         android:layout_marginBottom="8dp"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
-        tools:layout_editor_absoluteX="16dp">
+        tools:layout_editor_absoluteX="16dp"
+        tools:visibility="visible">
 
         <ImageView
             android:id="@+id/imageView4"
@@ -193,10 +194,10 @@
             android:layout_height="22dp"
             android:layout_marginStart="24dp"
             android:src="@drawable/ic_delete"
-            android:tint="@color/colorDelete"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="@color/colorDelete" />
 
         <TextView
             android:layout_width="wrap_content"

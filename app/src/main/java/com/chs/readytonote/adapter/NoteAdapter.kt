@@ -36,9 +36,9 @@ class NoteAdapter(private val clickListener: (note: Note, position: Int) -> Unit
     private lateinit var temp:MutableList<Note>
     private val searchList: MutableList<Note> by lazy { currentList }
     private lateinit var selectionTracker: SelectionTracker<Long>
-//    init {
-//        setHasStableIds(true)
-//    }
+    init {
+        setHasStableIds(true)
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NoteViewHolder {
         val view = LayoutInflater.from(parent.context)
@@ -51,11 +51,11 @@ class NoteAdapter(private val clickListener: (note: Note, position: Int) -> Unit
             )
         }
 
-        view.layoutNote.setOnLongClickListener {
-//            selectionTracker.select(viewHolder.adapterPosition.toLong())
-            viewHolder.itemView.img_check.visibility = View.VISIBLE
-            return@setOnLongClickListener true
-        }
+//        view.layoutNote.setOnLongClickListener {
+////            selectionTracker.select(viewHolder.adapterPosition.toLong())
+//            viewHolder.itemView.img_check.visibility = View.VISIBLE
+//            return@setOnLongClickListener true
+//        }
         return viewHolder
     }
     override fun onBindViewHolder(holder: NoteViewHolder, position: Int) {
@@ -69,11 +69,17 @@ class NoteAdapter(private val clickListener: (note: Note, position: Int) -> Unit
 
         if(getItem(position).imgPath!!.isNotEmpty()) {
             holder.itemView.imageNote.setImageBitmap(
-                calcRotate(getItem(position).imgPath!!,2)
+                calcRotate(getItem(position).imgPath!!,4)
             )
             holder.itemView.imageNote.visibility = View.VISIBLE
         } else {
             holder.itemView.imageNote.visibility = View.GONE
+        }
+
+        if(selectionTracker.isSelected(position.toLong())) {
+            holder.itemView.img_check.visibility = View.VISIBLE
+        } else {
+            holder.itemView.img_check.visibility = View.GONE
         }
     }
 

@@ -1,14 +1,11 @@
 package com.chs.readytonote.ui
 
-import android.app.Activity
-import android.app.ActivityOptions
+
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
-import android.widget.Toast
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.selection.SelectionPredicates
@@ -23,8 +20,6 @@ import com.chs.readytonote.entities.Note
 import com.chs.readytonote.viewmodel.MainViewModel
 import com.chs.readytonote.viewmodel.MainViewModelFactory
 import kotlinx.android.synthetic.main.activity_main.*
-
-import kotlinx.android.synthetic.main.item_container_note.view.*
 
 class MainActivity : AppCompatActivity() {
     companion object {
@@ -72,23 +67,25 @@ class MainActivity : AppCompatActivity() {
             })
             this.layoutManager = StaggeredGridLayoutManager(2,StaggeredGridLayoutManager.VERTICAL)
             this.adapter = notesAdapter
-//            val noteSelectionTracker = SelectionTracker.Builder<Long>(
-//                "note-content",
-//                Rv_notes,
-//                StableIdKeyProvider(Rv_notes),
-//                NoteDetailsLookup(Rv_notes),
-//                StorageStrategy.createLongStorage()
-//            ).withSelectionPredicate(
-//                SelectionPredicates.createSelectAnything()
-//            ).build()
-//            notesAdapter.setTracker(noteSelectionTracker)
+            // still selectionTracker Problem..
+            val noteSelectionTracker = SelectionTracker.Builder<Long>(
+                "note-content",
+                Rv_notes,
+                StableIdKeyProvider(Rv_notes),
+                NoteDetailsLookup(Rv_notes),
+                StorageStrategy.createLongStorage()
+            ).withSelectionPredicate(
+                SelectionPredicates.createSelectAnything()
+            ).build()
+            notesAdapter.setTracker(noteSelectionTracker)
         }
         getNote()
     }
 
     private fun getNote() {
         viewModel.getAllNotes().observe(this, Observer { note ->
-            notesAdapter.submitList(note)
+            if(note.isNotEmpty())
+                notesAdapter.submitList(note)
         })
     }
 
