@@ -29,7 +29,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="12dp"
             android:layout_marginTop="12dp"
-            android:background="@drawable/background_note"
+            android:background="@drawable/background_select"
             android:clickable="true"
             android:focusable="true"
             android:foreground="?selectableItemBackground"

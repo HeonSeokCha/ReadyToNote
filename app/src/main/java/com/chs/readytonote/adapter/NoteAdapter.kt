@@ -36,7 +36,7 @@ class NoteAdapter(private val clickListener: (note: Note, position: Int) -> Unit
     private lateinit var temp:MutableList<Note>
     private val searchList: MutableList<Note> by lazy { currentList }
     private lateinit var selectionTracker: SelectionTracker<Long>
-    init {
+    init{
         setHasStableIds(true)
     }
 
@@ -60,12 +60,13 @@ class NoteAdapter(private val clickListener: (note: Note, position: Int) -> Unit
     }
     override fun onBindViewHolder(holder: NoteViewHolder, position: Int) {
         holder.binding.model = getItem(position)
-        var gradientDrawable: GradientDrawable = (holder.itemView.layoutNote.background as GradientDrawable)
-        if (getItem(position).color != "") {
-            gradientDrawable.setColor(Color.parseColor(getItem(position).color))
-        } else {
-            gradientDrawable.setColor(Color.parseColor("#333333"))
-        }
+        holder.itemView.layoutNote.isActivated = selectionTracker.isSelected(position.toLong())
+//        var gradientDrawable: GradientDrawable = (holder.itemView.layoutNote.background as GradientDrawable)
+//        if (getItem(position).color != "") {
+//            gradientDrawable.setColor(Color.parseColor(getItem(position).color))
+//        } else {
+//            gradientDrawable.setColor(Color.parseColor("#333333"))
+//        }
 
         if(getItem(position).imgPath!!.isNotEmpty()) {
             holder.itemView.imageNote.setImageBitmap(
