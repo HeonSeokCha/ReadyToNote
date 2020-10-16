@@ -2,6 +2,11 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
+        android:id="@+id/main_menu_delete"
+        android:title="삭제"
+        app:showAsAction="never"
+        />
+    <item
         android:id="@+id/main_menu_deleteAll"
         android:title="노트 전체 삭제"
         app:showAsAction="never"
