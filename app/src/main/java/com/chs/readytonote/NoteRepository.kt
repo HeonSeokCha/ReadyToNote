@@ -9,7 +9,7 @@ class NoteRepository (application: Application){
 
     private var dao: NoteDao
     init {
-        val db =  NotesDatabases.getInstance(application)!!
+        val db =  NotesDatabases.getInstance(application)
         dao = db.todoDao()
     }
 

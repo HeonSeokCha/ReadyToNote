@@ -8,14 +8,14 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.recyclerview.selection.ItemDetailsLookup
-import androidx.recyclerview.selection.SelectionTracker
+import android.widget.Toast
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.chs.readytonote.R
 import com.chs.readytonote.calcRotate
 import com.chs.readytonote.databinding.ItemContainerNoteBinding
 import com.chs.readytonote.entities.Note
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.item_container_note.view.*
 import java.util.*
 import kotlin.concurrent.schedule
@@ -24,18 +24,11 @@ import kotlin.concurrent.schedule
 class NoteAdapter(private val clickListener: (note: Note, position: Int) -> Unit)
     : ListAdapter<Note, NoteAdapter.NoteViewHolder>(NoteDiffUtilCallback()) {
     class NoteViewHolder(val binding: ItemContainerNoteBinding)
-        : RecyclerView.ViewHolder(binding.root) {
-        fun getItemDetails(): ItemDetailsLookup.ItemDetails<Long> =
-            object : ItemDetailsLookup.ItemDetails<Long>() {
-                override fun getPosition(): Int = adapterPosition
-                override fun getSelectionKey(): Long? = itemId
-            }
-    }
+        : RecyclerView.ViewHolder(binding.root)
 
     private lateinit var timerTask: Timer
     private lateinit var temp:MutableList<Note>
     private val searchList: MutableList<Note> by lazy { currentList }
-    private lateinit var selectionTracker: SelectionTracker<Long>
     init{
         setHasStableIds(true)
     }
@@ -51,22 +44,22 @@ class NoteAdapter(private val clickListener: (note: Note, position: Int) -> Unit
             )
         }
 
-//        view.layoutNote.setOnLongClickListener {
-////            selectionTracker.select(viewHolder.adapterPosition.toLong())
-//            viewHolder.itemView.img_check.visibility = View.VISIBLE
-//            return@setOnLongClickListener true
-//        }
+        view.layoutNote.setOnLongClickListener {
+            Toast.makeText(it.context,
+                "This Note is ${viewHolder.adapterPosition} position",
+                Toast.LENGTH_SHORT).show()
+            return@setOnLongClickListener true
+        }
         return viewHolder
     }
     override fun onBindViewHolder(holder: NoteViewHolder, position: Int) {
         holder.binding.model = getItem(position)
-        holder.itemView.layoutNote.isActivated = selectionTracker.isSelected(position.toLong())
-//        var gradientDrawable: GradientDrawable = (holder.itemView.layoutNote.background as GradientDrawable)
-//        if (getItem(position).color != "") {
-//            gradientDrawable.setColor(Color.parseColor(getItem(position).color))
-//        } else {
-//            gradientDrawable.setColor(Color.parseColor("#333333"))
-//        }
+        var gradientDrawable: GradientDrawable = (holder.itemView.layoutNote.background as GradientDrawable)
+        if (getItem(position).color != "") {
+            gradientDrawable.setColor(Color.parseColor(getItem(position).color))
+        } else {
+            gradientDrawable.setColor(Color.parseColor("#333333"))
+        }
 
         if(getItem(position).imgPath!!.isNotEmpty()) {
             holder.itemView.imageNote.setImageBitmap(
@@ -76,19 +69,9 @@ class NoteAdapter(private val clickListener: (note: Note, position: Int) -> Unit
         } else {
             holder.itemView.imageNote.visibility = View.GONE
         }
-
-        if(selectionTracker.isSelected(position.toLong())) {
-            holder.itemView.img_check.visibility = View.VISIBLE
-        } else {
-            holder.itemView.img_check.visibility = View.GONE
-        }
     }
 
     override fun getItemId(position: Int): Long = position.toLong()
-
-    fun setTracker(selectionTracker: SelectionTracker<Long>){
-        this.selectionTracker = selectionTracker
-    }
 
     fun search(searchKeyword: String) {
         timerTask = Timer()
