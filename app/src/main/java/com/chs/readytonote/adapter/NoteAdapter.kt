@@ -29,9 +29,6 @@ class NoteAdapter(private val clickListener: (note: Note, position: Int) -> Unit
     private lateinit var timerTask: Timer
     private lateinit var temp:MutableList<Note>
     private val searchList: MutableList<Note> by lazy { currentList }
-    init{
-        setHasStableIds(true)
-    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NoteViewHolder {
         val view = LayoutInflater.from(parent.context)

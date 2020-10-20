@@ -150,7 +150,8 @@ class CreateNoteActivity : AppCompatActivity() {
                 color = noteColor,
                 webLink = webLink,
             )
-            if(::alreadyAvailableNote.isInitialized && alreadyAvailableNote != null) {
+            if(::alreadyAvailableNote.isInitialized
+                && alreadyAvailableNote != null) {
                 note.id = alreadyAvailableNote.id
             }
             viewModel.insert(note)
