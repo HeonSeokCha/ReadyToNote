@@ -21,14 +21,16 @@ import java.util.*
 import kotlin.concurrent.schedule
 
 
-class NoteAdapter(private val clickListener: (note: Note, position: Int) -> Unit)
-    : ListAdapter<Note, NoteAdapter.NoteViewHolder>(NoteDiffUtilCallback()) {
+class NoteAdapter(private var item: MutableList<Note>,
+                  private val clickListener: (note: Note, position: Int) -> Unit,
+                ) : RecyclerView.Adapter<NoteAdapter.NoteViewHolder>() {
     class NoteViewHolder(val binding: ItemContainerNoteBinding)
         : RecyclerView.ViewHolder(binding.root)
 
     private lateinit var timerTask: Timer
     private lateinit var temp:MutableList<Note>
-    private val searchList: MutableList<Note> by lazy { currentList }
+    private val searchList: MutableList<Note> by lazy { item }
+
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NoteViewHolder {
         val view = LayoutInflater.from(parent.context)
@@ -36,7 +38,7 @@ class NoteAdapter(private val clickListener: (note: Note, position: Int) -> Unit
         val viewHolder = NoteViewHolder(ItemContainerNoteBinding.bind(view))
         view.layoutNote.setOnClickListener {
             clickListener.invoke(
-                getItem(viewHolder.adapterPosition),
+                item[viewHolder.adapterPosition],
                 viewHolder.adapterPosition,
             )
         }
@@ -50,17 +52,17 @@ class NoteAdapter(private val clickListener: (note: Note, position: Int) -> Unit
         return viewHolder
     }
     override fun onBindViewHolder(holder: NoteViewHolder, position: Int) {
-        holder.binding.model = getItem(position)
+        holder.binding.model = item[position]
         var gradientDrawable: GradientDrawable = (holder.itemView.layoutNote.background as GradientDrawable)
-        if (getItem(position).color != "") {
-            gradientDrawable.setColor(Color.parseColor(getItem(position).color))
+        if (item[position].color != "") {
+            gradientDrawable.setColor(Color.parseColor(item[position].color))
         } else {
             gradientDrawable.setColor(Color.parseColor("#333333"))
         }
 
-        if(getItem(position).imgPath!!.isNotEmpty()) {
+        if(item[position].imgPath!!.isNotEmpty()) {
             holder.itemView.imageNote.setImageBitmap(
-                calcRotate(getItem(position).imgPath!!,4)
+                calcRotate(item[position].imgPath!!,4)
             )
             holder.itemView.imageNote.visibility = View.VISIBLE
         } else {
@@ -68,6 +70,7 @@ class NoteAdapter(private val clickListener: (note: Note, position: Int) -> Unit
         }
     }
 
+    override fun getItemCount(): Int = item.size
     override fun getItemId(position: Int): Long = position.toLong()
 
     fun search(searchKeyword: String) {
@@ -80,9 +83,9 @@ class NoteAdapter(private val clickListener: (note: Note, position: Int) -> Unit
                         || i.subtitle!!.toLowerCase().contains(searchKeyword.toLowerCase())) {
                         temp.add(i)
                     }
-                    submitList(temp)
+                    item = temp
                 }
-            } else submitList(searchList)
+            } else item = searchList
             Handler(Looper.getMainLooper()).post {
                 notifyDataSetChanged()
             }
