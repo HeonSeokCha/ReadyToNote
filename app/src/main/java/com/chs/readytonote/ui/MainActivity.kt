@@ -16,6 +16,7 @@ import com.chs.readytonote.adapter.NoteAdapter
 import com.chs.readytonote.entities.Note
 import com.chs.readytonote.viewmodel.MainViewModel
 import com.chs.readytonote.viewmodel.MainViewModelFactory
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
@@ -64,7 +65,7 @@ class MainActivity : AppCompatActivity() {
                     CreateNoteActivity::class.java)
                 intent.putExtra("isViewOrUpdate", true)
                 intent.putExtra("note", note)
-                startActivityForResult(intent,REQUEST_CODE_SHOW_NOTE)
+                startActivityForResult(intent,REQUEST_CODE_UPDATE_NOTE)
             })
             this.layoutManager = StaggeredGridLayoutManager(2,
                 StaggeredGridLayoutManager.VERTICAL)
@@ -82,17 +83,20 @@ class MainActivity : AppCompatActivity() {
                     notesAdapter.notifyDataSetChanged()
                 }
                 REQUEST_CODE_ADD_NOTE -> {
-                    noteList.add(0,it[0])
+                    noteList.add(0, it[0])
                     notesAdapter.notifyItemInserted(0)
                     Rv_notes.smoothScrollToPosition(0)
+                    Toast.makeText(this, "add Note", Toast.LENGTH_SHORT).show()
                 }
                 REQUEST_CODE_UPDATE_NOTE -> {
                     noteList.removeAt(noteClickPosition)
-                    if(isNoteDelete){
+                    if (isNoteDelete) {
                         notesAdapter.notifyItemRemoved(noteClickPosition)
-                    } else{
-                        noteList.add(noteClickPosition,it[noteClickPosition])
+                        Toast.makeText(this, "delete Note", Toast.LENGTH_SHORT).show()
+                    } else {
+                        noteList.add(noteClickPosition, it[noteClickPosition])
                         notesAdapter.notifyItemChanged(noteClickPosition)
+                        Toast.makeText(this, "update Note", Toast.LENGTH_SHORT).show()
                     }
                 }
             }
