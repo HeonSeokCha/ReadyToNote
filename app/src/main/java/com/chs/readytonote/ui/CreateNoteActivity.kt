@@ -85,19 +85,13 @@ class CreateNoteActivity : AppCompatActivity() {
     }
 
     private fun initClick(){
-        imgSave.setOnClickListener {
-            saveNote()
-        }
-
-        imgBack.setOnClickListener {
-            onBackPressed()
-        }
-
+        imgSave.setOnClickListener { saveNote() }
+        imgBack.setOnClickListener { onBackPressed() }
         layoutAddImage.setOnClickListener {
             bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
             if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.M) {
                 if (checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) ==
-                    PackageManager.PERMISSION_DENIED){
+                    PackageManager.PERMISSION_DENIED) {
                     val permissions = arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE)
                     requestPermissions(permissions, PERMISSION_CODE)
                 } else pickImageFromGallery()
@@ -130,13 +124,13 @@ class CreateNoteActivity : AppCompatActivity() {
         }
     }
 
-    private fun saveNote(){
+    private fun saveNote() {
         if(inputNoteTitle.text.trim().isNullOrEmpty()) {
             Toast.makeText(this, "Note title can't be empty!", Toast.LENGTH_SHORT).show()
         } else if(inputNoteSubtitle.text.trim().isNullOrEmpty()
             && inputNoteText.text.trim().isNullOrEmpty()) {
             Toast.makeText(this, "Note can't be empty!", Toast.LENGTH_SHORT).show()
-        } else{
+        } else {
             webLink = if(txtWebUrl.visibility == View.VISIBLE) {
                 txtWebUrl.text.toString()
             } else ""
@@ -246,7 +240,7 @@ class CreateNoteActivity : AppCompatActivity() {
         }
 
         if(::alreadyAvailableNote.isInitialized
-            &&! alreadyAvailableNote.color.isNullOrEmpty()) {
+            && alreadyAvailableNote.color!!.isNotEmpty()) {
             when(alreadyAvailableNote.color) {
                 "#333333"->layoutMiscellaneous.imageColorDefault.performClick()
                 "#FDBE3B"->layoutMiscellaneous.imageColorYellow.performClick()
@@ -270,10 +264,12 @@ class CreateNoteActivity : AppCompatActivity() {
         view.textAdd.setOnClickListener {
             when {
                 view.inputUrl.text.toString().trim().isEmpty() -> {
-                    Toast.makeText(this@CreateNoteActivity, "Enter URL", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@CreateNoteActivity,
+                        "Enter URL", Toast.LENGTH_SHORT).show()
                 }
                 !Patterns.WEB_URL.matcher(view.inputUrl.text.toString()).matches() -> {
-                    Toast.makeText(this@CreateNoteActivity, "Enter valid URL", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@CreateNoteActivity,
+                        "Enter valid URL", Toast.LENGTH_SHORT).show()
                 }
                 else -> {
                     closeKeyboard()
