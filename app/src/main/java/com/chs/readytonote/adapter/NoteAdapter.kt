@@ -53,7 +53,7 @@ class NoteAdapter(private var item: MutableList<Note>,
     }
     override fun onBindViewHolder(holder: NoteViewHolder, position: Int) {
         holder.binding.model = item[position]
-        var gradientDrawable: GradientDrawable = (holder.itemView.layoutNote.background as GradientDrawable)
+        var gradientDrawable = (holder.itemView.layoutNote.background as GradientDrawable)
         if (item[position].color != "") {
             gradientDrawable.setColor(Color.parseColor(item[position].color))
         } else {

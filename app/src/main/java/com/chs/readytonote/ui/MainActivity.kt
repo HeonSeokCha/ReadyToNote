@@ -37,9 +37,8 @@ class MainActivity : AppCompatActivity() {
         viewModel = ViewModelProvider(this,MainViewModelFactory(application))
             .get(MainViewModel::class.java)
         initRecyclerView()
-        initView()
+        initMenu()
         initClick()
-
     }
 
     private fun initClick() {
@@ -48,7 +47,7 @@ class MainActivity : AppCompatActivity() {
                 CreateNoteActivity::class.java),REQUEST_CODE_ADD_NOTE)
         }
     }
-    private fun initView(){
+    private fun initMenu(){
         bottomAppBar.replaceMenu(R.menu.create_note)
         bottomAppBar.setOnMenuItemClickListener {
             Toast.makeText(this, "There is no cow level", Toast.LENGTH_SHORT).show()
@@ -76,27 +75,31 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun getNote(requestCode: Int,isNoteDelete:Boolean) {
-        viewModel.getAllNotes().observe(this, Observer {
+        viewModel.getAllNotes().observe(this, Observer { notes ->
             when (requestCode) {
                 REQUEST_CODE_SHOW_NOTE -> {
-                    noteList.addAll(it)
+                    noteList.addAll(notes)
                     notesAdapter.notifyDataSetChanged()
                 }
                 REQUEST_CODE_ADD_NOTE -> {
-                    noteList.add(0, it[0])
-                    notesAdapter.notifyItemInserted(0)
-                    Rv_notes.smoothScrollToPosition(0)
-                    Toast.makeText(this, "add Note", Toast.LENGTH_SHORT).show()
+                    if(noteList.isNotEmpty()){
+                        noteList.add(0, notes[0])
+                        notesAdapter.notifyItemInserted(0)
+                        Rv_notes.smoothScrollToPosition(0)
+                        Snackbar.make(coordinatorLayout,"add Note",Snackbar.LENGTH_SHORT)
+                    } else {
+                        getNote(REQUEST_CODE_SHOW_NOTE,false)
+                    }
                 }
                 REQUEST_CODE_UPDATE_NOTE -> {
                     noteList.removeAt(noteClickPosition)
                     if (isNoteDelete) {
                         notesAdapter.notifyItemRemoved(noteClickPosition)
-                        Toast.makeText(this, "delete Note", Toast.LENGTH_SHORT).show()
+                        Snackbar.make(coordinatorLayout,"delete Note",Snackbar.LENGTH_SHORT)
                     } else {
-                        noteList.add(noteClickPosition, it[noteClickPosition])
+                        noteList.add(noteClickPosition, notes[noteClickPosition])
                         notesAdapter.notifyItemChanged(noteClickPosition)
-                        Toast.makeText(this, "update Note", Toast.LENGTH_SHORT).show()
+                        Snackbar.make(coordinatorLayout,"update Note",Snackbar.LENGTH_SHORT)
                     }
                 }
             }
@@ -120,9 +123,8 @@ class MainActivity : AppCompatActivity() {
         if(requestCode == REQUEST_CODE_ADD_NOTE && resultCode == Activity.RESULT_OK) {
             getNote(REQUEST_CODE_ADD_NOTE,false)
         } else if(requestCode == REQUEST_CODE_UPDATE_NOTE && resultCode == RESULT_OK) {
-            if(data!=null) {
-                getNote(REQUEST_CODE_UPDATE_NOTE,data!!.getBooleanExtra("isNoteDelete",false))
-            }
+            getNote(REQUEST_CODE_UPDATE_NOTE,
+                data!!.getBooleanExtra("isNoteDelete",false))
         }
     }
 }
