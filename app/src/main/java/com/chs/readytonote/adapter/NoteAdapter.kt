@@ -47,6 +47,9 @@ class NoteAdapter(private var item: MutableList<Note>,
             Toast.makeText(it.context,
                 "This Note is ${viewHolder.adapterPosition} position",
                 Toast.LENGTH_SHORT).show()
+            view.img_check.visibility = if(view.img_check.visibility == View.GONE) {
+                View.VISIBLE
+            } else View.GONE
             return@setOnLongClickListener true
         }
         return viewHolder
