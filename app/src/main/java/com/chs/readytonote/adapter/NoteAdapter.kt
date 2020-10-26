@@ -27,8 +27,8 @@ class NoteAdapter(private var item: MutableList<Note>,
     class NoteViewHolder(val binding: ItemContainerNoteBinding)
         : RecyclerView.ViewHolder(binding.root)
 
-    private lateinit var timerTask: Timer
     private lateinit var temp:MutableList<Note>
+    private val timerTask by lazy { Timer() }
     private val searchList: MutableList<Note> by lazy { item }
 
 
@@ -47,9 +47,7 @@ class NoteAdapter(private var item: MutableList<Note>,
             Toast.makeText(it.context,
                 "This Note is ${viewHolder.adapterPosition} position",
                 Toast.LENGTH_SHORT).show()
-            view.img_check.visibility = if(view.img_check.visibility == View.GONE) {
-                View.VISIBLE
-            } else View.GONE
+            allSelectItem(viewHolder)
             return@setOnLongClickListener true
         }
         return viewHolder
@@ -62,7 +60,6 @@ class NoteAdapter(private var item: MutableList<Note>,
         } else {
             gradientDrawable.setColor(Color.parseColor("#333333"))
         }
-
         if(item[position].imgPath!!.isNotEmpty()) {
             holder.itemView.imageNote.setImageBitmap(
                 calcRotate(item[position].imgPath!!,4)
@@ -74,17 +71,15 @@ class NoteAdapter(private var item: MutableList<Note>,
     }
 
     override fun getItemCount(): Int = item.size
-    override fun getItemId(position: Int): Long = position.toLong()
 
     fun search(searchKeyword: String) {
-        timerTask = Timer()
-        timerTask.schedule(500){
+        timerTask.schedule(500) {
             if (searchKeyword.isNotEmpty()) {
                 temp = mutableListOf()
-                for (i in searchList) {
-                    if(i.title!!.toLowerCase().contains(searchKeyword.toLowerCase())
-                        || i.subtitle!!.toLowerCase().contains(searchKeyword.toLowerCase())) {
-                        temp.add(i)
+                for (note in searchList) {
+                    if(note.title!!.toLowerCase().contains(searchKeyword.toLowerCase())
+                        || note.subtitle!!.toLowerCase().contains(searchKeyword.toLowerCase())) {
+                        temp.add(note)
                     }
                     item = temp
                 }
@@ -95,9 +90,15 @@ class NoteAdapter(private var item: MutableList<Note>,
         }
     }
 
-    fun cancelTimer() {
-        if(::timerTask.isInitialized) {
-            timerTask.cancel()
-        }
+    fun cancelTimer() = timerTask.cancel()
+
+    fun editNote() {
+
+    }
+
+    fun allSelectItem(holder: NoteViewHolder) {
+        holder.itemView.img_check.visibility = if(holder.itemView.img_check.visibility == View.GONE) {
+            View.VISIBLE
+        } else View.GONE
     }
 }

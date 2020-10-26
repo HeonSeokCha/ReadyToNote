@@ -314,6 +314,13 @@ class CreateNoteActivity : AppCompatActivity() {
         }
     }
 
+    private fun closeKeyboard() {
+        if(this.currentFocus != null) {
+            val inputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            inputMethodManager.hideSoftInputFromWindow(this.currentFocus!!.windowToken, 0)
+        }
+    }
+
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         when(requestCode) {
             PERMISSION_CODE -> {
@@ -336,10 +343,11 @@ class CreateNoteActivity : AppCompatActivity() {
         }
     }
 
-    private fun closeKeyboard() {
-        if(this.currentFocus != null) {
-            val inputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-            inputMethodManager.hideSoftInputFromWindow(this.currentFocus!!.windowToken, 0)
+    override fun onBackPressed() {
+        if(bottomSheetBehavior.state == BottomSheetBehavior.STATE_EXPANDED) {
+            bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+        } else {
+            super.onBackPressed()
         }
     }
 }

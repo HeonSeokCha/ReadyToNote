@@ -51,6 +51,7 @@ class MainActivity : AppCompatActivity() {
         bottomAppBar.replaceMenu(R.menu.create_note)
         bottomAppBar.setOnMenuItemClickListener {
             Toast.makeText(this, "There is no cow level", Toast.LENGTH_SHORT).show()
+            notesAdapter
             return@setOnMenuItemClickListener false
         }
     }
@@ -82,24 +83,33 @@ class MainActivity : AppCompatActivity() {
                     notesAdapter.notifyDataSetChanged()
                 }
                 REQUEST_CODE_ADD_NOTE -> {
-                    if(noteList.isNotEmpty()){
+                    if (noteList.isNotEmpty()) {
                         noteList.add(0, notes[0])
                         notesAdapter.notifyItemInserted(0)
                         Rv_notes.smoothScrollToPosition(0)
-                        Snackbar.make(coordinatorLayout,"add Note",Snackbar.LENGTH_SHORT)
+                        Snackbar.make(
+                            findViewById(R.id.constraintLayout),
+                            "add Note", Snackbar.LENGTH_SHORT
+                        ).show()
                     } else {
-                        getNote(REQUEST_CODE_SHOW_NOTE,false)
+                        getNote(REQUEST_CODE_SHOW_NOTE, false)
                     }
                 }
                 REQUEST_CODE_UPDATE_NOTE -> {
                     noteList.removeAt(noteClickPosition)
                     if (isNoteDelete) {
                         notesAdapter.notifyItemRemoved(noteClickPosition)
-                        Snackbar.make(coordinatorLayout,"delete Note",Snackbar.LENGTH_SHORT)
+                        Snackbar.make(
+                            findViewById(R.id.constraintLayout),
+                            "delete Note", Snackbar.LENGTH_SHORT
+                        ).show()
                     } else {
                         noteList.add(noteClickPosition, notes[noteClickPosition])
                         notesAdapter.notifyItemChanged(noteClickPosition)
-                        Snackbar.make(coordinatorLayout,"update Note",Snackbar.LENGTH_SHORT)
+                        Snackbar.make(
+                            findViewById(R.id.constraintLayout),
+                            "Edit Note", Snackbar.LENGTH_SHORT
+                        ).show()
                     }
                 }
             }
