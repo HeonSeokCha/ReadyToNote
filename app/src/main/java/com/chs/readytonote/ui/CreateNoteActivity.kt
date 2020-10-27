@@ -4,7 +4,6 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.GradientDrawable
@@ -170,7 +169,7 @@ class CreateNoteActivity : AppCompatActivity() {
 
         if(alreadyAvailableNote.imgPath!!.isNotEmpty()) {
             imageNote.visibility = View.VISIBLE
-            imageNote.setImageBitmap(calcRotate(alreadyAvailableNote.imgPath!!))
+            imageNote.setImageBitmap(calcRotate(alreadyAvailableNote.imgPath!!,2))
             imagePath = alreadyAvailableNote.imgPath!!
             imageDelete.visibility = View.VISIBLE
         }

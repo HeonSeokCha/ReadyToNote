@@ -8,6 +8,7 @@ import android.graphics.Matrix
 import android.media.ExifInterface
 import android.net.Uri
 import android.provider.MediaStore
+import android.util.Log
 import androidx.loader.content.CursorLoader
 
 
@@ -22,10 +23,11 @@ internal fun getRealPathFromURI(context: Context, contentUri: Uri): String? {
     return result
 }
 
-internal fun calcRotate(file: String,inSampleSize: Int = 2) : Bitmap {
+internal fun calcRotate(file: String,sampleSize: Int) : Bitmap {
     val options = BitmapFactory.Options().apply {
-        this.inSampleSize = inSampleSize
+        inSampleSize = sampleSize
     }
+
     val bitmap = BitmapFactory.decodeFile(file,options)
     val exif = ExifInterface(file)
     val matrix = Matrix()
@@ -42,8 +44,4 @@ internal fun calcRotate(file: String,inSampleSize: Int = 2) : Bitmap {
         bitmap.width, bitmap.height,
         matrix, true,
     )
-}
-
-internal fun calcInSampleSize() {
-
 }

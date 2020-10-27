@@ -4,18 +4,15 @@ import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.chs.readytonote.R
 import com.chs.readytonote.calcRotate
 import com.chs.readytonote.databinding.ItemContainerNoteBinding
 import com.chs.readytonote.entities.Note
-import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.item_container_note.view.*
 import java.util.*
 import kotlin.concurrent.schedule
@@ -27,8 +24,8 @@ class NoteAdapter(private var item: MutableList<Note>,
     class NoteViewHolder(val binding: ItemContainerNoteBinding)
         : RecyclerView.ViewHolder(binding.root)
 
-    private lateinit var temp:MutableList<Note>
-    private val timerTask by lazy { Timer() }
+    private lateinit var temp: MutableList<Note>
+    private lateinit var timerTask: Timer
     private val searchList: MutableList<Note> by lazy { item }
 
 
@@ -62,7 +59,7 @@ class NoteAdapter(private var item: MutableList<Note>,
         }
         if(item[position].imgPath!!.isNotEmpty()) {
             holder.itemView.imageNote.setImageBitmap(
-                calcRotate(item[position].imgPath!!,4)
+                calcRotate(item[position].imgPath!!,3)
             )
             holder.itemView.imageNote.visibility = View.VISIBLE
         } else {
@@ -73,6 +70,7 @@ class NoteAdapter(private var item: MutableList<Note>,
     override fun getItemCount(): Int = item.size
 
     fun search(searchKeyword: String) {
+        timerTask = Timer()
         timerTask.schedule(500) {
             if (searchKeyword.isNotEmpty()) {
                 temp = mutableListOf()
@@ -90,10 +88,9 @@ class NoteAdapter(private var item: MutableList<Note>,
         }
     }
 
-    fun cancelTimer() = timerTask.cancel()
-
-    fun editNote() {
-
+    fun cancelTimer() {
+        if(::timerTask.isInitialized)
+            timerTask.cancel()
     }
 
     fun allSelectItem(holder: NoteViewHolder) {
