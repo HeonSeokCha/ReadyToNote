@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.appcompat.widget.ViewUtils
 import androidx.recyclerview.widget.RecyclerView
 import com.chs.readytonote.R
 import com.chs.readytonote.calcRotate
@@ -20,12 +21,14 @@ import kotlin.concurrent.schedule
 
 class NoteAdapter(private var item: MutableList<Note>,
                   private val clickListener: (note: Note, position: Int) -> Unit,
+                  private val longClickListener: (chkState: Boolean) -> Unit,
                 ) : RecyclerView.Adapter<NoteAdapter.NoteViewHolder>() {
     class NoteViewHolder(val binding: ItemContainerNoteBinding)
         : RecyclerView.ViewHolder(binding.root)
 
     private lateinit var temp: MutableList<Note>
     private lateinit var timerTask: Timer
+    private var checkBox: Boolean = false
     private val searchList: MutableList<Note> by lazy { item }
 
 
@@ -34,17 +37,22 @@ class NoteAdapter(private var item: MutableList<Note>,
             .inflate(R.layout.item_container_note, parent, false)
         val viewHolder = NoteViewHolder(ItemContainerNoteBinding.bind(view))
         view.layoutNote.setOnClickListener {
-            clickListener.invoke(
-                item[viewHolder.adapterPosition],
-                viewHolder.adapterPosition,
-            )
+            if(checkBox) {
+                view.img_check.apply {
+                    isActivated = !this.isActivated
+                }
+            } else {
+                clickListener.invoke(
+                    item[viewHolder.adapterPosition],
+                    viewHolder.adapterPosition,
+                )
+            }
         }
 
         view.layoutNote.setOnLongClickListener {
-            Toast.makeText(it.context,
-                "This Note is ${viewHolder.adapterPosition} position",
-                Toast.LENGTH_SHORT).show()
-            allSelectItem(viewHolder)
+            checkBox = !checkBox
+            notifyDataSetChanged()
+            longClickListener(checkBox)
             return@setOnLongClickListener true
         }
         return viewHolder
@@ -59,15 +67,27 @@ class NoteAdapter(private var item: MutableList<Note>,
         }
         if(item[position].imgPath!!.isNotEmpty()) {
             holder.itemView.imageNote.setImageBitmap(
-                calcRotate(item[position].imgPath!!,3)
+                calcRotate(item[position].imgPath!!)
             )
             holder.itemView.imageNote.visibility = View.VISIBLE
         } else {
             holder.itemView.imageNote.visibility = View.GONE
         }
+        when {
+            checkBox -> {
+                holder.itemView.img_check.visibility = View.VISIBLE
+            }
+            else -> {
+                holder.itemView.img_check.visibility = View.GONE
+            }
+        }
     }
-
     override fun getItemCount(): Int = item.size
+
+    fun editItem(chk:Boolean) {
+        checkBox = chk
+        notifyDataSetChanged()
+    }
 
     fun search(searchKeyword: String) {
         timerTask = Timer()
@@ -93,9 +113,5 @@ class NoteAdapter(private var item: MutableList<Note>,
             timerTask.cancel()
     }
 
-    fun allSelectItem(holder: NoteViewHolder) {
-        holder.itemView.img_check.visibility = if(holder.itemView.img_check.visibility == View.GONE) {
-            View.VISIBLE
-        } else View.GONE
-    }
+
 }

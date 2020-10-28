@@ -95,9 +95,7 @@
             android:layout_gravity="bottom"
             app:backgroundTint="@color/colorQuickActionBackground"
             app:fabAlignmentMode="center"
-            app:fabCradleMargin="8dp"
-            app:hideOnScroll="true"
-            app:fabCradleRoundedCornerRadius="8dp" />
+            app:fabCradleMargin="8dp" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/imgAddNoteMain"
@@ -105,7 +103,6 @@
             android:layout_height="wrap_content"
             android:src="@drawable/ic_add"
             app:backgroundTint="@color/colorAccent"
-            app:borderWidth="0dp"
             app:fabSize="normal"
             app:layout_anchor="@id/bottomAppBar" />
     </androidx.coordinatorlayout.widget.CoordinatorLayout>

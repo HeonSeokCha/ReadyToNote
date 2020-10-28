@@ -17,7 +17,7 @@
             android:layout_height="wrap_content"
             android:elevation="2dp"
             android:visibility="gone"
-            android:src="@drawable/background_note_select"
+            android:background="@drawable/background_note_select"
             app:layout_constraintBottom_toTopOf="@+id/layoutNote"
             app:layout_constraintEnd_toStartOf="@+id/layoutNote"
             app:layout_constraintStart_toStartOf="@+id/layoutNote"
