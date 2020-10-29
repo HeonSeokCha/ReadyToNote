@@ -7,8 +7,6 @@ import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
-import androidx.appcompat.widget.ViewUtils
 import androidx.recyclerview.widget.RecyclerView
 import com.chs.readytonote.R
 import com.chs.readytonote.calcRotate
@@ -16,11 +14,13 @@ import com.chs.readytonote.databinding.ItemContainerNoteBinding
 import com.chs.readytonote.entities.Note
 import kotlinx.android.synthetic.main.item_container_note.view.*
 import java.util.*
+import kotlin.collections.HashMap
 import kotlin.concurrent.schedule
 
 
 class NoteAdapter(private var item: MutableList<Note>,
                   private val clickListener: (note: Note, position: Int) -> Unit,
+                  private val checkClickListener: (checkList: HashMap<Int, Note>) ->Unit,
                   private val longClickListener: (chkState: Boolean) -> Unit,
                 ) : RecyclerView.Adapter<NoteAdapter.NoteViewHolder>() {
     class NoteViewHolder(val binding: ItemContainerNoteBinding)
@@ -28,6 +28,7 @@ class NoteAdapter(private var item: MutableList<Note>,
 
     private lateinit var temp: MutableList<Note>
     private lateinit var timerTask: Timer
+    private val checkList:HashMap<Int,Note> by lazy { HashMap() }
     private var checkBox: Boolean = false
     private val searchList: MutableList<Note> by lazy { item }
 
@@ -41,6 +42,13 @@ class NoteAdapter(private var item: MutableList<Note>,
                 view.img_check.apply {
                     isActivated = !this.isActivated
                 }
+                if(view.img_check.isActivated) {
+                    checkList[viewHolder.adapterPosition] = item[viewHolder.adapterPosition]
+                } else {
+                    checkList.remove(viewHolder.adapterPosition)
+                }
+                checkClickListener.invoke(checkList)
+
             } else {
                 clickListener.invoke(
                     item[viewHolder.adapterPosition],
@@ -74,12 +82,8 @@ class NoteAdapter(private var item: MutableList<Note>,
             holder.itemView.imageNote.visibility = View.GONE
         }
         when {
-            checkBox -> {
-                holder.itemView.img_check.visibility = View.VISIBLE
-            }
-            else -> {
-                holder.itemView.img_check.visibility = View.GONE
-            }
+            checkBox -> holder.itemView.img_check.visibility = View.VISIBLE
+            else -> holder.itemView.img_check.visibility = View.GONE
         }
     }
     override fun getItemCount(): Int = item.size
@@ -112,6 +116,4 @@ class NoteAdapter(private var item: MutableList<Note>,
         if(::timerTask.isInitialized)
             timerTask.cancel()
     }
-
-
 }

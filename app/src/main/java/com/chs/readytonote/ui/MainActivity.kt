@@ -6,6 +6,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -26,12 +27,14 @@ class MainActivity : AppCompatActivity() {
         private const val REQUEST_CODE_ADD_NOTE = 1
         private const val REQUEST_CODE_UPDATE_NOTE = 2
         private const val REQUEST_CODE_SHOW_NOTE = 3
+        private const val REQUEST_CODE_REMOVE_NOTES = 4
     }
 
     private lateinit var notesAdapter: NoteAdapter
     private lateinit var viewModel: MainViewModel
     private lateinit var noteList: MutableList<Note>
-    private var editMode: Boolean = false
+    private var checkMode: Boolean = false
+    private lateinit var checkList: HashMap<Int,Note>
     private var noteClickPosition = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -46,12 +49,27 @@ class MainActivity : AppCompatActivity() {
 
     private fun initClick() {
         imgAddNoteMain.setOnClickListener {
-            startActivityForResult(
-                Intent(
-                    this,
-                    CreateNoteActivity::class.java
-                ), REQUEST_CODE_ADD_NOTE
-            )
+            if(checkMode) {
+                if(::checkList.isInitialized) {
+                    var temp = checkList.map { it.value }.toList()
+                    for(i in checkList.values.indices) {
+                        viewModel.delete(temp[i])
+                    }
+                    checkList.clear()
+                    notesAdapter.editItem(false)
+                    checkMode = false
+                    imgAddNoteMain.setImageDrawable(
+                        resources.getDrawable(R.drawable.ic_add, null))
+                    getNote(REQUEST_CODE_REMOVE_NOTES,false)
+                }
+            } else {
+                startActivityForResult(
+                    Intent(
+                        this,
+                        CreateNoteActivity::class.java
+                    ), REQUEST_CODE_ADD_NOTE
+                )
+            }
         }
     }
     private fun initMenu(){
@@ -79,15 +97,17 @@ class MainActivity : AppCompatActivity() {
                 intent.putExtra("isViewOrUpdate", true)
                 intent.putExtra("note", note)
                 startActivityForResult(intent, REQUEST_CODE_UPDATE_NOTE)
+            }, checkClickListener = { notes ->
+                checkList = notes
             }, longClickListener = { chkState ->
                 if (chkState) {
-                    editMode = true
+                    checkMode = true
                     imgAddNoteMain.setImageDrawable(
                         resources.getDrawable(R.drawable.ic_delete, null))
                 } else {
-                    editMode = false
+                    checkMode = false
                     imgAddNoteMain.setImageDrawable(
-                        resources.getDrawable(R.drawable.ic_add, null))
+                resources.getDrawable(R.drawable.ic_add, null))
                 }
             })
             this.layoutManager = StaggeredGridLayoutManager(
@@ -102,6 +122,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun getNote(requestCode: Int, isNoteDelete: Boolean) {
         viewModel.getAllNotes().observe(this, Observer { notes ->
+            Log.d("뭔데",requestCode.toString())
             when (requestCode) {
                 REQUEST_CODE_SHOW_NOTE -> {
                     noteList.addAll(notes)
@@ -137,6 +158,13 @@ class MainActivity : AppCompatActivity() {
                         ).show()
                     }
                 }
+                REQUEST_CODE_REMOVE_NOTES -> {
+                    var temp = checkList.map { it.key }.toIntArray()
+                    for(i in checkList.keys.indices) {
+                        noteList.removeAt(temp[i])
+                        notesAdapter.notifyItemRemoved(i)
+                    }
+                }
             }
         })
     }
@@ -166,9 +194,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onBackPressed() {
-        if(editMode) {
+        if(checkMode) {
             notesAdapter.editItem(false)
-            editMode = false
+            checkMode = false
             imgAddNoteMain.setImageDrawable(
                 resources.getDrawable(R.drawable.ic_add, null))
         } else {
