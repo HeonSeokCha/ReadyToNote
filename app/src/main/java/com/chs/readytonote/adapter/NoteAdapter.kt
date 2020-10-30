@@ -20,7 +20,7 @@ import kotlin.concurrent.schedule
 
 class NoteAdapter(private var item: MutableList<Note>,
                   private val clickListener: (note: Note, position: Int) -> Unit,
-                  private val checkClickListener: (checkList: HashMap<Int, Note>) ->Unit,
+                  private val checkClickListener: (checkList: MutableMap<Int, Note>) ->Unit,
                   private val longClickListener: (chkState: Boolean) -> Unit,
                 ) : RecyclerView.Adapter<NoteAdapter.NoteViewHolder>() {
     class NoteViewHolder(val binding: ItemContainerNoteBinding)
@@ -28,7 +28,7 @@ class NoteAdapter(private var item: MutableList<Note>,
 
     private lateinit var temp: MutableList<Note>
     private lateinit var timerTask: Timer
-    private val checkList:HashMap<Int,Note> by lazy { HashMap() }
+    private val checkList:MutableMap<Int,Note> by lazy { mutableMapOf() }
     private var checkBox: Boolean = false
     private val searchList: MutableList<Note> by lazy { item }
 

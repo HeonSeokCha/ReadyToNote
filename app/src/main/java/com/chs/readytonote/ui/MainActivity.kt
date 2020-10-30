@@ -33,8 +33,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var notesAdapter: NoteAdapter
     private lateinit var viewModel: MainViewModel
     private lateinit var noteList: MutableList<Note>
+    private lateinit var checkList: MutableMap<Int,Note>
     private var checkMode: Boolean = false
-    private lateinit var checkList: HashMap<Int,Note>
     private var noteClickPosition = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -50,25 +50,11 @@ class MainActivity : AppCompatActivity() {
     private fun initClick() {
         imgAddNoteMain.setOnClickListener {
             if(checkMode) {
-                if(::checkList.isInitialized) {
-                    var temp = checkList.map { it.value }.toList()
-                    for(i in checkList.values.indices) {
-                        viewModel.delete(temp[i])
-                    }
-                    checkList.clear()
-                    notesAdapter.editItem(false)
-                    checkMode = false
-                    imgAddNoteMain.setImageDrawable(
-                        resources.getDrawable(R.drawable.ic_add, null))
-                    getNote(REQUEST_CODE_REMOVE_NOTES,false)
-                }
+                getNote(REQUEST_CODE_REMOVE_NOTES,false)
             } else {
                 startActivityForResult(
-                    Intent(
-                        this,
-                        CreateNoteActivity::class.java
-                    ), REQUEST_CODE_ADD_NOTE
-                )
+                    Intent(this,
+                        CreateNoteActivity::class.java), REQUEST_CODE_ADD_NOTE)
             }
         }
     }
@@ -97,8 +83,6 @@ class MainActivity : AppCompatActivity() {
                 intent.putExtra("isViewOrUpdate", true)
                 intent.putExtra("note", note)
                 startActivityForResult(intent, REQUEST_CODE_UPDATE_NOTE)
-            }, checkClickListener = { notes ->
-                checkList = notes
             }, longClickListener = { chkState ->
                 if (chkState) {
                     checkMode = true
@@ -109,7 +93,10 @@ class MainActivity : AppCompatActivity() {
                     imgAddNoteMain.setImageDrawable(
                 resources.getDrawable(R.drawable.ic_add, null))
                 }
-            })
+            }, checkClickListener = { notes ->
+                    checkList = notes
+                }
+            )
             this.layoutManager = StaggeredGridLayoutManager(
                 2,
                 StaggeredGridLayoutManager.VERTICAL
@@ -159,10 +146,19 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
                 REQUEST_CODE_REMOVE_NOTES -> {
-                    var temp = checkList.map { it.key }.toIntArray()
-                    for(i in checkList.keys.indices) {
-                        noteList.removeAt(temp[i])
-                        notesAdapter.notifyItemRemoved(i)
+                    notesAdapter.editItem(false)
+                    if(::checkList.isInitialized) {
+                        var delList = checkList.map { it.value }.toList()
+                        var delPos = checkList.map {it.key}.toIntArray()
+                        for(i in checkList.values.indices) {
+                            viewModel.delete(delList[i])
+                            noteList.removeAt(delPos[i])
+                            notesAdapter.notifyItemRemoved(i)
+                        }
+                        checkList.clear()
+                        checkMode = false
+                        imgAddNoteMain.setImageDrawable(
+                            resources.getDrawable(R.drawable.ic_add, null))
                     }
                 }
             }
