@@ -50,7 +50,20 @@ class MainActivity : AppCompatActivity() {
     private fun initClick() {
         imgAddNoteMain.setOnClickListener {
             if(checkMode) {
-                getNote(REQUEST_CODE_REMOVE_NOTES,false)
+                notesAdapter.editItem(false)
+                if(::checkList.isInitialized) {
+                    var delList = checkList.map { it.value }.toList()
+                    var delPos = checkList.map {it.key}.toIntArray()
+                    for(i in checkList.values.indices) {
+                        viewModel.delete(delList[i])
+                        noteList.removeAt(delPos[i])
+                        notesAdapter.notifyItemRemoved(i)
+                    }
+                    checkList.clear()
+                    checkMode = false
+                    imgAddNoteMain.setImageDrawable(
+                        resources.getDrawable(R.drawable.ic_add, null))
+                }
             } else {
                 startActivityForResult(
                     Intent(this,
@@ -110,6 +123,7 @@ class MainActivity : AppCompatActivity() {
     private fun getNote(requestCode: Int, isNoteDelete: Boolean) {
         viewModel.getAllNotes().observe(this, Observer { notes ->
             Log.d("뭔데",requestCode.toString())
+            noteList.clear()
             when (requestCode) {
                 REQUEST_CODE_SHOW_NOTE -> {
                     noteList.addAll(notes)
@@ -145,22 +159,22 @@ class MainActivity : AppCompatActivity() {
                         ).show()
                     }
                 }
-                REQUEST_CODE_REMOVE_NOTES -> {
-                    notesAdapter.editItem(false)
-                    if(::checkList.isInitialized) {
-                        var delList = checkList.map { it.value }.toList()
-                        var delPos = checkList.map {it.key}.toIntArray()
-                        for(i in checkList.values.indices) {
-                            viewModel.delete(delList[i])
-                            noteList.removeAt(delPos[i])
-                            notesAdapter.notifyItemRemoved(i)
-                        }
-                        checkList.clear()
-                        checkMode = false
-                        imgAddNoteMain.setImageDrawable(
-                            resources.getDrawable(R.drawable.ic_add, null))
-                    }
-                }
+//                REQUEST_CODE_REMOVE_NOTES -> {
+//                    notesAdapter.editItem(false)
+//                    if(::checkList.isInitialized) {
+//                        var delList = checkList.map { it.value }.toList()
+//                        var delPos = checkList.map {it.key}.toIntArray()
+//                        for(i in checkList.values.indices) {
+//                            viewModel.delete(delList[i])
+//                            noteList.removeAt(delPos[i])
+//                            notesAdapter.notifyItemRemoved(i)
+//                        }
+//                        checkList.clear()
+//                        checkMode = false
+//                        imgAddNoteMain.setImageDrawable(
+//                            resources.getDrawable(R.drawable.ic_add, null))
+//                    }
+//                }
             }
         })
     }
