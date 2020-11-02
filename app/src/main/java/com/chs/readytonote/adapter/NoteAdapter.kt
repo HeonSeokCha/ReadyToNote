@@ -8,13 +8,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.chs.readytonote.R
-import com.chs.readytonote.calcRotate
 import com.chs.readytonote.databinding.ItemContainerNoteBinding
 import com.chs.readytonote.entities.Note
 import kotlinx.android.synthetic.main.item_container_note.view.*
 import java.util.*
-import kotlin.collections.HashMap
 import kotlin.concurrent.schedule
 
 
@@ -58,8 +57,7 @@ class NoteAdapter(private var item: MutableList<Note>,
         }
 
         view.layoutNote.setOnLongClickListener {
-            checkBox = !checkBox
-            notifyDataSetChanged()
+            editItemMode(true)
             longClickListener(checkBox)
             return@setOnLongClickListener true
         }
@@ -74,9 +72,9 @@ class NoteAdapter(private var item: MutableList<Note>,
             gradientDrawable.setColor(Color.parseColor("#333333"))
         }
         if(item[position].imgPath!!.isNotEmpty()) {
-            holder.itemView.imageNote.setImageBitmap(
-                calcRotate(item[position].imgPath!!)
-            )
+            Glide.with(holder.itemView).load(item[position].imgPath)
+                .error(R.drawable.ic_done)
+                .into(holder.itemView.imageNote)
             holder.itemView.imageNote.visibility = View.VISIBLE
         } else {
             holder.itemView.imageNote.visibility = View.GONE
@@ -88,7 +86,7 @@ class NoteAdapter(private var item: MutableList<Note>,
     }
     override fun getItemCount(): Int = item.size
 
-    fun editItem(chk:Boolean) {
+    fun editItemMode(chk:Boolean) {
         checkBox = chk
         notifyDataSetChanged()
     }

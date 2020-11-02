@@ -38,7 +38,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
-            <com.makeramen.roundedimageview.RoundedImageView
+            <ImageView
                 android:id="@+id/imageNote"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -89,26 +89,16 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
                 android:layout_marginBottom="8dp"
                 android:includeFontPadding="false"
                 android:text="@{model.dateTime}"
                 android:textColor="@color/colorNoteSubtitleText"
                 android:textSize="12sp"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/img_favorite"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/txtSubtitle" />
-
-            <ImageView
-                android:id="@+id/img_favorite"
-                android:layout_width="16dp"
-                android:layout_height="16dp"
-                android:layout_marginEnd="8dp"
-                android:visibility="gone"
-                app:layout_constraintBottom_toBottomOf="@+id/txtDateTime"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/txtDateTime"
-                app:srcCompat="@drawable/ic_favorite" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>

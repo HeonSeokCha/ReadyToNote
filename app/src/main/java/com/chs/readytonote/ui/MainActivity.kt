@@ -50,20 +50,11 @@ class MainActivity : AppCompatActivity() {
     private fun initClick() {
         imgAddNoteMain.setOnClickListener {
             if(checkMode) {
-                notesAdapter.editItem(false)
-                if(::checkList.isInitialized) {
-                    var delList = checkList.map { it.value }.toList()
-                    var delPos = checkList.map {it.key}.toIntArray()
-                    for(i in checkList.values.indices) {
-                        viewModel.delete(delList[i])
-                        noteList.removeAt(delPos[i])
-                        notesAdapter.notifyItemRemoved(i)
-                    }
-                    checkList.clear()
-                    checkMode = false
-                    imgAddNoteMain.setImageDrawable(
-                        resources.getDrawable(R.drawable.ic_add, null))
+                var delList = checkList.map { it.value }.toList()
+                for(i in checkList.values.indices) {
+                    viewModel.delete(delList[i])
                 }
+                getNote(REQUEST_CODE_REMOVE_NOTES,false)
             } else {
                 startActivityForResult(
                     Intent(this,
@@ -108,6 +99,7 @@ class MainActivity : AppCompatActivity() {
                 }
             }, checkClickListener = { notes ->
                     checkList = notes
+                    Log.d("스파게티","체크리스트 바뀜, ${notes.size}")
                 }
             )
             this.layoutManager = StaggeredGridLayoutManager(
@@ -115,17 +107,17 @@ class MainActivity : AppCompatActivity() {
                 StaggeredGridLayoutManager.VERTICAL
             )
             this.adapter = notesAdapter
+            getNote(REQUEST_CODE_SHOW_NOTE, false)
+            searchNote()
         }
-        getNote(REQUEST_CODE_SHOW_NOTE, false)
-        searchNote()
     }
 
     private fun getNote(requestCode: Int, isNoteDelete: Boolean) {
         viewModel.getAllNotes().observe(this, Observer { notes ->
-            Log.d("뭔데",requestCode.toString())
-            noteList.clear()
+            Log.d("뭔데","호출됨 $requestCode")
             when (requestCode) {
                 REQUEST_CODE_SHOW_NOTE -> {
+                    noteList.clear()
                     noteList.addAll(notes)
                     notesAdapter.notifyDataSetChanged()
                 }
@@ -159,22 +151,20 @@ class MainActivity : AppCompatActivity() {
                         ).show()
                     }
                 }
-//                REQUEST_CODE_REMOVE_NOTES -> {
-//                    notesAdapter.editItem(false)
-//                    if(::checkList.isInitialized) {
-//                        var delList = checkList.map { it.value }.toList()
-//                        var delPos = checkList.map {it.key}.toIntArray()
-//                        for(i in checkList.values.indices) {
-//                            viewModel.delete(delList[i])
-//                            noteList.removeAt(delPos[i])
-//                            notesAdapter.notifyItemRemoved(i)
-//                        }
-//                        checkList.clear()
-//                        checkMode = false
-//                        imgAddNoteMain.setImageDrawable(
-//                            resources.getDrawable(R.drawable.ic_add, null))
-//                    }
-//                }
+                REQUEST_CODE_REMOVE_NOTES -> {
+                    checkMode = false
+                    notesAdapter.editItem(false)
+                    if(::checkList.isInitialized) {
+                        var delPos = checkList.map {it.key}.toIntArray()
+                        for(i in checkList.values.indices) {
+                            noteList.removeAt(delPos[i])
+                            notesAdapter.notifyItemRemoved(i)
+                        }
+                        checkList.clear()
+                        imgAddNoteMain.setImageDrawable(
+                            resources.getDrawable(R.drawable.ic_add, null))
+                    }
+                }
             }
         })
     }
