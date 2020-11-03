@@ -8,7 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
+import com.chs.readytonote.GlideApp
 import com.chs.readytonote.R
 import com.chs.readytonote.databinding.ItemContainerNoteBinding
 import com.chs.readytonote.entities.Note
@@ -17,8 +17,7 @@ import java.util.*
 import kotlin.concurrent.schedule
 
 
-class NoteAdapter(private var item: MutableList<Note>,
-                  private val clickListener: (note: Note, position: Int) -> Unit,
+class NoteAdapter(                  private val clickListener: (note: Note, position: Int) -> Unit,
                   private val checkClickListener: (checkList: MutableMap<Int, Note>) ->Unit,
                   private val longClickListener: (chkState: Boolean) -> Unit,
                 ) : RecyclerView.Adapter<NoteAdapter.NoteViewHolder>() {
@@ -27,10 +26,19 @@ class NoteAdapter(private var item: MutableList<Note>,
 
     private lateinit var temp: MutableList<Note>
     private lateinit var timerTask: Timer
+    private var item: MutableList<Note> = mutableListOf()
     private val checkList:MutableMap<Int,Note> by lazy { mutableMapOf() }
     private var checkBox: Boolean = false
     private val searchList: MutableList<Note> by lazy { item }
 
+    fun setData(noteList: MutableList<Note>) {
+        item = noteList
+    }
+
+    fun editItemMode(chk:Boolean) {
+        checkBox = chk
+        notifyDataSetChanged()
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NoteViewHolder {
         val view = LayoutInflater.from(parent.context)
@@ -72,7 +80,7 @@ class NoteAdapter(private var item: MutableList<Note>,
             gradientDrawable.setColor(Color.parseColor("#333333"))
         }
         if(item[position].imgPath!!.isNotEmpty()) {
-            Glide.with(holder.itemView).load(item[position].imgPath)
+            GlideApp.with(holder.itemView).load(item[position].imgPath)
                 .error(R.drawable.ic_done)
                 .into(holder.itemView.imageNote)
             holder.itemView.imageNote.visibility = View.VISIBLE
@@ -84,12 +92,8 @@ class NoteAdapter(private var item: MutableList<Note>,
             else -> holder.itemView.img_check.visibility = View.GONE
         }
     }
-    override fun getItemCount(): Int = item.size
 
-    fun editItemMode(chk:Boolean) {
-        checkBox = chk
-        notifyDataSetChanged()
-    }
+    override fun getItemCount(): Int = item.size
 
     fun search(searchKeyword: String) {
         timerTask = Timer()

@@ -3,6 +3,7 @@ package com.chs.readytonote.ui
 
 import android.app.Activity
 import android.content.Intent
+import android.nfc.Tag
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -54,7 +55,16 @@ class MainActivity : AppCompatActivity() {
                 for(i in checkList.values.indices) {
                     viewModel.delete(delList[i])
                 }
-                getNote(REQUEST_CODE_REMOVE_NOTES,false)
+                checkMode = false
+                notesAdapter.editItemMode(false)
+                var delPos = checkList.map {it.key}.toIntArray()
+                for(i in checkList.values.indices) {
+                    noteList.removeAt(delPos[i])
+//                    notesAdapter.notifyItemRemoved(i)
+                }
+                checkList.clear()
+                imgAddNoteMain.setImageDrawable(
+                    resources.getDrawable(R.drawable.ic_add, null))
             } else {
                 startActivityForResult(
                     Intent(this,
@@ -76,9 +86,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun initRecyclerView() {
         Rv_notes.apply {
-            noteList = mutableListOf()
-            notesAdapter = NoteAdapter( noteList,
-            clickListener = { note, position ->
+            notesAdapter = NoteAdapter( clickListener = { note, position ->
                 noteClickPosition = position
                 val intent = Intent(
                     this@MainActivity,
@@ -112,13 +120,12 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun getNote(requestCode: Int, isNoteDelete: Boolean) {
+    private fun getNote(reqCode: Int, isNoteDelete: Boolean) {
         viewModel.getAllNotes().observe(this, Observer { notes ->
-            Log.d("뭔데","호출됨 $requestCode")
-            when (requestCode) {
+            Log.d("TAG","호출됨 $reqCode")
+            when (reqCode) {
                 REQUEST_CODE_SHOW_NOTE -> {
-                    noteList.clear()
-                    noteList.addAll(notes)
+                    notesAdapter.setData(notes)
                     notesAdapter.notifyDataSetChanged()
                 }
                 REQUEST_CODE_ADD_NOTE -> {
@@ -126,10 +133,6 @@ class MainActivity : AppCompatActivity() {
                         noteList.add(0, notes[0])
                         notesAdapter.notifyItemInserted(0)
                         Rv_notes.smoothScrollToPosition(0)
-                        Snackbar.make(
-                            findViewById(R.id.coordinatorLayout),
-                            "add Note", Snackbar.LENGTH_SHORT
-                        ).show()
                     } else {
                         getNote(REQUEST_CODE_SHOW_NOTE, false)
                     }
@@ -138,32 +141,14 @@ class MainActivity : AppCompatActivity() {
                     noteList.removeAt(noteClickPosition)
                     if (isNoteDelete) {
                         notesAdapter.notifyItemRemoved(noteClickPosition)
-                        Snackbar.make(
-                            findViewById(R.id.coordinatorLayout),
-                            "delete Note", Snackbar.LENGTH_SHORT
-                        ).show()
+
                     } else {
                         noteList.add(noteClickPosition, notes[noteClickPosition])
                         notesAdapter.notifyItemChanged(noteClickPosition)
-                        Snackbar.make(
-                            findViewById(R.id.coordinatorLayout),
-                            "Edit Note", Snackbar.LENGTH_SHORT
-                        ).show()
                     }
                 }
                 REQUEST_CODE_REMOVE_NOTES -> {
-                    checkMode = false
-                    notesAdapter.editItem(false)
-                    if(::checkList.isInitialized) {
-                        var delPos = checkList.map {it.key}.toIntArray()
-                        for(i in checkList.values.indices) {
-                            noteList.removeAt(delPos[i])
-                            notesAdapter.notifyItemRemoved(i)
-                        }
-                        checkList.clear()
-                        imgAddNoteMain.setImageDrawable(
-                            resources.getDrawable(R.drawable.ic_add, null))
-                    }
+
                 }
             }
         })
@@ -183,6 +168,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
+        Log.d("호출죔",requestCode.toString())
         if(requestCode == REQUEST_CODE_ADD_NOTE && resultCode == Activity.RESULT_OK) {
             getNote(REQUEST_CODE_ADD_NOTE, false)
         } else if(requestCode == REQUEST_CODE_UPDATE_NOTE && resultCode == RESULT_OK) {
@@ -195,7 +181,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onBackPressed() {
         if(checkMode) {
-            notesAdapter.editItem(false)
+            notesAdapter.editItemMode(false)
             checkMode = false
             imgAddNoteMain.setImageDrawable(
                 resources.getDrawable(R.drawable.ic_add, null))

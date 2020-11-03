@@ -26,8 +26,7 @@ import kotlinx.android.synthetic.main.activity_create_note.*
 import java.text.SimpleDateFormat
 import java.util.*
 import androidx.core.content.ContextCompat.checkSelfPermission
-import com.bumptech.glide.Glide
-import com.chs.readytonote.calcRotate
+import com.chs.readytonote.GlideApp
 import com.chs.readytonote.getRealPathFromURI
 import com.chs.readytonote.viewmodel.MainViewModel
 import com.chs.readytonote.viewmodel.MainViewModelFactory
@@ -69,7 +68,7 @@ class CreateNoteActivity : AppCompatActivity() {
         bottomSheetBehavior = BottomSheetBehavior.from(layoutMiscellaneous)
 
         if(intent.getBooleanExtra("isViewOrUpdate",false)) {
-            alreadyAvailableNote = intent.getParcelableExtra<Note>("note")
+            alreadyAvailableNote = intent.getParcelableExtra("note")
             setViewOrUpdateNote()
         }
         layoutMiscellaneous.findViewById<TextView>(R.id.textMiscellaneous)
@@ -144,8 +143,7 @@ class CreateNoteActivity : AppCompatActivity() {
                 color = noteColor,
                 webLink = webLink,
             )
-            if(::alreadyAvailableNote.isInitialized
-                && alreadyAvailableNote != null) {
+            if(::alreadyAvailableNote.isInitialized) {
                 note.id = alreadyAvailableNote.id
             }
             viewModel.insert(note)
@@ -170,7 +168,7 @@ class CreateNoteActivity : AppCompatActivity() {
 
         if(alreadyAvailableNote.imgPath!!.isNotEmpty()) {
             imageNote.visibility = View.VISIBLE
-            Glide.with(this).load(alreadyAvailableNote.imgPath)
+            GlideApp.with(this).load(alreadyAvailableNote.imgPath)
                 .error(R.drawable.ic_done)
                 .into(imageNote)
             imagePath = alreadyAvailableNote.imgPath!!
@@ -339,7 +337,7 @@ class CreateNoteActivity : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
         if(resultCode==Activity.RESULT_OK && requestCode == IMAGE_PICK_CODE) {
             imageNote.visibility = View.VISIBLE
-            Glide.with(this).load(data!!.data)
+            GlideApp.with(this).load(data!!.data)
                 .into(imageNote)
             imagePath = getRealPathFromURI(this, data.data!!)!!
             imageDelete.visibility = View.VISIBLE

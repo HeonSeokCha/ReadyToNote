@@ -2,13 +2,11 @@ package com.chs.readytonote
 
 import android.content.Context
 import android.database.Cursor
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.graphics.Matrix
-import android.media.ExifInterface
 import android.net.Uri
 import android.provider.MediaStore
 import androidx.loader.content.CursorLoader
+import com.bumptech.glide.annotation.GlideModule
+import com.bumptech.glide.module.AppGlideModule
 
 
 internal fun getRealPathFromURI(context: Context, contentUri: Uri): String? {
@@ -22,25 +20,5 @@ internal fun getRealPathFromURI(context: Context, contentUri: Uri): String? {
     return result
 }
 
-//internal fun calcRotate(file: String,imgSize: Int = 2) : Bitmap {
-//    val options = BitmapFactory.Options().apply {
-//        inSampleSize = imgSize
-//    }
-//
-//    var bitmap = BitmapFactory.decodeFile(file,options)
-//    val exif = ExifInterface(file)
-//    val matrix = Matrix()
-//    val orientation = exif.getAttributeInt (
-//        ExifInterface.TAG_ORIENTATION,
-//        ExifInterface.ORIENTATION_NORMAL,
-//    )
-//    when(orientation) {
-//        ExifInterface.ORIENTATION_ROTATE_90 -> matrix.postRotate(90F)
-//        ExifInterface.ORIENTATION_ROTATE_180 -> matrix.postRotate(180F)
-//        ExifInterface.ORIENTATION_ROTATE_270 -> matrix.postRotate(270F)
-//    }
-//    return Bitmap.createBitmap(bitmap, 0,0 ,
-//        bitmap.width, bitmap.height,
-//        matrix, true,
-//    )
-//}
+@GlideModule
+class MyGlide : AppGlideModule()
