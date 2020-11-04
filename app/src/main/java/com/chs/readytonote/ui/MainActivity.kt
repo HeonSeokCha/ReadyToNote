@@ -33,7 +33,6 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var notesAdapter: NoteAdapter
     private lateinit var viewModel: MainViewModel
-    private lateinit var noteList: MutableList<Note>
     private lateinit var checkList: MutableMap<Int,Note>
     private var checkMode: Boolean = false
     private var noteClickPosition = 0
@@ -55,16 +54,12 @@ class MainActivity : AppCompatActivity() {
                 for(i in checkList.values.indices) {
                     viewModel.delete(delList[i])
                 }
+                checkList.clear()
                 checkMode = false
                 notesAdapter.editItemMode(false)
-                var delPos = checkList.map {it.key}.toIntArray()
-                for(i in checkList.values.indices) {
-                    noteList.removeAt(delPos[i])
-//                    notesAdapter.notifyItemRemoved(i)
-                }
-                checkList.clear()
                 imgAddNoteMain.setImageDrawable(
-                    resources.getDrawable(R.drawable.ic_add, null))
+                        resources.getDrawable(R.drawable.ic_add, null))
+                getNote()
             } else {
                 startActivityForResult(
                     Intent(this,
@@ -115,42 +110,53 @@ class MainActivity : AppCompatActivity() {
                 StaggeredGridLayoutManager.VERTICAL
             )
             this.adapter = notesAdapter
-            getNote(REQUEST_CODE_SHOW_NOTE, false)
+            getNote()
             searchNote()
         }
     }
 
-    private fun getNote(reqCode: Int, isNoteDelete: Boolean) {
-        viewModel.getAllNotes().observe(this, Observer { notes ->
-            Log.d("TAG","호출됨 $reqCode")
-            when (reqCode) {
-                REQUEST_CODE_SHOW_NOTE -> {
-                    notesAdapter.setData(notes)
-                    notesAdapter.notifyDataSetChanged()
-                }
-                REQUEST_CODE_ADD_NOTE -> {
-                    if (noteList.isNotEmpty()) {
-                        noteList.add(0, notes[0])
-                        notesAdapter.notifyItemInserted(0)
-                        Rv_notes.smoothScrollToPosition(0)
-                    } else {
-                        getNote(REQUEST_CODE_SHOW_NOTE, false)
-                    }
-                }
-                REQUEST_CODE_UPDATE_NOTE -> {
-                    noteList.removeAt(noteClickPosition)
-                    if (isNoteDelete) {
-                        notesAdapter.notifyItemRemoved(noteClickPosition)
-
-                    } else {
-                        noteList.add(noteClickPosition, notes[noteClickPosition])
-                        notesAdapter.notifyItemChanged(noteClickPosition)
-                    }
-                }
-                REQUEST_CODE_REMOVE_NOTES -> {
-
-                }
-            }
+    private fun getNote() {
+        viewModel.getAllNotes().observe(this, {
+            notesAdapter.submitList(it)
+//            when (reqCode) {
+//                REQUEST_CODE_SHOW_NOTE -> {
+//                    notesAdapter.setData(notes)
+//                    notesAdapter.notifyDataSetChanged()
+//                }
+//                REQUEST_CODE_ADD_NOTE -> {
+//                    if (notes.isNotEmpty()) {
+//                        notesAdapter.setData(notes)
+//                        notesAdapter.notifyItemInserted(0)
+//                        Rv_notes.smoothScrollToPosition(0)
+//                    } else {
+//                        getNote(REQUEST_CODE_SHOW_NOTE, false)
+//                    }
+//                }
+//                REQUEST_CODE_UPDATE_NOTE -> {
+//                    notesAdapter.setData(notes)
+//                    if (isNoteDelete) {
+//                        notesAdapter.notifyItemRemoved(noteClickPosition)
+//
+//                    } else {
+//                        notesAdapter.notifyItemChanged(noteClickPosition)
+//                    }
+//                }
+//                REQUEST_CODE_REMOVE_NOTES -> {
+//                    var delList = checkList.map { it.value }.toList()
+//                    for(i in checkList.values.indices) {
+//                        viewModel.delete(delList[i])
+//                    }
+//                    notesAdapter.editItemMode(false)
+//                    for(i in checkList.values.indices) {
+//                        notesAdapter.notifyItemRemoved(i)
+//                    }
+//                    checkList.clear()
+//                    notesAdapter.setData(notes)
+//                    checkMode = false
+//                    imgAddNoteMain.setImageDrawable(
+//                        resources.getDrawable(R.drawable.ic_add, null))
+//                }
+//            }
         })
     }
 
@@ -170,12 +176,9 @@ class MainActivity : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
         Log.d("호출죔",requestCode.toString())
         if(requestCode == REQUEST_CODE_ADD_NOTE && resultCode == Activity.RESULT_OK) {
-            getNote(REQUEST_CODE_ADD_NOTE, false)
+            getNote()
         } else if(requestCode == REQUEST_CODE_UPDATE_NOTE && resultCode == RESULT_OK) {
-            getNote(
-                REQUEST_CODE_UPDATE_NOTE,
-                data!!.getBooleanExtra("isNoteDelete", false)
-            )
+            getNote()
         }
     }
 

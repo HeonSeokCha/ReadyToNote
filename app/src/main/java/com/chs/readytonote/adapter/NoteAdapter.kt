@@ -7,7 +7,9 @@ import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.request.target.Target
 import com.chs.readytonote.GlideApp
 import com.chs.readytonote.R
 import com.chs.readytonote.databinding.ItemContainerNoteBinding
@@ -17,23 +19,19 @@ import java.util.*
 import kotlin.concurrent.schedule
 
 
-class NoteAdapter(                  private val clickListener: (note: Note, position: Int) -> Unit,
+class NoteAdapter(private val clickListener: (note: Note, position: Int) -> Unit,
                   private val checkClickListener: (checkList: MutableMap<Int, Note>) ->Unit,
                   private val longClickListener: (chkState: Boolean) -> Unit,
-                ) : RecyclerView.Adapter<NoteAdapter.NoteViewHolder>() {
+                ) : ListAdapter<Note, NoteAdapter.NoteViewHolder>(NoteDiffUtilCallback()) {
     class NoteViewHolder(val binding: ItemContainerNoteBinding)
         : RecyclerView.ViewHolder(binding.root)
 
     private lateinit var temp: MutableList<Note>
     private lateinit var timerTask: Timer
-    private var item: MutableList<Note> = mutableListOf()
     private val checkList:MutableMap<Int,Note> by lazy { mutableMapOf() }
     private var checkBox: Boolean = false
-    private val searchList: MutableList<Note> by lazy { item }
+    private val searchList: List<Note> by lazy { currentList }
 
-    fun setData(noteList: MutableList<Note>) {
-        item = noteList
-    }
 
     fun editItemMode(chk:Boolean) {
         checkBox = chk
@@ -50,7 +48,7 @@ class NoteAdapter(                  private val clickListener: (note: Note, posi
                     isActivated = !this.isActivated
                 }
                 if(view.img_check.isActivated) {
-                    checkList[viewHolder.adapterPosition] = item[viewHolder.adapterPosition]
+                    checkList[viewHolder.adapterPosition] = getItem(viewHolder.adapterPosition)
                 } else {
                     checkList.remove(viewHolder.adapterPosition)
                 }
@@ -58,7 +56,7 @@ class NoteAdapter(                  private val clickListener: (note: Note, posi
 
             } else {
                 clickListener.invoke(
-                    item[viewHolder.adapterPosition],
+                    getItem(viewHolder.adapterPosition),
                     viewHolder.adapterPosition,
                 )
             }
@@ -72,16 +70,17 @@ class NoteAdapter(                  private val clickListener: (note: Note, posi
         return viewHolder
     }
     override fun onBindViewHolder(holder: NoteViewHolder, position: Int) {
-        holder.binding.model = item[position]
+        holder.binding.model = getItem(position)
         var gradientDrawable = (holder.itemView.layoutNote.background as GradientDrawable)
-        if (item[position].color != "") {
-            gradientDrawable.setColor(Color.parseColor(item[position].color))
+        if (getItem(position).color != "") {
+            gradientDrawable.setColor(Color.parseColor(getItem(position).color))
         } else {
             gradientDrawable.setColor(Color.parseColor("#333333"))
         }
-        if(item[position].imgPath!!.isNotEmpty()) {
-            GlideApp.with(holder.itemView).load(item[position].imgPath)
+        if(getItem(position).imgPath!!.isNotEmpty()) {
+            GlideApp.with(holder.itemView).load(getItem(position).imgPath)
                 .error(R.drawable.ic_done)
+                .override(Target.SIZE_ORIGINAL)
                 .into(holder.itemView.imageNote)
             holder.itemView.imageNote.visibility = View.VISIBLE
         } else {
@@ -93,7 +92,7 @@ class NoteAdapter(                  private val clickListener: (note: Note, posi
         }
     }
 
-    override fun getItemCount(): Int = item.size
+    override fun getItemId(position: Int): Long = position.toLong()
 
     fun search(searchKeyword: String) {
         timerTask = Timer()
@@ -105,9 +104,9 @@ class NoteAdapter(                  private val clickListener: (note: Note, posi
                         || note.subtitle!!.toLowerCase().contains(searchKeyword.toLowerCase())) {
                         temp.add(note)
                     }
-                    item = temp
+                    submitList(temp)
                 }
-            } else item = searchList
+            } else submitList(searchList)
             Handler(Looper.getMainLooper()).post {
                 notifyDataSetChanged()
             }
