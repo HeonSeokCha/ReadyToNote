@@ -1,25 +1,19 @@
 package com.chs.readytonote.ui
 
 
-import android.app.Activity
 import android.content.Intent
-import android.nfc.Tag
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.recyclerview.widget.RecyclerView.ItemAnimator
-import androidx.recyclerview.widget.SimpleItemAnimator
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.chs.readytonote.R
 import com.chs.readytonote.adapter.NoteAdapter
 import com.chs.readytonote.entities.Note
 import com.chs.readytonote.viewmodel.MainViewModel
 import com.chs.readytonote.viewmodel.MainViewModelFactory
-import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.activity_main.*
 
 
@@ -27,14 +21,12 @@ class MainActivity : AppCompatActivity() {
     companion object {
         private const val REQUEST_CODE_ADD_NOTE = 1
         private const val REQUEST_CODE_UPDATE_NOTE = 2
-        private const val REQUEST_CODE_SHOW_NOTE = 3
-        private const val REQUEST_CODE_REMOVE_NOTES = 4
     }
 
     private lateinit var notesAdapter: NoteAdapter
     private lateinit var viewModel: MainViewModel
     private lateinit var checkList: MutableMap<Int,Note>
-    private var checkMode: Boolean = false
+    private var editMode: Boolean = false
     private var noteClickPosition = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -49,13 +41,13 @@ class MainActivity : AppCompatActivity() {
 
     private fun initClick() {
         imgAddNoteMain.setOnClickListener {
-            if(checkMode) {
+            if(editMode && ::checkList.isInitialized) {
                 var delList = checkList.map { it.value }.toList()
                 for(i in checkList.values.indices) {
                     viewModel.delete(delList[i])
                 }
                 checkList.clear()
-                checkMode = false
+                editMode = false
                 notesAdapter.editItemMode(false)
                 imgAddNoteMain.setImageDrawable(
                         resources.getDrawable(R.drawable.ic_add, null))
@@ -70,11 +62,11 @@ class MainActivity : AppCompatActivity() {
     private fun initMenu(){
         bottomAppBar.replaceMenu(R.menu.create_note)
         bottomAppBar.setOnMenuItemClickListener {
-//            when(it.itemId) {
-//                R.id.main_menu_edit -> {
-//                    notesAdapter.editItem(true)
-//                }
-//            }
+            when(it.itemId) {
+                R.id.main_menu_edit -> {
+                    notesAdapter.editItemMode(true)
+                }
+            }
             return@setOnMenuItemClickListener false
         }
     }
@@ -92,11 +84,11 @@ class MainActivity : AppCompatActivity() {
                 startActivityForResult(intent, REQUEST_CODE_UPDATE_NOTE)
             }, longClickListener = { chkState ->
                 if (chkState) {
-                    checkMode = true
+                    editMode = true
                     imgAddNoteMain.setImageDrawable(
                         resources.getDrawable(R.drawable.ic_delete, null))
                 } else {
-                    checkMode = false
+                    editMode = false
                     imgAddNoteMain.setImageDrawable(
                 resources.getDrawable(R.drawable.ic_add, null))
                 }
@@ -109,6 +101,7 @@ class MainActivity : AppCompatActivity() {
                 2,
                 StaggeredGridLayoutManager.VERTICAL
             )
+            notesAdapter.setHasStableIds(true)
             this.adapter = notesAdapter
             getNote()
             searchNote()
@@ -116,47 +109,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun getNote() {
-        viewModel.getAllNotes().observe(this, {
-            notesAdapter.submitList(it)
-//            when (reqCode) {
-//                REQUEST_CODE_SHOW_NOTE -> {
-//                    notesAdapter.setData(notes)
-//                    notesAdapter.notifyDataSetChanged()
-//                }
-//                REQUEST_CODE_ADD_NOTE -> {
-//                    if (notes.isNotEmpty()) {
-//                        notesAdapter.setData(notes)
-//                        notesAdapter.notifyItemInserted(0)
-//                        Rv_notes.smoothScrollToPosition(0)
-//                    } else {
-//                        getNote(REQUEST_CODE_SHOW_NOTE, false)
-//                    }
-//                }
-//                REQUEST_CODE_UPDATE_NOTE -> {
-//                    notesAdapter.setData(notes)
-//                    if (isNoteDelete) {
-//                        notesAdapter.notifyItemRemoved(noteClickPosition)
-//
-//                    } else {
-//                        notesAdapter.notifyItemChanged(noteClickPosition)
-//                    }
-//                }
-//                REQUEST_CODE_REMOVE_NOTES -> {
-//                    var delList = checkList.map { it.value }.toList()
-//                    for(i in checkList.values.indices) {
-//                        viewModel.delete(delList[i])
-//                    }
-//                    notesAdapter.editItemMode(false)
-//                    for(i in checkList.values.indices) {
-//                        notesAdapter.notifyItemRemoved(i)
-//                    }
-//                    checkList.clear()
-//                    notesAdapter.setData(notes)
-//                    checkMode = false
-//                    imgAddNoteMain.setImageDrawable(
-//                        resources.getDrawable(R.drawable.ic_add, null))
-//                }
-//            }
+        viewModel.getAllNotes().observe(this, { notes ->
+            notesAdapter.submitList(notes)
         })
     }
 
@@ -174,8 +128,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        Log.d("호출죔",requestCode.toString())
-        if(requestCode == REQUEST_CODE_ADD_NOTE && resultCode == Activity.RESULT_OK) {
+        if(requestCode == REQUEST_CODE_ADD_NOTE && resultCode == RESULT_OK) {
             getNote()
         } else if(requestCode == REQUEST_CODE_UPDATE_NOTE && resultCode == RESULT_OK) {
             getNote()
@@ -183,9 +136,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onBackPressed() {
-        if(checkMode) {
+        if(editMode) {
             notesAdapter.editItemMode(false)
-            checkMode = false
+            editMode = false
             imgAddNoteMain.setImageDrawable(
                 resources.getDrawable(R.drawable.ic_add, null))
         } else {

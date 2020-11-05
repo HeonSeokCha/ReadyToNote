@@ -84,8 +84,6 @@ class CreateNoteActivity : AppCompatActivity() {
     }
 
     private fun initClick(){
-        imgSave.setOnClickListener { saveNote() }
-        imgBack.setOnClickListener { onBackPressed() }
         layoutAddImage.setOnClickListener {
             bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
             if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.M) {
@@ -95,6 +93,14 @@ class CreateNoteActivity : AppCompatActivity() {
                     requestPermissions(permissions, PERMISSION_CODE)
                 } else pickImageFromGallery()
             } else pickImageFromGallery()
+        }
+
+        imgSave.setOnClickListener {
+            saveNote()
+        }
+
+        imgBack.setOnClickListener {
+            onBackPressed()
         }
 
         layoutAddUrl.setOnClickListener {

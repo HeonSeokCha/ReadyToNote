@@ -71,16 +71,16 @@ class NoteAdapter(private val clickListener: (note: Note, position: Int) -> Unit
     }
     override fun onBindViewHolder(holder: NoteViewHolder, position: Int) {
         holder.binding.model = getItem(position)
-        var gradientDrawable = (holder.itemView.layoutNote.background as GradientDrawable)
         if (getItem(position).color != "") {
-            gradientDrawable.setColor(Color.parseColor(getItem(position).color))
+            holder.itemView.layoutNote.setCardBackgroundColor(
+                Color.parseColor(getItem(position).color))
         } else {
-            gradientDrawable.setColor(Color.parseColor("#333333"))
+            holder.itemView.layoutNote.setCardBackgroundColor(
+                Color.parseColor("#333333"))
         }
         if(getItem(position).imgPath!!.isNotEmpty()) {
             GlideApp.with(holder.itemView).load(getItem(position).imgPath)
                 .error(R.drawable.ic_done)
-                .override(Target.SIZE_ORIGINAL)
                 .into(holder.itemView.imageNote)
             holder.itemView.imageNote.visibility = View.VISIBLE
         } else {
@@ -92,7 +92,7 @@ class NoteAdapter(private val clickListener: (note: Note, position: Int) -> Unit
         }
     }
 
-    override fun getItemId(position: Int): Long = position.toLong()
+    override fun getItemId(position: Int): Long = getItem(position).id.toLong()
 
     fun search(searchKeyword: String) {
         timerTask = Timer()
