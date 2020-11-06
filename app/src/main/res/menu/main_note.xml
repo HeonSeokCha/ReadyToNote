@@ -6,9 +6,4 @@
         android:title="노트 전체 선택"
         app:showAsAction="never"
         />
-    <item
-        android:id="@+id/main_menu_delete"
-        android:title="삭제"
-        app:showAsAction="never"
-        />
 </menu>

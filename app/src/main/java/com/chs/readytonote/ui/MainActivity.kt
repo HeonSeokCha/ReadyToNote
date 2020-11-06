@@ -1,6 +1,7 @@
 package com.chs.readytonote.ui
 
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
@@ -39,10 +40,11 @@ class MainActivity : AppCompatActivity() {
         initClick()
     }
 
+    @SuppressLint("UseCompatLoadingForDrawables")
     private fun initClick() {
         imgAddNoteMain.setOnClickListener {
             if(editMode && ::checkList.isInitialized) {
-                var delList = checkList.map { it.value }.toList()
+                val delList = checkList.map { it.value }.toList()
                 for(i in checkList.values.indices) {
                     viewModel.delete(delList[i])
                 }
@@ -59,18 +61,8 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
-    private fun initMenu(){
-        bottomAppBar.replaceMenu(R.menu.create_note)
-        bottomAppBar.setOnMenuItemClickListener {
-            when(it.itemId) {
-                R.id.main_menu_edit -> {
-                    notesAdapter.editItemMode(true)
-                }
-            }
-            return@setOnMenuItemClickListener false
-        }
-    }
 
+    @SuppressLint("UseCompatLoadingForDrawables")
     private fun initRecyclerView() {
         Rv_notes.apply {
             notesAdapter = NoteAdapter( clickListener = { note, position ->
@@ -87,6 +79,7 @@ class MainActivity : AppCompatActivity() {
                     editMode = true
                     imgAddNoteMain.setImageDrawable(
                         resources.getDrawable(R.drawable.ic_delete, null))
+                    bottomAppBar.replaceMenu(R.menu.main_note)
                 } else {
                     editMode = false
                     imgAddNoteMain.setImageDrawable(
@@ -94,13 +87,15 @@ class MainActivity : AppCompatActivity() {
                 }
             }, checkClickListener = { notes ->
                     checkList = notes
+                    imgAddNoteMain.isEnabled = checkList.isNotEmpty()
                     Log.d("스파게티","체크리스트 바뀜, ${notes.size}")
                 }
             )
             this.layoutManager = StaggeredGridLayoutManager(
-                2,
-                StaggeredGridLayoutManager.VERTICAL
-            )
+                2,1).apply {
+                gapStrategy = StaggeredGridLayoutManager.GAP_HANDLING_MOVE_ITEMS_BETWEEN_SPANS
+                orientation = StaggeredGridLayoutManager.VERTICAL
+            }
             notesAdapter.setHasStableIds(true)
             this.adapter = notesAdapter
             getNote()
@@ -135,12 +130,45 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    @SuppressLint("UseCompatLoadingForDrawables")
+    private fun initMenu(){
+        var click = false
+        bottomAppBar.replaceMenu(R.menu.edit_note)
+        bottomAppBar.setOnMenuItemClickListener {
+            when(it.itemId) {
+                R.id.main_menu_edit -> {
+                    editMode = true
+                    notesAdapter.editItemMode(true)
+                    imgAddNoteMain.setImageDrawable(
+                        resources.getDrawable(R.drawable.ic_delete, null))
+                    imgAddNoteMain.isEnabled = false
+                    bottomAppBar.replaceMenu(R.menu.main_note)
+                }
+                R.id.main_menu_selectAll -> {
+                    click = if(!click) {
+                        notesAdapter.selectAll(true)
+                        true
+                    } else {
+                        notesAdapter.selectAll(false)
+                        false
+                    }
+                    Log.d("전체선택","$click")
+                }
+            }
+            return@setOnMenuItemClickListener false
+        }
+    }
+
+    @SuppressLint("UseCompatLoadingForDrawables")
     override fun onBackPressed() {
         if(editMode) {
             notesAdapter.editItemMode(false)
+            imgAddNoteMain.isEnabled = true
             editMode = false
             imgAddNoteMain.setImageDrawable(
                 resources.getDrawable(R.drawable.ic_add, null))
+            bottomAppBar.replaceMenu(R.menu.edit_note
+            )
         } else {
             super.onBackPressed()
         }

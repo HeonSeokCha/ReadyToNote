@@ -1,12 +1,13 @@
 package com.chs.readytonote.adapter
 
 import android.graphics.Color
-import android.graphics.drawable.GradientDrawable
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AnimationUtils
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.request.target.Target
@@ -19,8 +20,8 @@ import java.util.*
 import kotlin.concurrent.schedule
 
 
-class NoteAdapter(private val clickListener: (note: Note, position: Int) -> Unit,
-                  private val checkClickListener: (checkList: MutableMap<Int, Note>) ->Unit,
+class NoteAdapter (private val clickListener: (note: Note, position: Int) -> Unit,
+                  private val checkClickListener: (checkList: MutableMap<Int, Note>) -> Unit,
                   private val longClickListener: (chkState: Boolean) -> Unit,
                 ) : ListAdapter<Note, NoteAdapter.NoteViewHolder>(NoteDiffUtilCallback()) {
     class NoteViewHolder(val binding: ItemContainerNoteBinding)
@@ -28,9 +29,10 @@ class NoteAdapter(private val clickListener: (note: Note, position: Int) -> Unit
 
     private lateinit var temp: MutableList<Note>
     private lateinit var timerTask: Timer
-    private val checkList:MutableMap<Int,Note> by lazy { mutableMapOf() }
-    private var checkBox: Boolean = false
+    private val checkList: MutableMap<Int,Note> by lazy { mutableMapOf() }
     private val searchList: List<Note> by lazy { currentList }
+    private var checkBox: Boolean = false
+    private var select: Boolean = false
 
 
     fun editItemMode(chk:Boolean) {
@@ -38,16 +40,30 @@ class NoteAdapter(private val clickListener: (note: Note, position: Int) -> Unit
         notifyDataSetChanged()
     }
 
+    fun selectAll(chk: Boolean) {
+        select = if(chk) {
+            for(i in currentList.indices)
+                checkList[i] = currentList[i]
+            true
+        } else {
+            for(i in currentList.indices)
+                checkList.remove(i)
+            false
+        }
+        notifyDataSetChanged()
+        checkClickListener.invoke(checkList)
+    }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NoteViewHolder {
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.item_container_note, parent, false)
         val viewHolder = NoteViewHolder(ItemContainerNoteBinding.bind(view))
         view.layoutNote.setOnClickListener {
-            if(checkBox) {
+            if (checkBox) {
                 view.img_check.apply {
                     isActivated = !this.isActivated
                 }
-                if(view.img_check.isActivated) {
+                if (view.img_check.isActivated) {
                     checkList[viewHolder.adapterPosition] = getItem(viewHolder.adapterPosition)
                 } else {
                     checkList.remove(viewHolder.adapterPosition)
@@ -57,18 +73,22 @@ class NoteAdapter(private val clickListener: (note: Note, position: Int) -> Unit
             } else {
                 clickListener.invoke(
                     getItem(viewHolder.adapterPosition),
-                    viewHolder.adapterPosition,
-                )
+                    viewHolder.adapterPosition)
             }
         }
 
         view.layoutNote.setOnLongClickListener {
-            editItemMode(true)
-            longClickListener(checkBox)
+            if(!checkBox){
+                editItemMode(true)
+                longClickListener(checkBox)
+                if(!view.layoutNote.img_check.isActivated)
+                    view.layoutNote.img_check.isActivated = true
+            }
             return@setOnLongClickListener true
         }
         return viewHolder
     }
+
     override fun onBindViewHolder(holder: NoteViewHolder, position: Int) {
         holder.binding.model = getItem(position)
         if (getItem(position).color != "") {
@@ -81,14 +101,21 @@ class NoteAdapter(private val clickListener: (note: Note, position: Int) -> Unit
         if(getItem(position).imgPath!!.isNotEmpty()) {
             GlideApp.with(holder.itemView).load(getItem(position).imgPath)
                 .error(R.drawable.ic_done)
+                .override(Target.SIZE_ORIGINAL)
                 .into(holder.itemView.imageNote)
             holder.itemView.imageNote.visibility = View.VISIBLE
         } else {
             holder.itemView.imageNote.visibility = View.GONE
         }
         when {
-            checkBox -> holder.itemView.img_check.visibility = View.VISIBLE
-            else -> holder.itemView.img_check.visibility = View.GONE
+            checkBox -> {
+                holder.itemView.img_check.visibility = View.VISIBLE
+                holder.itemView.img_check.isActivated = select
+            }
+            else -> {
+                holder.itemView.img_check.visibility = View.GONE
+                holder.itemView.img_check.isActivated = false
+            }
         }
     }
 
@@ -100,8 +127,8 @@ class NoteAdapter(private val clickListener: (note: Note, position: Int) -> Unit
             if (searchKeyword.isNotEmpty()) {
                 temp = mutableListOf()
                 for (note in searchList) {
-                    if(note.title!!.toLowerCase().contains(searchKeyword.toLowerCase())
-                        || note.subtitle!!.toLowerCase().contains(searchKeyword.toLowerCase())) {
+                    if(note.title!!.toLowerCase().contains(searchKeyword.toLowerCase()) ||
+                        note.subtitle!!.toLowerCase().contains(searchKeyword.toLowerCase())) {
                         temp.add(note)
                     }
                     submitList(temp)

@@ -21,8 +21,8 @@
             android:clickable="true"
             android:focusable="true"
             android:foreground="?selectableItemBackground"
+            android:animateLayoutChanges="true"
             app:cardCornerRadius="5dp"
-            app:cardUseCompatPadding="true"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -30,7 +30,8 @@
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:animateLayoutChanges="true">
 
                 <ImageView
                     android:id="@+id/imageNote"
@@ -63,7 +64,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
-                    android:layout_marginTop="4dp"
+                    android:layout_marginTop="8dp"
                     android:layout_marginEnd="8dp"
                     android:includeFontPadding="false"
                     android:text="@{model.subtitle}"
@@ -81,6 +82,7 @@
                     android:layout_marginTop="8dp"
                     android:layout_marginEnd="8dp"
                     android:layout_marginBottom="8dp"
+                    android:animateLayoutChanges="true"
                     android:includeFontPadding="false"
                     android:text="@{model.dateTime}"
                     android:textColor="@color/colorNoteSubtitleText"
@@ -95,9 +97,9 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="8dp"
+                    android:animateLayoutChanges="true"
                     android:background="@drawable/background_note_select"
                     android:visibility="gone"
-                    android:elevation="4dp"
                     app:layout_constraintBottom_toBottomOf="@+id/txtTitle"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="@+id/txtTitle" />
