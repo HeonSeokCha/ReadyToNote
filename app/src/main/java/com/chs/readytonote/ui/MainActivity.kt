@@ -77,6 +77,7 @@ class MainActivity : AppCompatActivity() {
             }, longClickListener = { chkState ->
                 if (chkState) {
                     editMode = true
+                    imgAddNoteMain.isEnabled = false
                     imgAddNoteMain.setImageDrawable(
                         resources.getDrawable(R.drawable.ic_delete, null))
                     bottomAppBar.replaceMenu(R.menu.main_note)
@@ -94,7 +95,6 @@ class MainActivity : AppCompatActivity() {
             this.layoutManager = StaggeredGridLayoutManager(
                 2,1).apply {
                 gapStrategy = StaggeredGridLayoutManager.GAP_HANDLING_MOVE_ITEMS_BETWEEN_SPANS
-                orientation = StaggeredGridLayoutManager.VERTICAL
             }
             notesAdapter.setHasStableIds(true)
             this.adapter = notesAdapter
