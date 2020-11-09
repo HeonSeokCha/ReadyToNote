@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
@@ -67,12 +68,11 @@ class MainActivity : AppCompatActivity() {
         Rv_notes.apply {
             notesAdapter = NoteAdapter( clickListener = { note, position ->
                 noteClickPosition = position
-                val intent = Intent(
-                    this@MainActivity,
-                    CreateNoteActivity::class.java
-                )
-                intent.putExtra("isViewOrUpdate", true)
-                intent.putExtra("note", note)
+                val intent = Intent(this@MainActivity,
+                    CreateNoteActivity::class.java).apply {
+                    putExtra("isViewOrUpdate", true)
+                    putExtra("note", note)
+                }
                 startActivityForResult(intent, REQUEST_CODE_UPDATE_NOTE)
             }, longClickListener = { chkState ->
                 if (chkState) {
@@ -89,7 +89,6 @@ class MainActivity : AppCompatActivity() {
             }, checkClickListener = { notes ->
                     checkList = notes
                     imgAddNoteMain.isEnabled = checkList.isNotEmpty()
-                    Log.d("스파게티","체크리스트 바뀜, ${notes.size}")
                 }
             )
             this.layoutManager = StaggeredGridLayoutManager(
@@ -145,6 +144,7 @@ class MainActivity : AppCompatActivity() {
                     bottomAppBar.replaceMenu(R.menu.main_note)
                 }
                 R.id.main_menu_selectAll -> {
+                    Log.d("Click","$click")
                     click = if(!click) {
                         notesAdapter.selectAll(true)
                         true
@@ -152,7 +152,6 @@ class MainActivity : AppCompatActivity() {
                         notesAdapter.selectAll(false)
                         false
                     }
-                    Log.d("전체선택","$click")
                 }
             }
             return@setOnMenuItemClickListener false
@@ -162,9 +161,10 @@ class MainActivity : AppCompatActivity() {
     @SuppressLint("UseCompatLoadingForDrawables")
     override fun onBackPressed() {
         if(editMode) {
+            editMode = false
+            notesAdapter.selectAll(false)
             notesAdapter.editItemMode(false)
             imgAddNoteMain.isEnabled = true
-            editMode = false
             imgAddNoteMain.setImageDrawable(
                 resources.getDrawable(R.drawable.ic_add, null))
             bottomAppBar.replaceMenu(R.menu.edit_note

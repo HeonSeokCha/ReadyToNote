@@ -32,16 +32,17 @@ class NoteAdapter (private val clickListener: (note: Note, position: Int) -> Uni
     private val checkList: MutableMap<Int,Note> by lazy { mutableMapOf() }
     private val searchList: List<Note> by lazy { currentList }
     private var checkBox: Boolean = false
-    private var select: Boolean = false
+    private var isSelectModeOn: Boolean = false
 
 
     fun editItemMode(chk:Boolean) {
         checkBox = chk
+        Log.d("isSelectModeOn","$isSelectModeOn")
         notifyDataSetChanged()
     }
 
     fun selectAll(chk: Boolean) {
-        select = if(chk) {
+        isSelectModeOn = if(chk) {
             for(i in currentList.indices)
                 checkList[i] = currentList[i]
             true
@@ -91,15 +92,12 @@ class NoteAdapter (private val clickListener: (note: Note, position: Int) -> Uni
 
     override fun onBindViewHolder(holder: NoteViewHolder, position: Int) {
         holder.binding.model = getItem(position)
-        if (getItem(position).color != "") {
-            holder.itemView.layoutNote.setCardBackgroundColor(
-                Color.parseColor(getItem(position).color))
-        } else {
-            holder.itemView.layoutNote.setCardBackgroundColor(
-                Color.parseColor("#333333"))
-        }
+        holder.itemView.layoutNote.setCardBackgroundColor(
+                Color.parseColor(getItem(position).color)
+        )
         if(getItem(position).imgPath!!.isNotEmpty()) {
             GlideApp.with(holder.itemView).load(getItem(position).imgPath)
+                .centerCrop()
                 .error(R.drawable.ic_done)
                 .override(Target.SIZE_ORIGINAL)
                 .into(holder.itemView.imageNote)
@@ -110,7 +108,7 @@ class NoteAdapter (private val clickListener: (note: Note, position: Int) -> Uni
         when {
             checkBox -> {
                 holder.itemView.img_check.visibility = View.VISIBLE
-                holder.itemView.img_check.isActivated = select
+                holder.itemView.img_check.isActivated = isSelectModeOn
             }
             else -> {
                 holder.itemView.img_check.visibility = View.GONE
