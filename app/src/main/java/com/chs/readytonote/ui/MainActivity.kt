@@ -53,7 +53,8 @@ class MainActivity : AppCompatActivity() {
                 editMode = false
                 notesAdapter.editItemMode(false)
                 imgAddNoteMain.setImageDrawable(
-                        resources.getDrawable(R.drawable.ic_add, null))
+                        resources.getDrawable(R.drawable.ic_add, null)
+                )
                 getNote()
             } else {
                 startActivityForResult(
@@ -136,12 +137,14 @@ class MainActivity : AppCompatActivity() {
         bottomAppBar.setOnMenuItemClickListener {
             when(it.itemId) {
                 R.id.main_menu_edit -> {
+                    click = false
                     editMode = true
                     notesAdapter.editItemMode(true)
-                    imgAddNoteMain.setImageDrawable(
-                        resources.getDrawable(R.drawable.ic_delete, null))
                     imgAddNoteMain.isEnabled = false
                     bottomAppBar.replaceMenu(R.menu.main_note)
+                    imgAddNoteMain.setImageDrawable(
+                        resources.getDrawable(R.drawable.ic_delete, null)
+                    )
                 }
                 R.id.main_menu_selectAll -> {
                     Log.d("Click","$click")
@@ -164,10 +167,10 @@ class MainActivity : AppCompatActivity() {
             editMode = false
             notesAdapter.selectAll(false)
             notesAdapter.editItemMode(false)
+            bottomAppBar.replaceMenu(R.menu.edit_note)
             imgAddNoteMain.isEnabled = true
             imgAddNoteMain.setImageDrawable(
-                resources.getDrawable(R.drawable.ic_add, null))
-            bottomAppBar.replaceMenu(R.menu.edit_note
+                resources.getDrawable(R.drawable.ic_add, null)
             )
         } else {
             super.onBackPressed()
