@@ -15,6 +15,7 @@ import com.chs.readytonote.GlideApp
 import com.chs.readytonote.R
 import com.chs.readytonote.databinding.ItemContainerNoteBinding
 import com.chs.readytonote.entities.Note
+import kotlinx.android.extensions.LayoutContainer
 import kotlinx.android.synthetic.main.item_container_note.view.*
 import java.util.*
 import kotlin.concurrent.schedule
@@ -22,8 +23,8 @@ import kotlin.concurrent.schedule
 
 class NoteAdapter (private val clickListener: (note: Note, position: Int) -> Unit,
                   private val checkClickListener: (checkList: MutableMap<Int, Note>) -> Unit,
-                  private val longClickListener: (chkState: Boolean) -> Unit,
-                ) : ListAdapter<Note, NoteAdapter.NoteViewHolder>(NoteDiffUtilCallback()) {
+                  private val longClickListener: (chkState: Boolean) -> Unit)
+    : ListAdapter<Note, NoteAdapter.NoteViewHolder>(NoteDiffUtilCallback()) {
     class NoteViewHolder(val binding: ItemContainerNoteBinding)
         : RecyclerView.ViewHolder(binding.root)
 
@@ -37,7 +38,6 @@ class NoteAdapter (private val clickListener: (note: Note, position: Int) -> Uni
 
     fun editItemMode(chk:Boolean) {
         checkBox = chk
-        Log.d("isSelectModeOn","$isSelectModeOn")
         notifyDataSetChanged()
     }
 
@@ -79,7 +79,7 @@ class NoteAdapter (private val clickListener: (note: Note, position: Int) -> Uni
         }
 
         view.layoutNote.setOnLongClickListener {
-            if(!checkBox){
+            if(!checkBox) {
                 editItemMode(true)
                 longClickListener(checkBox)
                 if(!view.layoutNote.img_check.isActivated)

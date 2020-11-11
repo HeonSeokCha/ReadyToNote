@@ -45,9 +45,8 @@ class MainActivity : AppCompatActivity() {
     private fun initClick() {
         imgAddNoteMain.setOnClickListener {
             if(editMode && ::checkList.isInitialized) {
-                val delList = checkList.map { it.value }.toList()
                 for(i in checkList.values.indices) {
-                    viewModel.delete(delList[i])
+                    viewModel.delete(checkList[i]!!)
                 }
                 checkList.clear()
                 editMode = false
@@ -147,7 +146,6 @@ class MainActivity : AppCompatActivity() {
                     )
                 }
                 R.id.main_menu_selectAll -> {
-                    Log.d("Click","$click")
                     click = if(!click) {
                         notesAdapter.selectAll(true)
                         true
