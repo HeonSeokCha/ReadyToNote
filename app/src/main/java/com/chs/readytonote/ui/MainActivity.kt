@@ -7,7 +7,7 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
-import android.view.View
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
@@ -45,8 +45,8 @@ class MainActivity : AppCompatActivity() {
     private fun initClick() {
         imgAddNoteMain.setOnClickListener {
             if(editMode && ::checkList.isInitialized) {
-                for(i in checkList.values.indices) {
-                    viewModel.delete(checkList[i]!!)
+                for(i in checkList.values) {
+                    viewModel.delete(i)
                 }
                 checkList.clear()
                 editMode = false
@@ -54,12 +54,16 @@ class MainActivity : AppCompatActivity() {
                 imgAddNoteMain.setImageDrawable(
                         resources.getDrawable(R.drawable.ic_add, null)
                 )
+                bottomAppBar.replaceMenu(R.menu.main_note)
                 getNote()
             } else {
                 startActivityForResult(
                     Intent(this,
                         CreateNoteActivity::class.java), REQUEST_CODE_ADD_NOTE)
             }
+        }
+        btn_darkMode.setOnClickListener {
+            Toast.makeText(this, "This is the DarkMode...", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -80,13 +84,18 @@ class MainActivity : AppCompatActivity() {
                     imgAddNoteMain.isEnabled = false
                     imgAddNoteMain.setImageDrawable(
                         resources.getDrawable(R.drawable.ic_delete, null))
-                    bottomAppBar.replaceMenu(R.menu.main_note)
+                    bottomAppBar.replaceMenu(R.menu.select_note)
                 } else {
                     editMode = false
                     imgAddNoteMain.setImageDrawable(
                 resources.getDrawable(R.drawable.ic_add, null))
                 }
             }, checkClickListener = { notes ->
+                Log.d("checkList","${notes.size}")
+                for(i in notes.values) {
+                    Log.d("checkList","${notes.keys}")
+                    Log.d("checkList","${notes.values}")
+                }
                     checkList = notes
                     imgAddNoteMain.isEnabled = checkList.isNotEmpty()
                 }
@@ -132,7 +141,7 @@ class MainActivity : AppCompatActivity() {
     @SuppressLint("UseCompatLoadingForDrawables")
     private fun initMenu(){
         var click = false
-        bottomAppBar.replaceMenu(R.menu.edit_note)
+        bottomAppBar.replaceMenu(R.menu.main_note)
         bottomAppBar.setOnMenuItemClickListener {
             when(it.itemId) {
                 R.id.main_menu_edit -> {
@@ -140,7 +149,7 @@ class MainActivity : AppCompatActivity() {
                     editMode = true
                     notesAdapter.editItemMode(true)
                     imgAddNoteMain.isEnabled = false
-                    bottomAppBar.replaceMenu(R.menu.main_note)
+                    bottomAppBar.replaceMenu(R.menu.select_note)
                     imgAddNoteMain.setImageDrawable(
                         resources.getDrawable(R.drawable.ic_delete, null)
                     )
@@ -165,7 +174,7 @@ class MainActivity : AppCompatActivity() {
             editMode = false
             notesAdapter.selectAll(false)
             notesAdapter.editItemMode(false)
-            bottomAppBar.replaceMenu(R.menu.edit_note)
+            bottomAppBar.replaceMenu(R.menu.main_note)
             imgAddNoteMain.isEnabled = true
             imgAddNoteMain.setImageDrawable(
                 resources.getDrawable(R.drawable.ic_add, null)

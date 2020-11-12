@@ -2,14 +2,8 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/main_menu_edit"
-        android:title="편집"
-        app:showAsAction="never"
-        />
-
-    <item
-        android:id="@+id/main_menu_about"
-        android:title="About"
+        android:id="@+id/main_menu_selectAll"
+        android:title="노트 전체 선택"
         app:showAsAction="never"
         />
 </menu>
