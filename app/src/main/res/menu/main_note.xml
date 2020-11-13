@@ -2,6 +2,18 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
+        android:id="@+id/main_menu_shortcut_photo"
+        android:title="Add Photo"
+        android:icon="@drawable/ic_image"
+        app:showAsAction="always"
+        />
+    <item
+        android:id="@+id/main_menu_shortcut_record"
+        android:title="Add record"
+        android:icon="@drawable/ic_record"
+        app:showAsAction="always"
+        />
+    <item
         android:id="@+id/main_menu_edit"
         android:title="편집"
         app:showAsAction="never"

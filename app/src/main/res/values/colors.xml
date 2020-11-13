@@ -3,8 +3,11 @@
     <color name="colorPrimary">#292929</color>
     <color name="colorPrimaryDark">#292929</color>
     <color name="colorAccent">#FDBE3B</color>
+    <color name="colorDarkPrimary">#D6D6D6</color>
+    <color name="colorDarkPrimaryDark">#D6D6D6</color>
+    <color name="colorDarkAccent">#FDBE3B</color>
     <color name="colorWhite">#FFFFFF</color>
-    <color name="colorSearchIcon">#DBDBDB</color>
+        <color name="colorSearchIcon">#DBDBDB</color>
     <color name="colorTextHint">#7B7B7B</color>
     <color name="colorQuickActionBackground">#2F2D2E</color>
     <color name="colorIcons">#A4A4A4</color>

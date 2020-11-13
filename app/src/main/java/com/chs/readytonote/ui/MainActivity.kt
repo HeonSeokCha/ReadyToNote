@@ -24,7 +24,6 @@ class MainActivity : AppCompatActivity() {
         private const val REQUEST_CODE_ADD_NOTE = 1
         private const val REQUEST_CODE_UPDATE_NOTE = 2
     }
-
     private lateinit var notesAdapter: NoteAdapter
     private lateinit var viewModel: MainViewModel
     private lateinit var checkList: MutableMap<Int,Note>
@@ -48,6 +47,9 @@ class MainActivity : AppCompatActivity() {
                 for(i in checkList.values) {
                     viewModel.delete(i)
                 }
+                Toast.makeText(this,
+                    "${checkList.size}개의 노트가 삭제되었습니다.",
+                    Toast.LENGTH_SHORT).show()
                 checkList.clear()
                 editMode = false
                 notesAdapter.editItemMode(false)
@@ -91,11 +93,6 @@ class MainActivity : AppCompatActivity() {
                 resources.getDrawable(R.drawable.ic_add, null))
                 }
             }, checkClickListener = { notes ->
-                Log.d("checkList","${notes.size}")
-                for(i in notes.values) {
-                    Log.d("checkList","${notes.keys}")
-                    Log.d("checkList","${notes.values}")
-                }
                     checkList = notes
                     imgAddNoteMain.isEnabled = checkList.isNotEmpty()
                 }
@@ -133,6 +130,7 @@ class MainActivity : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
         if(requestCode == REQUEST_CODE_ADD_NOTE && resultCode == RESULT_OK) {
             getNote()
+            Toast.makeText(this, "노트 추가됨", Toast.LENGTH_SHORT).show()
         } else if(requestCode == REQUEST_CODE_UPDATE_NOTE && resultCode == RESULT_OK) {
             getNote()
         }
