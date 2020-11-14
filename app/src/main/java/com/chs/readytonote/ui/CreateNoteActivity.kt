@@ -33,8 +33,8 @@ import com.chs.readytonote.viewmodel.MainViewModelFactory
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import kotlinx.android.synthetic.main.layout_add_url.view.*
 import kotlinx.android.synthetic.main.layout_delete_note.view.*
-import kotlinx.android.synthetic.main.layout_miscellaneous.*
-import kotlinx.android.synthetic.main.layout_miscellaneous.view.*
+import kotlinx.android.synthetic.main.layout_decorations.*
+import kotlinx.android.synthetic.main.layout_decorations.view.*
 
 class CreateNoteActivity : AppCompatActivity() {
     companion object {

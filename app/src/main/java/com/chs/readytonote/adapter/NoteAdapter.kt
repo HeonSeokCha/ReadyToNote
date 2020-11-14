@@ -1,5 +1,6 @@
 package com.chs.readytonote.adapter
 
+import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.os.Handler
 import android.os.Looper
@@ -96,10 +97,12 @@ class NoteAdapter (private val clickListener: (note: Note, position: Int) -> Uni
                 Color.parseColor(getItem(position).color)
         )
         if(getItem(position).imgPath!!.isNotEmpty()) {
+//            holder.itemView.imageNote.layoutParams.height =
+//                BitmapFactory.decodeFile(currentList[position].imgPath).height
+//            holder.itemView.imageNote.requestLayout()
             GlideApp.with(holder.itemView).load(getItem(position).imgPath)
                 .centerCrop()
                 .error(R.drawable.ic_done)
-                .override(Target.SIZE_ORIGINAL)
                 .into(holder.itemView.imageNote)
             holder.itemView.imageNote.visibility = View.VISIBLE
         } else {

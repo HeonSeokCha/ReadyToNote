@@ -5,7 +5,7 @@
     android:id="@+id/layoutMiscellaneous"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/background_miscellaneous"
+    android:background="@drawable/background_decorations"
     app:behavior_peekHeight="30dp"
     app:layout_behavior="@string/bottom_sheet_behavior">
 

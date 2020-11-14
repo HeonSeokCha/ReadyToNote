@@ -17,7 +17,7 @@
         <shape android:shape="oval">
             <stroke
                 android:width="6dp"
-                android:color="@color/colorMiscellaneousBackground" />
+                android:color="@color/colorDecorationsBackground" />
         </shape>
 
     </item>

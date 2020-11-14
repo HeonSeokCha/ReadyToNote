@@ -26,6 +26,7 @@ class MainActivity : AppCompatActivity() {
     }
     private lateinit var notesAdapter: NoteAdapter
     private lateinit var viewModel: MainViewModel
+    private lateinit var noteLayoutManager: StaggeredGridLayoutManager
     private lateinit var checkList: MutableMap<Int,Note>
     private var editMode: Boolean = false
     private var noteClickPosition = 0
@@ -97,10 +98,9 @@ class MainActivity : AppCompatActivity() {
                     imgAddNoteMain.isEnabled = checkList.isNotEmpty()
                 }
             )
-            this.layoutManager = StaggeredGridLayoutManager(
-                2,1).apply {
-                gapStrategy = StaggeredGridLayoutManager.GAP_HANDLING_MOVE_ITEMS_BETWEEN_SPANS
-            }
+            noteLayoutManager = StaggeredGridLayoutManager(2,1)
+            noteLayoutManager.gapStrategy = StaggeredGridLayoutManager.GAP_HANDLING_NONE
+            this.layoutManager = noteLayoutManager
             notesAdapter.setHasStableIds(true)
             this.adapter = notesAdapter
             getNote()
@@ -147,10 +147,10 @@ class MainActivity : AppCompatActivity() {
                     editMode = true
                     notesAdapter.editItemMode(true)
                     imgAddNoteMain.isEnabled = false
-                    bottomAppBar.replaceMenu(R.menu.select_note)
                     imgAddNoteMain.setImageDrawable(
                         resources.getDrawable(R.drawable.ic_delete, null)
                     )
+                    bottomAppBar.replaceMenu(R.menu.select_note)
                 }
                 R.id.main_menu_selectAll -> {
                     click = if(!click) {

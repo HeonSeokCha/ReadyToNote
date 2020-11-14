@@ -185,5 +185,5 @@
                 app:layout_constraintTop_toBottomOf="@+id/txtWebUrl" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
-    <include layout="@layout/layout_miscellaneous" />
+    <include layout="@layout/layout_decorations" />
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
