@@ -158,6 +158,20 @@ class MainActivity : AppCompatActivity() {
                         false
                     }
                 }
+                R.id.main_menu_shortcut_photo -> {
+                    val intent = Intent(this@MainActivity,
+                        CreateNoteActivity::class.java).apply {
+                        putExtra("shortCutImage", true)
+                    }
+                    startActivityForResult(intent, REQUEST_CODE_ADD_NOTE)
+                }
+                R.id.main_menu_shortcut_record -> {
+                    val intent = Intent(this@MainActivity,
+                        CreateNoteActivity::class.java).apply {
+                        putExtra("shortCutMic", true)
+                    }
+                    startActivityForResult(intent, REQUEST_CODE_ADD_NOTE)
+                }
             }
             return@setOnMenuItemClickListener false
         }

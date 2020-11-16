@@ -26,6 +26,8 @@ import kotlinx.android.synthetic.main.activity_create_note.*
 import java.text.SimpleDateFormat
 import java.util.*
 import androidx.core.content.ContextCompat.checkSelfPermission
+import com.bumptech.glide.load.resource.bitmap.DownsampleStrategy
+import com.bumptech.glide.request.target.Target
 import com.chs.readytonote.GlideApp
 import com.chs.readytonote.getRealPathFromURI
 import com.chs.readytonote.viewmodel.MainViewModel
@@ -71,6 +73,13 @@ class CreateNoteActivity : AppCompatActivity() {
             alreadyAvailableNote = intent.getParcelableExtra("note")
             setViewOrUpdateNote()
         }
+        if(intent.getBooleanExtra("shortCutImage",false)) {
+            checkPermImage()
+        }
+        if(intent.getBooleanExtra("shortCutMic",false)) {
+
+        }
+
         layoutMiscellaneous.findViewById<TextView>(R.id.textMiscellaneous)
             .setOnClickListener {
             if(bottomSheetBehavior.state != BottomSheetBehavior.STATE_EXPANDED) {
@@ -85,14 +94,7 @@ class CreateNoteActivity : AppCompatActivity() {
 
     private fun initClick(){
         layoutAddImage.setOnClickListener {
-            bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
-            if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.M) {
-                if (checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) ==
-                    PackageManager.PERMISSION_DENIED) {
-                    val permissions = arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE)
-                    requestPermissions(permissions, PERMISSION_CODE)
-                } else pickImageFromGallery()
-            } else pickImageFromGallery()
+            checkPermImage()
         }
 
         imgSave.setOnClickListener {
@@ -108,14 +110,6 @@ class CreateNoteActivity : AppCompatActivity() {
             showAddUrlDialog()
         }
 
-        if(::alreadyAvailableNote.isInitialized) {
-            layoutDeleteNote.visibility = View.VISIBLE
-            layoutDeleteNote.setOnClickListener {
-                bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
-                showDeleteDialog()
-            }
-        }
-
         imageDelete.setOnClickListener {
             imagePath = ""
             imageNote.visibility = View.GONE
@@ -127,16 +121,36 @@ class CreateNoteActivity : AppCompatActivity() {
             txtWebUrl.visibility = View.GONE
             imageDeleteUrl.visibility = View.GONE
         }
+
+        if(::alreadyAvailableNote.isInitialized) {
+            layoutDeleteNote.visibility = View.VISIBLE
+            layoutDeleteNote.setOnClickListener {
+                bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+                showDeleteDialog()
+            }
+        }
+    }
+
+    private fun checkPermImage() {
+        if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.M) {
+            if (checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) ==
+                PackageManager.PERMISSION_DENIED) {
+                val permissions = arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE)
+                requestPermissions(permissions, PERMISSION_CODE)
+            } else pickImageFromGallery()
+        } else pickImageFromGallery()
     }
 
     private fun saveNote() {
         if(inputNoteTitle.text.trim().isNullOrEmpty()) {
-            Toast.makeText(this, "Note title can't be empty!", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this,
+                "Note title can't be empty!", Toast.LENGTH_SHORT).show()
         } else if(inputNoteSubtitle.text.trim().isNullOrEmpty()
             && inputNoteText.text.trim().isNullOrEmpty()) {
-            Toast.makeText(this, "Note can't be empty!", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this,
+                "Note can't be empty!", Toast.LENGTH_SHORT).show()
         } else {
-            webLink = if(txtWebUrl.visibility == View.VISIBLE) {
+            webLink = if(txtWebUrl.text.trim().isNotEmpty()) {
                 txtWebUrl.text.toString()
             } else ""
 
@@ -343,6 +357,7 @@ class CreateNoteActivity : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
         if(resultCode==Activity.RESULT_OK && requestCode == IMAGE_PICK_CODE) {
             imageNote.visibility = View.VISIBLE
+            DownsampleStrategy.SampleSizeRounding.QUALITY
             GlideApp.with(this).load(data!!.data)
                 .into(imageNote)
             imagePath = getRealPathFromURI(this, data.data!!)!!

@@ -106,7 +106,6 @@ class NoteAdapter(
             GlideApp.with(holder.itemView)
                 .load(getItem(position).imgPath)
                 .placeholder(R.color.colorDefaultNoteColor)
-                .override(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL)
                 .into(holder.itemView.imageNote)
             holder.itemView.imageNote.visibility = View.VISIBLE
         } else {
