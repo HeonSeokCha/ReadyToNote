@@ -26,7 +26,6 @@ class MainActivity : AppCompatActivity() {
     }
     private lateinit var notesAdapter: NoteAdapter
     private lateinit var viewModel: MainViewModel
-    private lateinit var noteLayoutManager: StaggeredGridLayoutManager
     private lateinit var checkList: MutableMap<Int,Note>
     private var editMode: Boolean = false
     private var noteClickPosition = 0
@@ -98,9 +97,7 @@ class MainActivity : AppCompatActivity() {
                     imgAddNoteMain.isEnabled = checkList.isNotEmpty()
                 }
             )
-            noteLayoutManager = StaggeredGridLayoutManager(2,1)
-            noteLayoutManager.gapStrategy = StaggeredGridLayoutManager.GAP_HANDLING_NONE
-            this.layoutManager = noteLayoutManager
+            this.layoutManager = StaggeredGridLayoutManager(2,1)
             notesAdapter.setHasStableIds(true)
             this.adapter = notesAdapter
             getNote()
