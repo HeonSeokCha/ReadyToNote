@@ -65,7 +65,9 @@ class MainActivity : AppCompatActivity() {
             }
         }
         btn_darkMode.setOnClickListener {
-            Toast.makeText(this, "This is the DarkMode...", Toast.LENGTH_SHORT).show()
+            setTheme(R.style.AppTheme)
+            startActivity(Intent(this,MainActivity::class.java))
+            finish()
         }
     }
 
@@ -127,6 +129,8 @@ class MainActivity : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
         if(requestCode == REQUEST_CODE_ADD_NOTE && resultCode == RESULT_OK) {
             getNote()
+            Rv_notes.scrollToPosition(0)
+            Rv_notes.smoothScrollToPosition(0)
             Toast.makeText(this, "노트 추가됨", Toast.LENGTH_SHORT).show()
         } else if(requestCode == REQUEST_CODE_UPDATE_NOTE && resultCode == RESULT_OK) {
             getNote()

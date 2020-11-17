@@ -1,5 +1,6 @@
 package com.chs.readytonote.adapter
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.BitmapFactory
 import android.graphics.Color
@@ -97,17 +98,22 @@ class NoteAdapter(
         return viewHolder
     }
 
+    @SuppressLint("ResourceAsColor")
     override fun onBindViewHolder(holder: NoteViewHolder, position: Int) {
         holder.binding.model = getItem(position)
         holder.itemView.layoutNote.setCardBackgroundColor(
             Color.parseColor(getItem(position).color)
         )
+//        if(getItem(position).color=="#FF4842" ||
+//            getItem(position).color=="#FDBE3B") {
+//            holder.itemView.txtTitle.setTextColor(Color.parseColor("#000000"))
+//            holder.itemView.txtSubtitle.setTextColor(Color.parseColor("#000000"))
+//        }
         if(getItem(position).imgPath!!.isNotEmpty()) {
+            holder.itemView.imageNote.visibility = View.VISIBLE
             GlideApp.with(holder.itemView)
                 .load(getItem(position).imgPath)
-                .placeholder(R.color.colorDefaultNoteColor)
                 .into(holder.itemView.imageNote)
-            holder.itemView.imageNote.visibility = View.VISIBLE
         } else {
             holder.itemView.imageNote.visibility = View.GONE
         }
