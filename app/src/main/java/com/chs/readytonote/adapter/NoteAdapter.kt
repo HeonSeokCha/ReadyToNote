@@ -104,11 +104,10 @@ class NoteAdapter(
         holder.itemView.layoutNote.setCardBackgroundColor(
             Color.parseColor(getItem(position).color)
         )
-//        if(getItem(position).color=="#FF4842" ||
-//            getItem(position).color=="#FDBE3B") {
-//            holder.itemView.txtTitle.setTextColor(Color.parseColor("#000000"))
-//            holder.itemView.txtSubtitle.setTextColor(Color.parseColor("#000000"))
-//        }
+        if(getItem(position).color=="#FDBE3B") {
+            holder.itemView.txtTitle.setTextColor(Color.parseColor("#000000"))
+            holder.itemView.txtSubtitle.setTextColor(Color.parseColor("#000000"))
+        }
         if(getItem(position).imgPath!!.isNotEmpty()) {
             holder.itemView.imageNote.visibility = View.VISIBLE
             GlideApp.with(holder.itemView)

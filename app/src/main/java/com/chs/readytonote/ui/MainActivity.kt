@@ -3,20 +3,29 @@ package com.chs.readytonote.ui
 
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
+import android.util.Patterns
+import android.view.LayoutInflater
+import android.view.View
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
+import com.chs.readytonote.Preferences
 import com.chs.readytonote.R
 import com.chs.readytonote.adapter.NoteAdapter
 import com.chs.readytonote.entities.Note
 import com.chs.readytonote.viewmodel.MainViewModel
 import com.chs.readytonote.viewmodel.MainViewModelFactory
+import kotlinx.android.synthetic.main.activity_create_note.*
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.layout_add_url.view.*
+import kotlinx.android.synthetic.main.layout_theme_select.view.*
 
 
 class MainActivity : AppCompatActivity() {
@@ -24,6 +33,7 @@ class MainActivity : AppCompatActivity() {
         private const val REQUEST_CODE_ADD_NOTE = 1
         private const val REQUEST_CODE_UPDATE_NOTE = 2
     }
+    private lateinit var dialogTheme: AlertDialog
     private lateinit var notesAdapter: NoteAdapter
     private lateinit var viewModel: MainViewModel
     private lateinit var checkList: MutableMap<Int,Note>
@@ -31,6 +41,7 @@ class MainActivity : AppCompatActivity() {
     private var noteClickPosition = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        checkTheme()
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         viewModel = ViewModelProvider(this, MainViewModelFactory(application))
@@ -38,6 +49,15 @@ class MainActivity : AppCompatActivity() {
         initRecyclerView()
         initMenu()
         initClick()
+    }
+
+    private fun checkTheme() {
+        Log.d("Preferences","${Preferences.data}")
+        when (Preferences.data) {
+            "Default" -> ""
+            "DarkMode" -> setTheme(R.style.AppDarkTheme)
+            "WhiteMode" -> setTheme(R.style.AppTheme)
+        }
     }
 
     @SuppressLint("UseCompatLoadingForDrawables")
@@ -65,9 +85,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
         btn_darkMode.setOnClickListener {
-            setTheme(R.style.AppTheme)
-            startActivity(Intent(this,MainActivity::class.java))
-            finish()
+            showThemeDialog()
         }
     }
 
@@ -129,8 +147,6 @@ class MainActivity : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
         if(requestCode == REQUEST_CODE_ADD_NOTE && resultCode == RESULT_OK) {
             getNote()
-            Rv_notes.scrollToPosition(0)
-            Rv_notes.smoothScrollToPosition(0)
             Toast.makeText(this, "노트 추가됨", Toast.LENGTH_SHORT).show()
         } else if(requestCode == REQUEST_CODE_UPDATE_NOTE && resultCode == RESULT_OK) {
             getNote()
@@ -179,6 +195,34 @@ class MainActivity : AppCompatActivity() {
             }
             return@setOnMenuItemClickListener false
         }
+    }
+
+    private fun showThemeDialog() {
+        val builder: AlertDialog.Builder = AlertDialog.Builder(this)
+        val view = LayoutInflater.from(this).inflate(R.layout.layout_theme_select,
+            (findViewById(R.id.layoutThemeContainer)))
+        builder.setView(view)
+        dialogTheme = builder.create()
+        if(dialogTheme.window!=null) {
+            dialogTheme.window!!.setBackgroundDrawable(ColorDrawable(0))
+        }
+        view.radioGroup.setOnCheckedChangeListener { group, checkedId ->
+            when(checkedId) {
+                R.id.rdo_dark -> Preferences.data = "DarkMode"
+                R.id.rdo_white -> Preferences.data = "WhiteMode"
+                R.id.rdo_default -> Preferences.data = "Default"
+            }
+            Log.d("Theme","${Preferences.data}")
+        }
+        view.btn_ok.setOnClickListener {
+            dialogTheme.dismiss()
+            startActivity(Intent(this,MainActivity::class.java))
+            finish()
+        }
+        view.btn_cancel.setOnClickListener {
+            dialogTheme.dismiss()
+        }
+        dialogTheme.show()
     }
 
     @SuppressLint("UseCompatLoadingForDrawables")
