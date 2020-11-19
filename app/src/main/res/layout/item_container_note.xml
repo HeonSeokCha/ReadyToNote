@@ -22,7 +22,7 @@
             android:focusable="true"
             android:foreground="?selectableItemBackground"
             android:animateLayoutChanges="true"
-            app:cardCornerRadius="10dp"
+            app:cardCornerRadius="15dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

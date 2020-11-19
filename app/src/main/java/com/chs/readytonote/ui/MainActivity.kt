@@ -2,6 +2,7 @@ package com.chs.readytonote.ui
 
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.Intent
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
@@ -206,18 +207,21 @@ class MainActivity : AppCompatActivity() {
         if(dialogTheme.window!=null) {
             dialogTheme.window!!.setBackgroundDrawable(ColorDrawable(0))
         }
+        when (Preferences.data) {
+            "WhiteMode" -> view.rdo_white.isChecked = true
+            "DarkMode" -> view.rdo_dark.isChecked = true
+            "Default" -> view.rdo_default.isChecked = true
+        }
         view.radioGroup.setOnCheckedChangeListener { group, checkedId ->
             when(checkedId) {
                 R.id.rdo_dark -> Preferences.data = "DarkMode"
                 R.id.rdo_white -> Preferences.data = "WhiteMode"
                 R.id.rdo_default -> Preferences.data = "Default"
             }
-            Log.d("Theme","${Preferences.data}")
         }
         view.btn_ok.setOnClickListener {
             dialogTheme.dismiss()
-            startActivity(Intent(this,MainActivity::class.java))
-            finish()
+            this@MainActivity.recreate()
         }
         view.btn_cancel.setOnClickListener {
             dialogTheme.dismiss()

@@ -36,7 +36,7 @@ class NoteAdapter(
         : RecyclerView.ViewHolder(binding.root)
 
     private lateinit var temp: MutableList<Note>
-    private lateinit var timerTask: Timer
+    private lateinit var timerTask: TimerTask
     private val checkList: MutableMap<Int, Note> by lazy { mutableMapOf() }
     private val searchList: List<Note> by lazy { currentList }
     private var checkBox: Boolean = false
@@ -107,11 +107,13 @@ class NoteAdapter(
         if(getItem(position).color=="#FDBE3B") {
             holder.itemView.txtTitle.setTextColor(Color.parseColor("#000000"))
             holder.itemView.txtSubtitle.setTextColor(Color.parseColor("#000000"))
+            holder.itemView.txtDateTime.setTextColor(Color.parseColor("#000000"))
         }
         if(getItem(position).imgPath!!.isNotEmpty()) {
             holder.itemView.imageNote.visibility = View.VISIBLE
             GlideApp.with(holder.itemView)
                 .load(getItem(position).imgPath)
+                .placeholder(R.color.colorDefaultNoteColor)
                 .into(holder.itemView.imageNote)
         } else {
             holder.itemView.imageNote.visibility = View.GONE
@@ -131,8 +133,7 @@ class NoteAdapter(
     override fun getItemId(position: Int): Long = getItem(position).id.toLong()
 
     fun search(searchKeyword: String) {
-        timerTask = Timer()
-        timerTask.schedule(500) {
+        timerTask = Timer().schedule(500) {
             if (searchKeyword.isNotEmpty()) {
                 temp = mutableListOf()
                 for (note in searchList) {

@@ -3,6 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mainTop_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorDarkPrimary"
@@ -90,14 +91,17 @@
         app:layout_constraintTop_toBottomOf="@+id/constraintLayout"
         app:layout_constraintVertical_bias="0.0">
 
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/Rv_notes"
+        <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_marginEnd="8dp"
-            android:layout_marginBottom="68dp"
-            tools:listitem="@layout/item_container_note" />
+            android:layout_marginBottom="68dp">
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/Rv_notes"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                tools:listitem="@layout/item_container_note" />
+        </androidx.core.widget.NestedScrollView>
 
         <com.google.android.material.bottomappbar.BottomAppBar
             android:id="@+id/bottomAppBar"
