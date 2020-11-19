@@ -5,8 +5,8 @@ This is Simple Todo Note.
 
 * Application Screen
 <div>
-<img width="300" src="https://user-images.githubusercontent.com/55890012/97432462-54c95400-195f-11eb-931d-682e72d3e197.png">
-<img width="300" src="https://user-images.githubusercontent.com/55890012/91754799-fdc82c80-ec04-11ea-91c2-bbd7d11aff34.png">
+<img width="300" src="https://user-images.githubusercontent.com/55890012/99682418-8480fd00-2ac2-11eb-8739-0e4f4249d829.png">
+<img width="300" src="https://user-images.githubusercontent.com/55890012/99682425-85b22a00-2ac2-11eb-9c87-506c5bfae77e.png">
   
 
 </div>
