@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorDarkPrimary"
+    android:background="@color/colorPrimary"
     tools:context=".ui.CreateNoteActivity">
 
     <ScrollView
@@ -29,7 +29,6 @@
                 android:layout_marginTop="20dp"
                 android:contentDescription="@string/app_name"
                 android:src="@drawable/ic_back"
-                app:tint="@color/colorIcons"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -42,8 +41,7 @@
                 android:padding="4dp"
                 android:src="@drawable/ic_done"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/imgBack"
-                app:tint="@color/colorIcons" />
+                app:layout_constraintTop_toTopOf="@+id/imgBack" />
 
             <EditText
                 android:id="@+id/inputNoteTitle"

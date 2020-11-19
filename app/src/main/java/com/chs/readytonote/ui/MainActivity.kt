@@ -15,6 +15,7 @@ import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.chs.readytonote.Preferences
@@ -54,10 +55,16 @@ class MainActivity : AppCompatActivity() {
 
     private fun checkTheme() {
         Log.d("Preferences","${Preferences.data}")
+
         when (Preferences.data) {
+            "WhiteMode" ->{
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+            }
+            "DarkMode" ->{
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+//                setTheme(R.style.AppDarkTheme)
+            }
             "Default" -> ""
-            "DarkMode" -> setTheme(R.style.AppDarkTheme)
-            "WhiteMode" -> setTheme(R.style.AppTheme)
         }
     }
 

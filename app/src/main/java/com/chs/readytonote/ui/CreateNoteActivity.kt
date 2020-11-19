@@ -101,6 +101,7 @@ class CreateNoteActivity : AppCompatActivity() {
         }
 
         imgBack.setOnClickListener {
+            closeKeyboard()
             onBackPressed()
         }
 
