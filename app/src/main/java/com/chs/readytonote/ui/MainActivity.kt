@@ -145,6 +145,7 @@ class MainActivity : AppCompatActivity() {
         viewModel.getAllNotes().observe(this, { notes ->
             notesAdapter.submitList(notes)
         })
+        checkList = mutableMapOf()
     }
 
     private fun searchNote() {
