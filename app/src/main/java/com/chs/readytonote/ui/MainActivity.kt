@@ -178,9 +178,13 @@ class MainActivity : AppCompatActivity() {
                     bottomAppBar.replaceMenu(R.menu.select_note)
                 }
                 R.id.main_menu_selectAll -> {
-                    click = if(!click) {
+                    click = if(!click &&
+                        checkList.size!=notesAdapter.currentList.size) {
                         notesAdapter.selectAll(true)
                         true
+                    } else if(checkList.size==notesAdapter.currentList.size) {
+                        notesAdapter.selectAll(false)
+                        false
                     } else {
                         notesAdapter.selectAll(false)
                         false
