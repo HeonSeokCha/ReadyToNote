@@ -5,6 +5,7 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import android.graphics.drawable.ColorDrawable
+import android.os.Build
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -48,23 +49,26 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         viewModel = ViewModelProvider(this, MainViewModelFactory(application))
             .get(MainViewModel::class.java)
+        initClick()
         initRecyclerView()
         initMenu()
-        initClick()
     }
 
     private fun checkTheme() {
-        Log.d("Preferences","${Preferences.data}")
-
         when (Preferences.data) {
             "WhiteMode" ->{
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
             }
             "DarkMode" ->{
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-//                setTheme(R.style.AppDarkTheme)
             }
-            "Default" -> ""
+            "Default" ->{
+                if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.Q) {
+                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
+                } else {
+                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_AUTO_BATTERY)
+                }
+            }
         }
     }
 
