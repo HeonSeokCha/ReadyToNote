@@ -57,16 +57,20 @@ class MainActivity : AppCompatActivity() {
     private fun checkTheme() {
         when (Preferences.data) {
             "WhiteMode" ->{
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+                AppCompatDelegate.setDefaultNightMode(
+                    AppCompatDelegate.MODE_NIGHT_NO)
             }
             "DarkMode" ->{
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+                AppCompatDelegate.setDefaultNightMode(
+                    AppCompatDelegate.MODE_NIGHT_YES)
             }
             "Default" ->{
                 if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.Q) {
-                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
+                    AppCompatDelegate.setDefaultNightMode(
+                        AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
                 } else {
-                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_AUTO_BATTERY)
+                    AppCompatDelegate.setDefaultNightMode(
+                        AppCompatDelegate.MODE_NIGHT_AUTO_BATTERY)
                 }
             }
         }
@@ -227,7 +231,7 @@ class MainActivity : AppCompatActivity() {
             "DarkMode" -> view.rdo_dark.isChecked = true
             "Default" -> view.rdo_default.isChecked = true
         }
-        view.radioGroup.setOnCheckedChangeListener { group, checkedId ->
+        view.radioGroup.setOnCheckedChangeListener { _, checkedId ->
             when(checkedId) {
                 R.id.rdo_dark -> Preferences.data = "DarkMode"
                 R.id.rdo_white -> Preferences.data = "WhiteMode"

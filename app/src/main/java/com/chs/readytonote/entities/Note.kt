@@ -28,11 +28,15 @@ data class Note(
 
     @ColumnInfo(name = "web_link")
     val webLink: String?,
+
+    @ColumnInfo(name = "record_file")
+    val recordFile: String?,
 ): Parcelable {
     @PrimaryKey(autoGenerate = true)
     var id: Int = 0
 
     constructor(parcel: Parcel) : this(
+        parcel.readString(),
         parcel.readString(),
         parcel.readString(),
         parcel.readString(),
@@ -52,6 +56,7 @@ data class Note(
         parcel.writeString(imgPath)
         parcel.writeString(color)
         parcel.writeString(webLink)
+        parcel.writeString(recordFile)
         parcel.writeInt(id)
     }
 

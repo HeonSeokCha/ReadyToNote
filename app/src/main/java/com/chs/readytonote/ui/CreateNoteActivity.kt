@@ -40,7 +40,8 @@ import kotlinx.android.synthetic.main.layout_decorations.view.*
 class CreateNoteActivity : AppCompatActivity() {
     companion object {
         private const val IMAGE_PICK_CODE = 1000
-        private const val PERMISSION_CODE = 1001
+        private const val PERMISSION_CODE_IMAGE = 1001
+        private const val PERMISSION_CODE_RECORD = 1002
     }
 
     private lateinit var viewModel: MainViewModel
@@ -136,7 +137,17 @@ class CreateNoteActivity : AppCompatActivity() {
             if (checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) ==
                 PackageManager.PERMISSION_DENIED) {
                 val permissions = arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE)
-                requestPermissions(permissions, PERMISSION_CODE)
+                requestPermissions(permissions, PERMISSION_CODE_IMAGE)
+            } else pickImageFromGallery()
+        } else pickImageFromGallery()
+    }
+
+    private fun checkPermRecord() {
+        if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.M) {
+            if (checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) ==
+                PackageManager.PERMISSION_DENIED) {
+                val permissions = arrayOf(Manifest.permission.RECORD_AUDIO)
+                requestPermissions(permissions, PERMISSION_CODE_RECORD)
             } else pickImageFromGallery()
         } else pickImageFromGallery()
     }
@@ -162,6 +173,7 @@ class CreateNoteActivity : AppCompatActivity() {
                 imgPath = imagePath,
                 color = noteColor,
                 webLink = webLink,
+                recordFile = "",
             )
             if(::alreadyAvailableNote.isInitialized) {
                 note.id = alreadyAvailableNote.id
@@ -343,12 +355,15 @@ class CreateNoteActivity : AppCompatActivity() {
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         when(requestCode) {
-            PERMISSION_CODE -> {
+            PERMISSION_CODE_IMAGE -> {
                 if (grantResults.isNotEmpty() &&
                     grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     pickImageFromGallery()
                 }
                 else Toast.makeText(this, "Permission denied", Toast.LENGTH_SHORT).show()
+            }
+            PERMISSION_CODE_RECORD -> {
+
             }
         }
     }
