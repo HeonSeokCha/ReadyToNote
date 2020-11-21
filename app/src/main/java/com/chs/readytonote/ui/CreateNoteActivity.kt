@@ -377,6 +377,7 @@ class CreateNoteActivity : AppCompatActivity() {
                 .into(imageNote)
             imagePath = getRealPathFromURI(this, data.data!!)!!
             imageDelete.visibility = View.VISIBLE
+            bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
         }
     }
 
