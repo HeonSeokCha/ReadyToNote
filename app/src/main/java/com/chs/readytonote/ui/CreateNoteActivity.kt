@@ -226,7 +226,7 @@ class CreateNoteActivity : AppCompatActivity() {
                 imageColorYellow.setImageResource(0)
                 imageColorRed.setImageResource(0)
                 imageColorBlue.setImageResource(0)
-                imageColorBlack.setImageResource(0)
+                imageColorPurple.setImageResource(0)
                 setSubtitleIndicator()
             }
 
@@ -236,7 +236,7 @@ class CreateNoteActivity : AppCompatActivity() {
                 imageColorYellow.setImageResource(R.drawable.ic_done)
                 imageColorRed.setImageResource(0)
                 imageColorBlue.setImageResource(0)
-                imageColorBlack.setImageResource(0)
+                imageColorPurple.setImageResource(0)
                 setSubtitleIndicator()
             }
 
@@ -246,7 +246,7 @@ class CreateNoteActivity : AppCompatActivity() {
                 imageColorYellow.setImageResource(0)
                 imageColorRed.setImageResource(R.drawable.ic_done)
                 imageColorBlue.setImageResource(0)
-                imageColorBlack.setImageResource(0)
+                imageColorPurple.setImageResource(0)
                 setSubtitleIndicator()
             }
 
@@ -256,17 +256,17 @@ class CreateNoteActivity : AppCompatActivity() {
                 imageColorYellow.setImageResource(0)
                 imageColorRed.setImageResource(0)
                 imageColorBlue.setImageResource(R.drawable.ic_done)
-                imageColorBlack.setImageResource(0)
+                imageColorPurple.setImageResource(0)
                 setSubtitleIndicator()
             }
 
-            imageColorBlack.setOnClickListener {
-                noteColor = "#000000"
+            imageColorPurple.setOnClickListener {
+                noteColor = "#967FFA"
                 imageColorDefault.setImageResource(0)
                 imageColorYellow.setImageResource(0)
                 imageColorRed.setImageResource(0)
                 imageColorBlue.setImageResource(0)
-                imageColorBlack.setImageResource(R.drawable.ic_done)
+                imageColorPurple.setImageResource(R.drawable.ic_done)
                 setSubtitleIndicator()
             }
         }
@@ -278,7 +278,7 @@ class CreateNoteActivity : AppCompatActivity() {
                 "#FDBE3B"->layoutMiscellaneous.imageColorYellow.performClick()
                 "#FF4842"->layoutMiscellaneous.imageColorRed.performClick()
                 "#3A52FC"->layoutMiscellaneous.imageColorBlue.performClick()
-                "#000000"->layoutMiscellaneous.imageColorBlack.performClick()
+                "#000000"->layoutMiscellaneous.imageColorPurple.performClick()
             }
         }
     }
