@@ -76,9 +76,6 @@ class CreateNoteActivity : AppCompatActivity() {
         if(intent.getBooleanExtra("shortCutImage",false)) {
             checkPermImage()
         }
-        if(intent.getBooleanExtra("shortCutMic",false)) {
-
-        }
 
         layoutMiscellaneous.findViewById<TextView>(R.id.textMiscellaneous)
             .setOnClickListener {
@@ -138,16 +135,6 @@ class CreateNoteActivity : AppCompatActivity() {
                 PackageManager.PERMISSION_DENIED) {
                 val permissions = arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE)
                 requestPermissions(permissions, PERMISSION_CODE_IMAGE)
-            } else pickImageFromGallery()
-        } else pickImageFromGallery()
-    }
-
-    private fun checkPermRecord() {
-        if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.M) {
-            if (checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) ==
-                PackageManager.PERMISSION_DENIED) {
-                val permissions = arrayOf(Manifest.permission.RECORD_AUDIO)
-                requestPermissions(permissions, PERMISSION_CODE_RECORD)
             } else pickImageFromGallery()
         } else pickImageFromGallery()
     }
