@@ -3,7 +3,7 @@ package com.chs.readytonote.viewmodel
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import com.chs.readytonote.NoteRepository
+import com.chs.readytonote.repository.NoteRepository
 import com.chs.readytonote.entities.Note
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

@@ -6,7 +6,6 @@ import com.chs.readytonote.entities.Note
 
 @Dao
 interface NoteDao {
-
     @Query("SELECT * FROM notes ORDER BY id DESC")
     fun getAllNotes(): LiveData<MutableList<Note>>
 
@@ -17,5 +16,5 @@ interface NoteDao {
     suspend fun deleteNote(note: Note)
 
     @Query("DELETE FROM notes")
-    suspend fun deleteAll() : Int
+    suspend fun deleteNoteAll() : Int
 }
