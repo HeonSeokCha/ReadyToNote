@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.chs.readytonote.Preferences
 import com.chs.readytonote.R
 import com.chs.readytonote.adapter.NoteAdapter
+import com.chs.readytonote.databinding.ActivityMainBinding
 import com.chs.readytonote.entities.Note
 import com.chs.readytonote.viewmodel.MainViewModel
 import com.chs.readytonote.viewmodel.MainViewModelFactory
@@ -33,6 +34,7 @@ class MainActivity : AppCompatActivity() {
         private const val REQUEST_CODE_ADD_NOTE = 1
         private const val REQUEST_CODE_UPDATE_NOTE = 2
     }
+    private lateinit var binding: ActivityMainBinding
     private lateinit var dialogTheme: AlertDialog
     private lateinit var notesAdapter: NoteAdapter
     private lateinit var viewModel: MainViewModel
@@ -43,7 +45,8 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         checkTheme()
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
         viewModel = ViewModelProvider(this, MainViewModelFactory(application))
             .get(MainViewModel::class.java)
         initClick()
@@ -75,7 +78,7 @@ class MainActivity : AppCompatActivity() {
 
     @SuppressLint("UseCompatLoadingForDrawables")
     private fun initClick() {
-        imgAddNoteMain.setOnClickListener {
+        binding.imgAddNoteMain.setOnClickListener {
             if(editMode && ::checkList.isInitialized) {
                 for(i in checkList.values) {
                     viewModel.delete(i)
@@ -86,10 +89,10 @@ class MainActivity : AppCompatActivity() {
                 checkList.clear()
                 editMode = false
                 notesAdapter.editItemMode(false)
-                imgAddNoteMain.setImageDrawable(
+                binding.imgAddNoteMain.setImageDrawable(
                         resources.getDrawable(R.drawable.ic_add, null)
                 )
-                bottomAppBar.replaceMenu(R.menu.main_note)
+                binding.bottomAppBar.replaceMenu(R.menu.main_note)
                 getNote()
             } else {
                 startActivityForResult(
@@ -97,14 +100,14 @@ class MainActivity : AppCompatActivity() {
                         CreateNoteActivity::class.java), REQUEST_CODE_ADD_NOTE)
             }
         }
-        btn_darkMode.setOnClickListener {
+        binding.btnDarkMode.setOnClickListener {
             showThemeDialog()
         }
     }
 
     @SuppressLint("UseCompatLoadingForDrawables")
     private fun initRecyclerView() {
-        Rv_notes.apply {
+        binding.RvNotes.apply {
             notesAdapter = NoteAdapter( clickListener = { note, position ->
                 noteClickPosition = position
                 val intent = Intent(this@MainActivity,
@@ -116,18 +119,18 @@ class MainActivity : AppCompatActivity() {
             }, longClickListener = { chkState ->
                 if (chkState) {
                     editMode = true
-                    imgAddNoteMain.isEnabled = false
-                    imgAddNoteMain.setImageDrawable(
+                    binding.imgAddNoteMain.isEnabled = false
+                    binding.imgAddNoteMain.setImageDrawable(
                         resources.getDrawable(R.drawable.ic_delete, null))
-                    bottomAppBar.replaceMenu(R.menu.select_note)
+                    binding.bottomAppBar.replaceMenu(R.menu.select_note)
                 } else {
                     editMode = false
-                    imgAddNoteMain.setImageDrawable(
+                    binding.imgAddNoteMain.setImageDrawable(
                 resources.getDrawable(R.drawable.ic_add, null))
                 }
             }, checkClickListener = { notes ->
                     checkList = notes
-                    imgAddNoteMain.isEnabled = checkList.isNotEmpty()
+                    binding.imgAddNoteMain.isEnabled = checkList.isNotEmpty()
                 }
             )
             this.layoutManager = StaggeredGridLayoutManager(2,1)
@@ -146,7 +149,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun searchNote() {
-        inputSearch.addTextChangedListener(object : TextWatcher {
+        binding.inputSearch.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(p0: Editable?) {
                 notesAdapter.search(p0.toString())
             }
@@ -170,8 +173,8 @@ class MainActivity : AppCompatActivity() {
     @SuppressLint("UseCompatLoadingForDrawables")
     private fun initMenu(){
         var click = false
-        bottomAppBar.replaceMenu(R.menu.main_note)
-        bottomAppBar.setOnMenuItemClickListener {
+        binding.bottomAppBar.replaceMenu(R.menu.main_note)
+        binding.bottomAppBar.setOnMenuItemClickListener {
             when(it.itemId) {
                 R.id.main_menu_edit -> {
                     click = false
@@ -181,7 +184,7 @@ class MainActivity : AppCompatActivity() {
                     imgAddNoteMain.setImageDrawable(
                         resources.getDrawable(R.drawable.ic_delete, null)
                     )
-                    bottomAppBar.replaceMenu(R.menu.select_note)
+                    binding.bottomAppBar.replaceMenu(R.menu.select_note)
                 }
                 R.id.main_menu_selectAll -> {
                     click = if(!click &&
@@ -203,13 +206,6 @@ class MainActivity : AppCompatActivity() {
                     }
                     startActivityForResult(intent, REQUEST_CODE_ADD_NOTE)
                 }
-                R.id.main_menu_shortcut_record -> {
-                    val intent = Intent(this@MainActivity,
-                        CreateNoteActivity::class.java).apply {
-                        putExtra("shortCutMic", true)
-                    }
-                    startActivityForResult(intent, REQUEST_CODE_ADD_NOTE)
-                }
             }
             return@setOnMenuItemClickListener false
         }
@@ -217,30 +213,30 @@ class MainActivity : AppCompatActivity() {
 
     private fun showThemeDialog() {
         val builder: AlertDialog.Builder = AlertDialog.Builder(this)
-        val view = LayoutInflater.from(this).inflate(R.layout.layout_theme_select,
+        val dialogView = LayoutInflater.from(this).inflate(R.layout.layout_theme_select,
             (findViewById(R.id.layoutThemeContainer)))
-        builder.setView(view)
+        builder.setView(dialogView)
         dialogTheme = builder.create()
         if(dialogTheme.window!=null) {
             dialogTheme.window!!.setBackgroundDrawable(ColorDrawable(0))
         }
         when (Preferences.data) {
-            "WhiteMode" -> view.rdo_white.isChecked = true
-            "DarkMode" -> view.rdo_dark.isChecked = true
-            "Default" -> view.rdo_default.isChecked = true
+            "WhiteMode" -> dialogView.rdo_white.isChecked = true
+            "DarkMode" -> dialogView.rdo_dark.isChecked = true
+            "Default" -> dialogView.rdo_default.isChecked = true
         }
-        view.radioGroup.setOnCheckedChangeListener { _, checkedId ->
+        dialogView.radioGroup.setOnCheckedChangeListener { _, checkedId ->
             when(checkedId) {
                 R.id.rdo_dark -> Preferences.data = "DarkMode"
                 R.id.rdo_white -> Preferences.data = "WhiteMode"
                 R.id.rdo_default -> Preferences.data = "Default"
             }
         }
-        view.btn_ok.setOnClickListener {
+        dialogView.btn_ok.setOnClickListener {
             dialogTheme.dismiss()
             this@MainActivity.recreate()
         }
-        view.btn_cancel.setOnClickListener {
+        dialogView.btn_cancel.setOnClickListener {
             dialogTheme.dismiss()
         }
         dialogTheme.show()
@@ -252,9 +248,9 @@ class MainActivity : AppCompatActivity() {
             editMode = false
             notesAdapter.selectAll(false)
             notesAdapter.editItemMode(false)
-            bottomAppBar.replaceMenu(R.menu.main_note)
-            imgAddNoteMain.isEnabled = true
-            imgAddNoteMain.setImageDrawable(
+            binding.bottomAppBar.replaceMenu(R.menu.main_note)
+            binding.imgAddNoteMain.isEnabled = true
+            binding.imgAddNoteMain.setImageDrawable(
                 resources.getDrawable(R.drawable.ic_add, null)
             )
         } else {

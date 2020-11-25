@@ -28,6 +28,7 @@ import java.util.*
 import androidx.core.content.ContextCompat.checkSelfPermission
 import com.bumptech.glide.load.resource.bitmap.DownsampleStrategy
 import com.chs.readytonote.GlideApp
+import com.chs.readytonote.databinding.ActivityCreateNoteBinding
 import com.chs.readytonote.getRealPathFromURI
 import com.chs.readytonote.viewmodel.MainViewModel
 import com.chs.readytonote.viewmodel.MainViewModelFactory
@@ -43,19 +44,21 @@ class CreateNoteActivity : AppCompatActivity() {
         private const val PERMISSION_CODE_IMAGE = 1001
         private const val PERMISSION_CODE_RECORD = 1002
     }
-
-    private lateinit var viewModel: MainViewModel
+    private lateinit var alreadyAvailableNote: Note
+    private lateinit var binding: ActivityCreateNoteBinding
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<ConstraintLayout>
-    private lateinit var noteColor: String
-    private lateinit var imagePath: String
-    private lateinit var webLink: String
     private lateinit var dialogUrlAdd: AlertDialog
     private lateinit var dialogDelete: AlertDialog
-    private lateinit var alreadyAvailableNote: Note
+    private lateinit var imagePath: String
+    private lateinit var noteColor: String
+    private lateinit var viewModel: MainViewModel
+    private lateinit var webLink: String
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_create_note)
+        binding = ActivityCreateNoteBinding.inflate(layoutInflater)
+        setContentView(binding.root)
         viewModel = ViewModelProvider(this,MainViewModelFactory(application))
             .get(MainViewModel::class.java)
         initView()
@@ -65,7 +68,7 @@ class CreateNoteActivity : AppCompatActivity() {
     private fun initView() {
         noteColor = "#333333"
         imagePath = ""
-        txtDateTime.text = SimpleDateFormat("yyyy년 MM월 dd일 E요일",
+        binding.txtDateTime.text = SimpleDateFormat("yyyy년 MM월 dd일 E요일",
             Locale.KOREA).format(Date())
         bottomSheetBehavior = BottomSheetBehavior.from(layoutMiscellaneous)
 
@@ -76,7 +79,6 @@ class CreateNoteActivity : AppCompatActivity() {
         if(intent.getBooleanExtra("shortCutImage",false)) {
             checkPermImage()
         }
-
         layoutMiscellaneous.findViewById<TextView>(R.id.textMiscellaneous)
             .setOnClickListener {
             if(bottomSheetBehavior.state != BottomSheetBehavior.STATE_EXPANDED) {
@@ -181,27 +183,27 @@ class CreateNoteActivity : AppCompatActivity() {
     }
 
     private fun setViewOrUpdateNote() {
-        inputNoteTitle.setText(alreadyAvailableNote.title)
-        inputNoteSubtitle.setText(alreadyAvailableNote.subtitle)
-        inputNoteText.setText(alreadyAvailableNote.noteText)
+        binding.inputNoteTitle.setText(alreadyAvailableNote.title)
+        binding.inputNoteSubtitle.setText(alreadyAvailableNote.subtitle)
+        binding.inputNoteText.setText(alreadyAvailableNote.noteText)
 
         if(alreadyAvailableNote.imgPath!!.isNotEmpty()) {
-            imageNote.visibility = View.VISIBLE
+            binding.imageNote.visibility = View.VISIBLE
             GlideApp.with(this).load(alreadyAvailableNote.imgPath)
                 .error(R.drawable.ic_done)
-                .into(imageNote)
+                .into(binding.imageNote)
             imagePath = alreadyAvailableNote.imgPath!!
-            imageDelete.visibility = View.VISIBLE
+            binding.imageDelete.visibility = View.VISIBLE
         }
         if(alreadyAvailableNote.webLink!!.isNotEmpty()) {
-            txtWebUrl.text = alreadyAvailableNote.webLink
-            txtWebUrl.visibility = View.VISIBLE
-            imageDeleteUrl.visibility = View.VISIBLE
+            binding.txtWebUrl.text = alreadyAvailableNote.webLink
+            binding.txtWebUrl.visibility = View.VISIBLE
+            binding.imageDeleteUrl.visibility = View.VISIBLE
         }
     }
 
     private fun setSubtitleIndicator() {
-        var gradientDrawable= (viewSubtitleIndicator.background as GradientDrawable)
+        var gradientDrawable= (binding.viewSubtitleIndicator.background as GradientDrawable)
         gradientDrawable.setColor(Color.parseColor(noteColor))
     }
 
@@ -272,34 +274,34 @@ class CreateNoteActivity : AppCompatActivity() {
 
     private fun showAddUrlDialog() {
         val builder:AlertDialog.Builder = AlertDialog.Builder(this)
-        val view = LayoutInflater.from(this).inflate(R.layout.layout_add_url,
+        val dialogView = LayoutInflater.from(this).inflate(R.layout.layout_add_url,
             (findViewById(R.id.layoutAddUrlContainer)))
-        builder.setView(view)
+        builder.setView(dialogView)
         dialogUrlAdd = builder.create()
         if(dialogUrlAdd.window!=null) {
             dialogUrlAdd.window!!.setBackgroundDrawable(ColorDrawable(0))
         }
-        view.inputUrl.requestFocus()
-        view.textAdd.setOnClickListener {
+        dialogView.inputUrl.requestFocus()
+        dialogView.textAdd.setOnClickListener {
             when {
-                view.inputUrl.text.toString().trim().isEmpty() -> {
+                dialogView.inputUrl.text.toString().trim().isEmpty() -> {
                     Toast.makeText(this@CreateNoteActivity,
                         "Enter URL", Toast.LENGTH_SHORT).show()
                 }
-                !Patterns.WEB_URL.matcher(view.inputUrl.text.toString()).matches() -> {
+                !Patterns.WEB_URL.matcher(dialogView.inputUrl.text.toString()).matches() -> {
                     Toast.makeText(this@CreateNoteActivity,
                         "Enter valid URL", Toast.LENGTH_SHORT).show()
                 }
                 else -> {
                     closeKeyboard()
-                    txtWebUrl.text = view.inputUrl.text
+                    txtWebUrl.text = dialogView.inputUrl.text
                     txtWebUrl.visibility = View.VISIBLE
                     dialogUrlAdd.dismiss()
                     imageDeleteUrl.visibility = View.VISIBLE
                 }
             }
         }
-        view.textCancel.setOnClickListener {
+        dialogView.textCancel.setOnClickListener {
             dialogUrlAdd.dismiss()
         }
         dialogUrlAdd.show()
@@ -307,18 +309,18 @@ class CreateNoteActivity : AppCompatActivity() {
 
     private fun showDeleteDialog() {
         val builder:AlertDialog.Builder = AlertDialog.Builder(this)
-        val view = LayoutInflater.from(this).inflate(R.layout.layout_delete_note,
+        val dialogView = LayoutInflater.from(this).inflate(R.layout.layout_delete_note,
             (findViewById(R.id.layoutDeleteNoteContainer)))
-        builder.setView(view)
+        builder.setView(dialogView)
         dialogDelete = builder.create()
         if(dialogDelete.window != null) {
             dialogDelete.window!!.setBackgroundDrawable(ColorDrawable(0))
         }
-        view.txtDeleteNote.setOnClickListener {
+        dialogView.txtDeleteNote.setOnClickListener {
             dialogDelete.dismiss()
             deleteNote(alreadyAvailableNote)
         }
-        view.textDeleteCancel.setOnClickListener {
+        dialogView.textDeleteCancel.setOnClickListener {
             dialogDelete.dismiss()
         }
         dialogDelete.show()
@@ -335,12 +337,15 @@ class CreateNoteActivity : AppCompatActivity() {
 
     private fun closeKeyboard() {
         if(this.currentFocus != null) {
-            val inputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-            inputMethodManager.hideSoftInputFromWindow(this.currentFocus!!.windowToken, 0)
+            val inputMethodManager = getSystemService(
+                Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            inputMethodManager.hideSoftInputFromWindow(
+                this.currentFocus!!.windowToken, 0)
         }
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+    override fun onRequestPermissionsResult(requestCode: Int,
+                                            permissions: Array<out String>, grantResults: IntArray) {
         when(requestCode) {
             PERMISSION_CODE_IMAGE -> {
                 if (grantResults.isNotEmpty() &&
@@ -349,21 +354,18 @@ class CreateNoteActivity : AppCompatActivity() {
                 }
                 else Toast.makeText(this, "Permission denied", Toast.LENGTH_SHORT).show()
             }
-            PERMISSION_CODE_RECORD -> {
-
-            }
         }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if(resultCode==Activity.RESULT_OK && requestCode == IMAGE_PICK_CODE) {
-            imageNote.visibility = View.VISIBLE
+            binding.imageNote.visibility = View.VISIBLE
             DownsampleStrategy.SampleSizeRounding.QUALITY
             GlideApp.with(this).load(data!!.data)
-                .into(imageNote)
+                .into(binding.imageNote)
             imagePath = getRealPathFromURI(this, data.data!!)!!
-            imageDelete.visibility = View.VISIBLE
+            binding.imageDelete.visibility = View.VISIBLE
             bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
         }
     }
