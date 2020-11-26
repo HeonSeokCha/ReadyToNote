@@ -11,6 +11,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.request.target.CustomTarget
@@ -101,9 +102,8 @@ class NoteAdapter(
     @SuppressLint("ResourceAsColor")
     override fun onBindViewHolder(holder: NoteViewHolder, position: Int) {
         holder.binding.model = getItem(position)
-        if(getItem(position).color=="#333333") {
 
-        } else {
+        if(getItem(position).color != "#333333") {
             holder.itemView.layoutNote.setCardBackgroundColor(
                 Color.parseColor(getItem(position).color))
         }
@@ -113,6 +113,7 @@ class NoteAdapter(
             holder.itemView.txtSubtitle.setTextColor(Color.parseColor("#000000"))
             holder.itemView.txtDateTime.setTextColor(Color.parseColor("#000000"))
         }
+
         if(getItem(position).imgPath!!.isNotEmpty()) {
             holder.itemView.imageNote.visibility = View.VISIBLE
             GlideApp.with(holder.itemView)

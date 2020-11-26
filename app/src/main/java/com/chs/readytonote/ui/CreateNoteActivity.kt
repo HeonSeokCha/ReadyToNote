@@ -1,5 +1,6 @@
 package com.chs.readytonote.ui
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
@@ -11,6 +12,7 @@ import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.MediaStore
+import android.util.Log
 import android.util.Patterns
 import android.view.LayoutInflater
 import android.view.View
@@ -19,6 +21,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import com.chs.readytonote.R
 import com.chs.readytonote.entities.Note
@@ -42,7 +45,6 @@ class CreateNoteActivity : AppCompatActivity() {
     companion object {
         private const val IMAGE_PICK_CODE = 1000
         private const val PERMISSION_CODE_IMAGE = 1001
-        private const val PERMISSION_CODE_RECORD = 1002
     }
     private lateinit var alreadyAvailableNote: Note
     private lateinit var binding: ActivityCreateNoteBinding
@@ -88,7 +90,7 @@ class CreateNoteActivity : AppCompatActivity() {
             }
         }
         initMiscellaneous()
-        setSubtitleIndicator()
+        setSubtitleIndicator(noteColor)
     }
 
     private fun initClick(){
@@ -162,7 +164,6 @@ class CreateNoteActivity : AppCompatActivity() {
                 imgPath = imagePath,
                 color = noteColor,
                 webLink = webLink,
-                recordFile = "",
             )
             if(::alreadyAvailableNote.isInitialized) {
                 note.id = alreadyAvailableNote.id
@@ -202,9 +203,9 @@ class CreateNoteActivity : AppCompatActivity() {
         }
     }
 
-    private fun setSubtitleIndicator() {
-        var gradientDrawable= (binding.viewSubtitleIndicator.background as GradientDrawable)
-        gradientDrawable.setColor(Color.parseColor(noteColor))
+    private fun setSubtitleIndicator(color:String) {
+        var gradientDrawable = binding.viewSubtitleIndicator.background as GradientDrawable
+        gradientDrawable.setColor(Color.parseColor(color))
     }
 
     private fun initMiscellaneous() {
@@ -216,7 +217,7 @@ class CreateNoteActivity : AppCompatActivity() {
                 imageColorRed.setImageResource(0)
                 imageColorBlue.setImageResource(0)
                 imageColorPurple.setImageResource(0)
-                setSubtitleIndicator()
+                setSubtitleIndicator(noteColor)
             }
 
             imageColorYellow.setOnClickListener {
@@ -226,7 +227,7 @@ class CreateNoteActivity : AppCompatActivity() {
                 imageColorRed.setImageResource(0)
                 imageColorBlue.setImageResource(0)
                 imageColorPurple.setImageResource(0)
-                setSubtitleIndicator()
+                setSubtitleIndicator(noteColor)
             }
 
             imageColorRed.setOnClickListener {
@@ -236,7 +237,7 @@ class CreateNoteActivity : AppCompatActivity() {
                 imageColorRed.setImageResource(R.drawable.ic_done)
                 imageColorBlue.setImageResource(0)
                 imageColorPurple.setImageResource(0)
-                setSubtitleIndicator()
+                setSubtitleIndicator(noteColor)
             }
 
             imageColorBlue.setOnClickListener {
@@ -246,7 +247,7 @@ class CreateNoteActivity : AppCompatActivity() {
                 imageColorRed.setImageResource(0)
                 imageColorBlue.setImageResource(R.drawable.ic_done)
                 imageColorPurple.setImageResource(0)
-                setSubtitleIndicator()
+                setSubtitleIndicator(noteColor)
             }
 
             imageColorPurple.setOnClickListener {
@@ -256,18 +257,21 @@ class CreateNoteActivity : AppCompatActivity() {
                 imageColorRed.setImageResource(0)
                 imageColorBlue.setImageResource(0)
                 imageColorPurple.setImageResource(R.drawable.ic_done)
-                setSubtitleIndicator()
+                setSubtitleIndicator(noteColor)
             }
         }
 
         if(::alreadyAvailableNote.isInitialized
             && alreadyAvailableNote.color!!.isNotEmpty()) {
             when(alreadyAvailableNote.color) {
-                "#333333"->layoutMiscellaneous.imageColorDefault.performClick()
+                "#333333"-> {
+
+                    layoutMiscellaneous.imageColorDefault.performClick()
+                }
                 "#FDBE3B"->layoutMiscellaneous.imageColorYellow.performClick()
                 "#FF4842"->layoutMiscellaneous.imageColorRed.performClick()
                 "#3A52FC"->layoutMiscellaneous.imageColorBlue.performClick()
-                "#000000"->layoutMiscellaneous.imageColorPurple.performClick()
+                "#967FFA"->layoutMiscellaneous.imageColorPurple.performClick()
             }
         }
     }
