@@ -205,7 +205,11 @@ class CreateNoteActivity : AppCompatActivity() {
 
     private fun setSubtitleIndicator(color:String) {
         var gradientDrawable = binding.viewSubtitleIndicator.background as GradientDrawable
-        gradientDrawable.setColor(Color.parseColor(color))
+        if(noteColor=="#333333") {
+            gradientDrawable.setColor(resources.getColor(R.color.colorNoteDefaultColor,null))
+        } else {
+            gradientDrawable.setColor(Color.parseColor(noteColor))
+        }
     }
 
     private fun initMiscellaneous() {
