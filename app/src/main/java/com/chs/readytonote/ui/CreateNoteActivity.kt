@@ -21,7 +21,6 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import com.chs.readytonote.R
 import com.chs.readytonote.entities.Note
@@ -32,6 +31,7 @@ import androidx.core.content.ContextCompat.checkSelfPermission
 import com.bumptech.glide.load.resource.bitmap.DownsampleStrategy
 import com.chs.readytonote.GlideApp
 import com.chs.readytonote.databinding.ActivityCreateNoteBinding
+import com.chs.readytonote.getFileName
 import com.chs.readytonote.getRealPathFromURI
 import com.chs.readytonote.viewmodel.MainViewModel
 import com.chs.readytonote.viewmodel.MainViewModelFactory
@@ -373,6 +373,7 @@ class CreateNoteActivity : AppCompatActivity() {
             GlideApp.with(this).load(data!!.data)
                 .into(binding.imageNote)
             imagePath = getRealPathFromURI(this, data.data!!)!!
+            Log.d("ImagePath","${contentResolver.getFileName(data.data!!)}")
             binding.imageDelete.visibility = View.VISIBLE
             bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
         }

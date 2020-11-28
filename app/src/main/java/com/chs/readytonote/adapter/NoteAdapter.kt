@@ -31,8 +31,7 @@ class NoteAdapter(
     private val clickListener: (note: Note, position: Int) -> Unit,
     private val checkClickListener: (checkList: MutableMap<Int, Note>) -> Unit,
     private val longClickListener: (chkState: Boolean) -> Unit
-)
-    : ListAdapter<Note, NoteAdapter.NoteViewHolder>(NoteDiffUtilCallback()) {
+) : ListAdapter<Note, NoteAdapter.NoteViewHolder>(NoteDiffUtilCallback()) {
     class NoteViewHolder(val binding: ItemContainerNoteBinding)
         : RecyclerView.ViewHolder(binding.root)
 

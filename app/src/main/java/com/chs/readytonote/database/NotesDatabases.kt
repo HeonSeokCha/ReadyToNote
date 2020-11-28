@@ -6,8 +6,9 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.chs.readytonote.dao.NoteDao
 import com.chs.readytonote.entities.Note
+import com.chs.readytonote.entities.Todo
 
-@Database(entities = [Note::class],version = 1,exportSchema = false)
+@Database(entities = [Note::class,Todo::class],version = 1,exportSchema = false)
 abstract class NotesDatabases : RoomDatabase() {
 
     abstract fun noteDao(): NoteDao

@@ -1,19 +1,21 @@
 package com.chs.readytonote
 
 import android.content.ContentResolver
+import android.content.ContentUris
 import android.content.Context
 import android.database.Cursor
 import android.net.Uri
+import android.os.Environment
+import android.provider.DocumentsContract
 import android.provider.MediaStore
 import android.provider.OpenableColumns
-import android.util.Log
 import androidx.loader.content.CursorLoader
 import com.bumptech.glide.annotation.GlideModule
 import com.bumptech.glide.module.AppGlideModule
-import java.io.File
-import java.io.FileInputStream
-import java.io.FileOutputStream
 
+
+@GlideModule
+class MyGlide : AppGlideModule()
 
 internal fun getRealPathFromURI(context: Context, contentUri: Uri): String? {
     val proj = arrayOf(MediaStore.Images.Media.DATA)
@@ -28,16 +30,13 @@ internal fun getRealPathFromURI(context: Context, contentUri: Uri): String? {
 
 internal fun ContentResolver.getFileName(fileUri: Uri): String {
     var name = ""
-    val returnCursor = this.query(fileUri, null, null, null, null)
+    val projection = arrayOf(MediaStore.MediaColumns._ID)
+    val returnCursor = this.query(fileUri, projection, null, null, null)
     if (returnCursor != null) {
-        val nameIndex = returnCursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+        val nameIndex = returnCursor.getColumnIndex(MediaStore.MediaColumns._ID)
         returnCursor.moveToFirst()
-        Log.d("returnCursor","${returnCursor}")
-        name = returnCursor.getString(nameIndex)
+        val id = returnCursor.getInt(returnCursor.getColumnIndexOrThrow(MediaStore.MediaColumns._ID))
         returnCursor.close()
     }
     return name
 }
-
-@GlideModule
-class MyGlide : AppGlideModule()
