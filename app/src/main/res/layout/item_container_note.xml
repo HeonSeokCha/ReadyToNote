@@ -48,19 +48,19 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="12dp"
-                    android:layout_marginTop="8dp"
+                    android:layout_marginTop="16dp"
                     android:layout_marginEnd="12dp"
+                    android:ellipsize="end"
                     android:includeFontPadding="false"
+                    android:maxLines="2"
                     android:text="@{model.title}"
                     android:textColor="?android:attr/textColorPrimary"
                     android:textSize="16dp"
                     android:textStyle="bold"
-                    android:maxLines="2"
-                    android:ellipsize="end"
                     app:layout_constraintEnd_toStartOf="@+id/img_check"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/imageNote"
-                    tools:text="LoremIpsum"/>
+                    tools:text="LoremIpsum" />
 
                 <TextView
                     android:id="@+id/txtSubtitle"
@@ -84,17 +84,15 @@
                     android:id="@+id/txtDateTime"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="12dp"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginBottom="8dp"
+                    android:layout_marginEnd="16dp"
                     android:animateLayoutChanges="true"
                     android:includeFontPadding="false"
                     android:text=""
                     android:textColor="@color/colorNoteSubtitleText"
                     android:textSize="12dp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/txtSubtitle"
+                    app:layout_constraintBottom_toBottomOf="@+id/textView5"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/textView5"
                     tools:text="2020/11/30" />
 
                 <ImageView
@@ -108,6 +106,19 @@
                     app:layout_constraintBottom_toBottomOf="@+id/txtTitle"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="@+id/txtTitle" />
+
+                <TextView
+                    android:id="@+id/textView5"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="12dp"
+                    android:background="@drawable/background_note_subject"
+                    android:text="Notes"
+                    android:textSize="12dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="@+id/txtSubtitle"
+                    app:layout_constraintTop_toBottomOf="@+id/txtSubtitle" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.cardview.widget.CardView>

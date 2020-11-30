@@ -13,6 +13,9 @@ data class Note(
     @ColumnInfo(name = "title")
     val title: String?,
 
+    @ColumnInfo(name = "label")
+    val label: String?,
+
     @ColumnInfo(name = "date_time")
     val dateTime: String?,
 
@@ -43,12 +46,14 @@ data class Note(
         parcel.readString(),
         parcel.readString(),
         parcel.readString(),
+        parcel.readString(),
     ) {
         id = parcel.readInt()
     }
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeString(title)
+        parcel.writeString(label)
         parcel.writeString(dateTime)
         parcel.writeString(subtitle)
         parcel.writeString(noteText)
@@ -71,29 +76,4 @@ data class Note(
             return arrayOfNulls(size)
         }
     }
-}
-
-@Entity(
-    tableName = "todos",
-    foreignKeys = [
-        ForeignKey(
-            entity = Note::class,
-            parentColumns = ["id"],
-            childColumns = ["note_id"],
-            onDelete = CASCADE
-        )
-    ]
-)
-data class Todo(
-    @ColumnInfo(name = "note_id")
-    val noteId: Int?,
-
-    @ColumnInfo(name = "todo_title")
-    val todoTitle: String?,
-
-    @ColumnInfo(name = "todo_check")
-    val todoCheck: Boolean = false
-) {
-    @PrimaryKey(autoGenerate = true)
-    var id: Int = 0
 }

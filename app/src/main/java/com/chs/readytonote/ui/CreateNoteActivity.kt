@@ -1,6 +1,5 @@
 package com.chs.readytonote.ui
 import android.Manifest
-import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
@@ -30,7 +29,6 @@ import java.util.*
 import androidx.core.content.ContextCompat.checkSelfPermission
 import com.bumptech.glide.load.resource.bitmap.DownsampleStrategy
 import com.chs.readytonote.GlideApp
-import com.chs.readytonote.adapter.TodoAdapter
 import com.chs.readytonote.databinding.ActivityCreateNoteBinding
 import com.chs.readytonote.getFileName
 import com.chs.readytonote.getRealPathFromURI
@@ -54,7 +52,6 @@ class CreateNoteActivity : AppCompatActivity() {
     private lateinit var dialogDelete: AlertDialog
     private lateinit var imagePath: String
     private lateinit var noteColor: String
-    private lateinit var todoAdapter:TodoAdapter
     private lateinit var viewModel: MainViewModel
     private lateinit var webLink: String
 
@@ -72,7 +69,7 @@ class CreateNoteActivity : AppCompatActivity() {
     private fun initView() {
         noteColor = "#333333"
         imagePath = ""
-        binding.txtDateTime.text = SimpleDateFormat("yyyy년 MM월 dd일 E요일",
+        binding.txtDateTime.text = SimpleDateFormat("yyyy년 MM월 dd일 E",
             Locale.KOREA).format(Date())
         bottomSheetBehavior = BottomSheetBehavior.from(layoutMiscellaneous)
 
@@ -160,6 +157,7 @@ class CreateNoteActivity : AppCompatActivity() {
 
             val note = Note(
                 title = inputNoteTitle.text.toString(),
+                label = "",
                 dateTime = txtDateTime.text.toString(),
                 subtitle = inputNoteSubtitle.text.toString(),
                 noteText = inputNoteText.text.toString(),
@@ -190,7 +188,7 @@ class CreateNoteActivity : AppCompatActivity() {
         binding.inputNoteSubtitle.setText(alreadyAvailableNote.subtitle)
         binding.inputNoteText.setText(alreadyAvailableNote.noteText)
 
-        if(alreadyAvailableNote.imgPath!!.isNotEmpty()) {
+        if (alreadyAvailableNote.imgPath!!.isNotEmpty()) {
             binding.imageNote.visibility = View.VISIBLE
             GlideApp.with(this).load(alreadyAvailableNote.imgPath)
                 .error(R.drawable.ic_done)
@@ -198,25 +196,11 @@ class CreateNoteActivity : AppCompatActivity() {
             imagePath = alreadyAvailableNote.imgPath!!
             binding.imageDelete.visibility = View.VISIBLE
         }
-        if(alreadyAvailableNote.webLink!!.isNotEmpty()) {
+        if (alreadyAvailableNote.webLink!!.isNotEmpty()) {
             binding.txtWebUrl.text = alreadyAvailableNote.webLink
             binding.txtWebUrl.visibility = View.VISIBLE
             binding.imageDeleteUrl.visibility = View.VISIBLE
         }
-    }
-
-    private fun getTodo() {
-        viewModel.getALlTodos().observe(this,{
-
-        })
-    }
-
-    private fun saveTodo() {
-
-    }
-
-    private fun deleteTodo() {
-
     }
 
     private fun setSubtitleIndicator(color:String) {
