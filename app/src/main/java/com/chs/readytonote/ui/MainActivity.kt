@@ -81,7 +81,7 @@ class MainActivity : AppCompatActivity() {
         binding.imgAddNoteMain.setOnClickListener {
             if(editMode && ::checkList.isInitialized) {
                 for(i in checkList.values) {
-                    viewModel.delete(i)
+                    viewModel.deleteNote(i)
                 }
                 Toast.makeText(this,
                     "${checkList.size}개의 노트가 삭제되었습니다.",

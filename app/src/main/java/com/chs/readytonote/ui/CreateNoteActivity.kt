@@ -30,6 +30,7 @@ import java.util.*
 import androidx.core.content.ContextCompat.checkSelfPermission
 import com.bumptech.glide.load.resource.bitmap.DownsampleStrategy
 import com.chs.readytonote.GlideApp
+import com.chs.readytonote.adapter.TodoAdapter
 import com.chs.readytonote.databinding.ActivityCreateNoteBinding
 import com.chs.readytonote.getFileName
 import com.chs.readytonote.getRealPathFromURI
@@ -53,6 +54,7 @@ class CreateNoteActivity : AppCompatActivity() {
     private lateinit var dialogDelete: AlertDialog
     private lateinit var imagePath: String
     private lateinit var noteColor: String
+    private lateinit var todoAdapter:TodoAdapter
     private lateinit var viewModel: MainViewModel
     private lateinit var webLink: String
 
@@ -168,7 +170,7 @@ class CreateNoteActivity : AppCompatActivity() {
             if(::alreadyAvailableNote.isInitialized) {
                 note.id = alreadyAvailableNote.id
             }
-            viewModel.insert(note)
+            viewModel.insertNote(note)
             closeKeyboard()
             setResult(Activity.RESULT_OK, Intent())
             finish()
@@ -176,7 +178,7 @@ class CreateNoteActivity : AppCompatActivity() {
     }
 
     private fun deleteNote(note:Note) {
-        viewModel.delete(note)
+        viewModel.deleteNote(note)
         val intent = Intent()
         intent.putExtra("isNoteDelete",true)
         setResult(Activity.RESULT_OK,intent)
@@ -201,6 +203,20 @@ class CreateNoteActivity : AppCompatActivity() {
             binding.txtWebUrl.visibility = View.VISIBLE
             binding.imageDeleteUrl.visibility = View.VISIBLE
         }
+    }
+
+    private fun getTodo() {
+        viewModel.getALlTodos().observe(this,{
+
+        })
+    }
+
+    private fun saveTodo() {
+
+    }
+
+    private fun deleteTodo() {
+
     }
 
     private fun setSubtitleIndicator(color:String) {

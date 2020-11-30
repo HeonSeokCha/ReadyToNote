@@ -5,6 +5,7 @@ import androidx.lifecycle.LiveData
 import com.chs.readytonote.dao.NoteDao
 import com.chs.readytonote.database.NotesDatabases
 import com.chs.readytonote.entities.Note
+import com.chs.readytonote.entities.Todo
 
 class NoteRepository (application: Application) {
 
@@ -15,12 +16,22 @@ class NoteRepository (application: Application) {
 
     fun getNotes(): LiveData<MutableList<Note>> = dao.getAllNotes()
 
-    suspend fun insert(note:Note) {
+    fun getTodos(): LiveData<MutableList<Todo>> = dao.getAllToDos()
+
+    suspend fun insertNote(note:Note) {
         dao.insertNote(note)
     }
 
-    suspend fun delete(note:Note) {
+    suspend fun insertTodo(todo:Todo) {
+        dao.insertTodo(todo)
+    }
+
+    suspend fun deleteNote(note:Note) {
         dao.deleteNote(note)
+    }
+
+    suspend fun deleteTodo(todo:Todo) {
+        dao.deleteTodo(todo)
     }
 
     suspend fun allDelete() {
