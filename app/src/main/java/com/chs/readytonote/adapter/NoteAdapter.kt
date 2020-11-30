@@ -101,35 +101,38 @@ class NoteAdapter(
     @SuppressLint("ResourceAsColor")
     override fun onBindViewHolder(holder: NoteViewHolder, position: Int) {
         holder.binding.model = getItem(position)
+        with(holder.itemView) {
+            this.txtDateTime.text = getItem(position).dateTime!!.split("년 ")[1]
 
-        if(getItem(position).color != "#333333") {
-            holder.itemView.layoutNote.setCardBackgroundColor(
-                Color.parseColor(getItem(position).color))
-        }
-
-        if(getItem(position).color=="#FDBE3B") {
-            holder.itemView.txtTitle.setTextColor(Color.parseColor("#000000"))
-            holder.itemView.txtSubtitle.setTextColor(Color.parseColor("#000000"))
-            holder.itemView.txtDateTime.setTextColor(Color.parseColor("#000000"))
-        }
-
-        if(getItem(position).imgPath!!.isNotEmpty()) {
-            holder.itemView.imageNote.visibility = View.VISIBLE
-            GlideApp.with(holder.itemView)
-                .load(getItem(position).imgPath)
-                .placeholder(R.color.colorNoteDefaultColor)
-                .into(holder.itemView.imageNote)
-        } else {
-            holder.itemView.imageNote.visibility = View.GONE
-        }
-        when {
-            checkBox -> {
-                holder.itemView.img_check.visibility = View.VISIBLE
-                holder.itemView.img_check.isActivated = isSelectModeOn
+            if(getItem(position).color != "#333333") {
+                this.layoutNote.setCardBackgroundColor(
+                    Color.parseColor(getItem(position).color))
             }
-            else -> {
-                holder.itemView.img_check.visibility = View.GONE
-                holder.itemView.img_check.isActivated = false
+
+            if(getItem(position).color=="#FDBE3B") {
+                this.txtTitle.setTextColor(Color.parseColor("#000000"))
+                this.txtSubtitle.setTextColor(Color.parseColor("#000000"))
+                this.txtDateTime.setTextColor(Color.parseColor("#000000"))
+            }
+
+            if(getItem(position).imgPath!!.isNotEmpty()) {
+                this.imageNote.visibility = View.VISIBLE
+                GlideApp.with(this)
+                    .load(getItem(position).imgPath)
+                    .placeholder(R.color.colorNoteDefaultColor)
+                    .into(this.imageNote)
+            } else {
+                this.imageNote.visibility = View.GONE
+            }
+            when {
+                checkBox -> {
+                    this.img_check.visibility = View.VISIBLE
+                    this.img_check.isActivated = isSelectModeOn
+                }
+                else -> {
+                    this.img_check.visibility = View.GONE
+                    this.img_check.isActivated = false
+                }
             }
         }
     }

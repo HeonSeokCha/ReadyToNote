@@ -59,7 +59,8 @@
                     android:ellipsize="end"
                     app:layout_constraintEnd_toStartOf="@+id/img_check"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/imageNote" />
+                    app:layout_constraintTop_toBottomOf="@+id/imageNote"
+                    tools:text="LoremIpsum"/>
 
                 <TextView
                     android:id="@+id/txtSubtitle"
@@ -76,7 +77,8 @@
                     android:ellipsize="end"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/txtTitle" />
+                    app:layout_constraintTop_toBottomOf="@+id/txtTitle"
+                    tools:text="LoremIpsum"/>
 
                 <TextView
                     android:id="@+id/txtDateTime"
@@ -84,17 +86,16 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="12dp"
                     android:layout_marginTop="8dp"
-                    android:layout_marginEnd="12dp"
                     android:layout_marginBottom="8dp"
                     android:animateLayoutChanges="true"
                     android:includeFontPadding="false"
-                    android:text="@{model.dateTime}"
+                    android:text=""
                     android:textColor="@color/colorNoteSubtitleText"
                     android:textSize="12dp"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/txtSubtitle" />
+                    app:layout_constraintTop_toBottomOf="@+id/txtSubtitle"
+                    tools:text="2020/11/30" />
 
                 <ImageView
                     android:id="@+id/img_check"
