@@ -10,6 +10,7 @@ import com.chs.readytonote.R
 import com.chs.readytonote.databinding.ItemAddLabelBinding
 import com.chs.readytonote.databinding.ItemContainerLabelBinding
 import com.chs.readytonote.entities.Label
+import kotlinx.android.synthetic.main.item_container_label.view.*
 import java.util.*
 import kotlin.concurrent.schedule
 
@@ -17,7 +18,8 @@ class LabelAdapter(
     private val clickListener: (label: Label, position: Int) -> Unit,
 ): ListAdapter<Label, RecyclerView.ViewHolder>(LabelDiffUtilCallback()) {
 
-    class LabelViewHolder(binding:ItemContainerLabelBinding):RecyclerView.ViewHolder(binding.root)
+    class LabelViewHolder(private val binding:ItemContainerLabelBinding):RecyclerView.ViewHolder(binding.root){
+    }
     class LabelAddViewHolder(binding:ItemAddLabelBinding):RecyclerView.ViewHolder(binding.root)
 
     private lateinit var temp: MutableList<Label>
@@ -45,7 +47,12 @@ class LabelAdapter(
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when(holder){
-            is LabelViewHolder ->{
+            is LabelViewHolder -> {
+                holder.itemView.txtLabelTitle.text = getItem(position).title
+                holder.itemView.txtLabelTitle.isChecked = getItem(position).checked
+            }
+            is LabelAddViewHolder -> {
+
             }
         }
     }
