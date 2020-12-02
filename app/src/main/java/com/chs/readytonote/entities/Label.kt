@@ -8,8 +8,8 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "label")
 data class Label(
-    @ColumnInfo(name = "name")
-    val name: String?,
+    @ColumnInfo(name = "title")
+    val title: String?,
     @ColumnInfo(name = "checked")
     val checked: Boolean = false,
 ):Parcelable {
@@ -24,7 +24,7 @@ data class Label(
     }
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
-        parcel.writeString(name)
+        parcel.writeString(title)
         parcel.writeByte(if (checked) 1 else 0)
         parcel.writeInt(id)
     }

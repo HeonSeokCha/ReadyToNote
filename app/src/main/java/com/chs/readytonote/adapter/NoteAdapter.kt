@@ -139,13 +139,13 @@ class NoteAdapter(
 
     override fun getItemId(position: Int): Long = getItem(position).id.toLong()
 
-    fun search(searchKeyword: String) {
+    fun search(search: String) {
         timerTask = Timer().schedule(500) {
-            if (searchKeyword.isNotEmpty()) {
+            if (search.isNotEmpty()) {
                 temp = mutableListOf()
                 for (note in searchList) {
-                    if(note.title!!.toLowerCase().contains(searchKeyword.toLowerCase()) ||
-                        note.subtitle!!.toLowerCase().contains(searchKeyword.toLowerCase())) {
+                    if(note.title!!.toLowerCase().contains(search.toLowerCase()) ||
+                        note.subtitle!!.toLowerCase().contains(search.toLowerCase())) {
                         temp.add(note)
                     }
                     submitList(temp)
