@@ -11,6 +11,8 @@ import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.MediaStore
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.util.Patterns
 import android.view.LayoutInflater
@@ -27,31 +29,40 @@ import kotlinx.android.synthetic.main.activity_create_note.*
 import java.text.SimpleDateFormat
 import java.util.*
 import androidx.core.content.ContextCompat.checkSelfPermission
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.load.resource.bitmap.DownsampleStrategy
 import com.chs.readytonote.GlideApp
+import com.chs.readytonote.adapter.LabelAdapter
 import com.chs.readytonote.databinding.ActivityCreateNoteBinding
+import com.chs.readytonote.entities.Label
 import com.chs.readytonote.getFileName
 import com.chs.readytonote.getRealPathFromURI
 import com.chs.readytonote.viewmodel.MainViewModel
 import com.chs.readytonote.viewmodel.MainViewModelFactory
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import kotlinx.android.synthetic.main.layout_add_url.view.*
+import kotlinx.android.synthetic.main.layout_add_url.view.textAdd
+import kotlinx.android.synthetic.main.layout_add_url.view.textCancel
 import kotlinx.android.synthetic.main.layout_delete_note.view.*
 import kotlinx.android.synthetic.main.layout_decorations.*
 import kotlinx.android.synthetic.main.layout_decorations.view.*
+import kotlinx.android.synthetic.main.layout_label.view.*
 
 class CreateNoteActivity : AppCompatActivity() {
     companion object {
         private const val IMAGE_PICK_CODE = 1000
         private const val PERMISSION_CODE_IMAGE = 1001
     }
+    private var imagePath: String = ""
+    private var label: String = ""
+    private var noteColor: String = "#333333"
     private lateinit var alreadyAvailableNote: Note
     private lateinit var binding: ActivityCreateNoteBinding
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<ConstraintLayout>
     private lateinit var dialogUrlAdd: AlertDialog
     private lateinit var dialogDelete: AlertDialog
-    private lateinit var imagePath: String
-    private lateinit var noteColor: String
+    private lateinit var dialogLabelAdd: AlertDialog
+    private lateinit var labelAdapter: LabelAdapter
     private lateinit var viewModel: MainViewModel
     private lateinit var webLink: String
 
@@ -69,6 +80,7 @@ class CreateNoteActivity : AppCompatActivity() {
     private fun initView() {
         noteColor = "#333333"
         imagePath = ""
+        label = ""
         binding.txtDateTime.text = SimpleDateFormat("yyyy년 MM월 dd일 E",
             Locale.KOREA).format(Date())
         bottomSheetBehavior = BottomSheetBehavior.from(layoutMiscellaneous)
@@ -111,6 +123,11 @@ class CreateNoteActivity : AppCompatActivity() {
             showAddUrlDialog()
         }
 
+        layoutAddLabel.setOnClickListener {
+            bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+            showLabelDialog()
+        }
+
         imageDelete.setOnClickListener {
             imagePath = ""
             imageNote.visibility = View.GONE
@@ -132,16 +149,6 @@ class CreateNoteActivity : AppCompatActivity() {
         }
     }
 
-    private fun checkPermImage() {
-        if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.M) {
-            if (checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) ==
-                PackageManager.PERMISSION_DENIED) {
-                val permissions = arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE)
-                requestPermissions(permissions, PERMISSION_CODE_IMAGE)
-            } else pickImageFromGallery()
-        } else pickImageFromGallery()
-    }
-
     private fun saveNote() {
         if(inputNoteTitle.text.trim().isNullOrEmpty()) {
             Toast.makeText(this,
@@ -157,7 +164,7 @@ class CreateNoteActivity : AppCompatActivity() {
 
             val note = Note(
                 title = inputNoteTitle.text.toString(),
-                label = "",
+                label = label,
                 dateTime = txtDateTime.text.toString(),
                 subtitle = inputNoteSubtitle.text.toString(),
                 noteText = inputNoteText.text.toString(),
@@ -334,13 +341,55 @@ class CreateNoteActivity : AppCompatActivity() {
         dialogDelete.show()
     }
 
-    private fun pickImageFromGallery() {
-        val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
-        if(intent.resolveActivity(packageManager)!= null) {
-            intent.type = "image/*"
-            intent.flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
-            startActivityForResult(intent, IMAGE_PICK_CODE)
+    private fun showLabelDialog() {
+        val builder:AlertDialog.Builder = AlertDialog.Builder(this)
+        val dialogView = LayoutInflater.from(this).inflate(R.layout.layout_label,
+            (findViewById(R.id.layoutAddLabelContainer)))
+        builder.setView(dialogView)
+        dialogLabelAdd = builder.create()
+        if(dialogLabelAdd.window != null) {
+            dialogLabelAdd.window!!.setBackgroundDrawable(ColorDrawable(0))
         }
+        dialogView.textAdd.setOnClickListener {
+
+        }
+
+        dialogView.textCancel.setOnClickListener {
+            dialogLabelAdd.dismiss()
+            closeKeyboard()
+        }
+        initLabelRecyclerview(dialogView)
+        dialogLabelAdd.show()
+    }
+
+    private fun initLabelRecyclerview(view: View) {
+        view.Rv_label.apply {
+            labelAdapter = LabelAdapter( clickListener = { labelTitle,labelChecked ->
+                label = if(labelChecked) {
+                    labelTitle
+                } else ""
+            })
+            labelAdapter.setHasStableIds(true)
+            this.layoutManager = LinearLayoutManager(this@CreateNoteActivity)
+            this.adapter = labelAdapter
+            viewModel.getAllLabel().observe(this@CreateNoteActivity,{
+                labelAdapter.submitList(it)
+            })
+            searchLabel(view)
+        }
+    }
+
+    private fun searchLabel(view: View) {
+        view.inputLabel.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(s: Editable?) {
+                labelAdapter.searchLabel(s.toString())
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                labelAdapter.cancelTimer()
+            }
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+        })
     }
 
     private fun closeKeyboard() {
@@ -349,6 +398,25 @@ class CreateNoteActivity : AppCompatActivity() {
                 Context.INPUT_METHOD_SERVICE) as InputMethodManager
             inputMethodManager.hideSoftInputFromWindow(
                 this.currentFocus!!.windowToken, 0)
+        }
+    }
+
+    private fun checkPermImage() {
+        if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.M) {
+            if (checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) ==
+                PackageManager.PERMISSION_DENIED) {
+                val permissions = arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE)
+                requestPermissions(permissions, PERMISSION_CODE_IMAGE)
+            } else pickImageFromGallery()
+        } else pickImageFromGallery()
+    }
+
+    private fun pickImageFromGallery() {
+        val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+        if(intent.resolveActivity(packageManager)!= null) {
+            intent.type = "image/*"
+            intent.flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
+            startActivityForResult(intent, IMAGE_PICK_CODE)
         }
     }
 

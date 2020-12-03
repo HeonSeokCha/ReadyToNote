@@ -27,7 +27,7 @@ import java.util.*
 import kotlin.concurrent.schedule
 
 
-class NoteAdapter(
+class NoteAdapter (
     private val clickListener: (note: Note, position: Int) -> Unit,
     private val checkClickListener: (checkList: MutableMap<Int, Note>) -> Unit,
     private val longClickListener: (chkState: Boolean) -> Unit
@@ -113,6 +113,10 @@ class NoteAdapter(
                 this.txtTitle.setTextColor(Color.parseColor("#000000"))
                 this.txtSubtitle.setTextColor(Color.parseColor("#000000"))
                 this.txtDateTime.setTextColor(Color.parseColor("#000000"))
+            }
+
+            if(getItem(position).label.isNullOrEmpty()) {
+                this.txtLabel.visibility = View.GONE
             }
 
             if(getItem(position).imgPath!!.isNotEmpty()) {
