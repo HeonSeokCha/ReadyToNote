@@ -19,11 +19,13 @@ import kotlin.concurrent.schedule
 
 class LabelAdapter(
     private val clickListener: (title: String, checked: Boolean) -> Unit,
+    private val addClickListener: (title: String) -> Unit,
 ): ListAdapter<Label, RecyclerView.ViewHolder>(LabelDiffUtilCallback()) {
 
     class LabelViewHolder(val binding:ItemContainerLabelBinding):RecyclerView.ViewHolder(binding.root)
-    class LabelAddViewHolder(binding:ItemAddLabelBinding):RecyclerView.ViewHolder(binding.root)
+    class LabelAddViewHolder(val binding:ItemAddLabelBinding):RecyclerView.ViewHolder(binding.root)
 
+    private var labelAdd: Boolean = false
     private lateinit var temp: MutableList<Label>
     private lateinit var timerTask: TimerTask
     private lateinit var viewholder: RecyclerView.ViewHolder
@@ -31,7 +33,8 @@ class LabelAdapter(
 
 
     override fun getItemViewType(position: Int): Int {
-        return if(::temp.isInitialized && temp.isEmpty()) {
+        Log.d("에욱",labelAdd.toString())
+        return if(::temp.isInitialized && labelAdd) {
             R.layout.item_add_label
         } else {
             R.layout.item_container_label
@@ -55,6 +58,11 @@ class LabelAdapter(
             }
             R.layout.item_add_label -> {
                 viewholder = LabelAddViewHolder(ItemAddLabelBinding.bind(view))
+                view.setOnClickListener {
+                    addClickListener.invoke(getItem(0).title!!)
+                    labelAdd = false
+                    submitList(searchList)
+                }
             }
         }
         return viewholder
@@ -63,11 +71,10 @@ class LabelAdapter(
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when(holder){
             is LabelViewHolder -> {
-                Log.d("LabelViewHolder","LabelViewHolder")
                 holder.binding.model = getItem(position)
             }
             is LabelAddViewHolder -> {
-                Log.d("LabelAddViewHolder","LabelAddViewHolder")
+                holder.itemView.checkedTextView.text = "'${getItem(position).title} 라벨 만들기"
             }
         }
     }
@@ -82,9 +89,19 @@ class LabelAdapter(
                     if (label.title!!.toLowerCase().contains(search.toLowerCase())) {
                         temp.add(label)
                     }
-                    submitList(temp)
                 }
-            } else submitList(searchList)
+                labelAdd = if(temp.isEmpty()) {
+                    temp.add(Label(search,false))
+                    submitList(temp)
+                    true
+                } else {
+                    submitList(temp)
+                    false
+                }
+            } else {
+                labelAdd = false
+                submitList(searchList)
+            }
             Handler(Looper.getMainLooper()).post {
                 notifyDataSetChanged()
             }

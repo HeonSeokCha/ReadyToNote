@@ -368,6 +368,10 @@ class CreateNoteActivity : AppCompatActivity() {
                 label = if(labelChecked) {
                     labelTitle
                 } else ""
+            },
+            addClickListener = { labelTitle ->
+                viewModel.insertLabel(Label(labelTitle,false))
+                view.inputLabel.text.clear()
             })
             labelAdapter.setHasStableIds(true)
             this.layoutManager = LinearLayoutManager(this@CreateNoteActivity)
