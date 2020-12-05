@@ -23,8 +23,9 @@ class LabelAdapter(
 ): ListAdapter<Label, RecyclerView.ViewHolder>(LabelDiffUtilCallback()) {
 
     class LabelViewHolder(val binding:ItemContainerLabelBinding):RecyclerView.ViewHolder(binding.root)
-    class LabelAddViewHolder(val binding:ItemAddLabelBinding):RecyclerView.ViewHolder(binding.root)
+    class LabelAddViewHolder(binding:ItemAddLabelBinding):RecyclerView.ViewHolder(binding.root)
 
+    private var selectPosition: Int = -1
     private var labelAdd: Boolean = false
     private lateinit var temp: MutableList<Label>
     private lateinit var timerTask: TimerTask
@@ -33,7 +34,6 @@ class LabelAdapter(
 
 
     override fun getItemViewType(position: Int): Int {
-        Log.d("에욱",labelAdd.toString())
         return if(::temp.isInitialized && labelAdd) {
             R.layout.item_add_label
         } else {
@@ -48,20 +48,33 @@ class LabelAdapter(
         when(viewType) {
             R.layout.item_container_label -> {
                 viewholder = LabelViewHolder(ItemContainerLabelBinding.bind(view))
-                view.layout_label.setOnClickListener {
-                    viewholder.itemView.txtLabelTitle.apply {
-                        isChecked = !this.isChecked
-                    }
-                    clickListener.invoke(getItem(viewholder.adapterPosition).title!!,
-                        viewholder.itemView.txtLabelTitle.isChecked)
-                }
             }
             R.layout.item_add_label -> {
                 viewholder = LabelAddViewHolder(ItemAddLabelBinding.bind(view))
+            }
+        }
+
+        when(viewholder) {
+            is LabelViewHolder -> {
+                view.setOnClickListener {
+                    if(selectPosition != viewholder.adapterPosition) {
+                        view.txtLabelTitle.apply {
+                            isChecked = !this.isChecked
+                        }
+                    } else {
+                        view.txtLabelTitle.apply {
+                            isChecked = !this.isChecked
+                        }
+                    }
+                    selectPosition = viewholder.adapterPosition
+                    clickListener.invoke(getItem(viewholder.adapterPosition).title!!,
+                        view.txtLabelTitle.isChecked)
+                }
+            }
+            is LabelAddViewHolder -> {
                 view.setOnClickListener {
                     addClickListener.invoke(getItem(0).title!!)
                     labelAdd = false
-                    submitList(searchList)
                 }
             }
         }
@@ -74,7 +87,7 @@ class LabelAdapter(
                 holder.binding.model = getItem(position)
             }
             is LabelAddViewHolder -> {
-                holder.itemView.checkedTextView.text = "'${getItem(position).title} 라벨 만들기"
+                holder.itemView.checkedTextView.text = "'${getItem(position).title}' 라벨 만들기"
             }
         }
     }
@@ -98,9 +111,10 @@ class LabelAdapter(
                     submitList(temp)
                     false
                 }
-            } else {
+            } else if(search.isEmpty() && temp.isNotEmpty()){
                 labelAdd = false
                 submitList(searchList)
+                temp.clear()
             }
             Handler(Looper.getMainLooper()).post {
                 notifyDataSetChanged()

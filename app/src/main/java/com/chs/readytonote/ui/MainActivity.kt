@@ -180,8 +180,8 @@ class MainActivity : AppCompatActivity() {
                     click = false
                     editMode = true
                     notesAdapter.editItemMode(true)
-                    imgAddNoteMain.isEnabled = false
-                    imgAddNoteMain.setImageDrawable(
+                    binding.imgAddNoteMain.isEnabled = false
+                    binding.imgAddNoteMain.setImageDrawable(
                         resources.getDrawable(R.drawable.ic_delete, null)
                     )
                     binding.bottomAppBar.replaceMenu(R.menu.select_note)

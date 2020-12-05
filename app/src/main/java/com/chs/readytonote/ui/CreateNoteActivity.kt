@@ -351,7 +351,7 @@ class CreateNoteActivity : AppCompatActivity() {
             dialogLabelAdd.window!!.setBackgroundDrawable(ColorDrawable(0))
         }
         dialogView.textAdd.setOnClickListener {
-
+            TODO("if checked Item label = labelTitle")
         }
 
         dialogView.textCancel.setOnClickListener {
@@ -372,15 +372,20 @@ class CreateNoteActivity : AppCompatActivity() {
             addClickListener = { labelTitle ->
                 viewModel.insertLabel(Label(labelTitle,false))
                 view.inputLabel.text.clear()
+                getLabel()
             })
             labelAdapter.setHasStableIds(true)
             this.layoutManager = LinearLayoutManager(this@CreateNoteActivity)
             this.adapter = labelAdapter
-            viewModel.getAllLabel().observe(this@CreateNoteActivity,{
-                labelAdapter.submitList(it)
-            })
+            getLabel()
             searchLabel(view)
         }
+    }
+
+    private fun getLabel() {
+        viewModel.getAllLabel().observe(this@CreateNoteActivity,{
+            labelAdapter.submitList(it)
+        })
     }
 
     private fun searchLabel(view: View) {
