@@ -18,7 +18,7 @@ import java.util.*
 import kotlin.concurrent.schedule
 
 class LabelAdapter(
-    private val clickListener: (title: String, checked: Boolean) -> Unit,
+    private val clickListener: (label: Label) -> Unit,
     private val addClickListener: (title: String) -> Unit,
 ): ListAdapter<Label, RecyclerView.ViewHolder>(LabelDiffUtilCallback()) {
 
@@ -44,38 +44,12 @@ class LabelAdapter(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val view = LayoutInflater.from(parent.context)
             .inflate(viewType, parent, false)
-
         when(viewType) {
             R.layout.item_container_label -> {
                 viewholder = LabelViewHolder(ItemContainerLabelBinding.bind(view))
             }
             R.layout.item_add_label -> {
                 viewholder = LabelAddViewHolder(ItemAddLabelBinding.bind(view))
-            }
-        }
-
-        when(viewholder) {
-            is LabelViewHolder -> {
-                view.setOnClickListener {
-                    if(selectPosition != viewholder.adapterPosition) {
-                        view.txtLabelTitle.apply {
-                            isChecked = !this.isChecked
-                        }
-                    } else {
-                        view.txtLabelTitle.apply {
-                            isChecked = !this.isChecked
-                        }
-                    }
-                    selectPosition = viewholder.adapterPosition
-                    clickListener.invoke(getItem(viewholder.adapterPosition).title!!,
-                        view.txtLabelTitle.isChecked)
-                }
-            }
-            is LabelAddViewHolder -> {
-                view.setOnClickListener {
-                    addClickListener.invoke(getItem(0).title!!)
-                    labelAdd = false
-                }
             }
         }
         return viewholder
@@ -85,9 +59,43 @@ class LabelAdapter(
         when(holder){
             is LabelViewHolder -> {
                 holder.binding.model = getItem(position)
+                if(getItem(position).checked) {
+                    selectPosition = position
+                }
+                holder.itemView.setOnClickListener {
+                    holder.itemView.txtLabelTitle.apply {
+                        when {
+                            selectPosition == -1 -> {
+                                Log.d("selectPosition == -1)","selectPosition == -1)")
+                                currentList[position].checked = true
+                                selectPosition = position
+                            }
+                            selectPosition == position -> {
+                                Log.d("selectPosition == position","selectPosition == position")
+                                currentList[position].checked = false
+                                selectPosition = -1
+                            }
+                            selectPosition != -1 -> {
+                                Log.d("else)","else")
+                                for(i in currentList.indices) {
+                                    currentList[i].checked = false
+                                }
+                                currentList[position].checked = true
+                                selectPosition = position
+                            }
+                        }
+
+                    }
+                    notifyDataSetChanged()
+                    clickListener.invoke(getItem(position))
+                }
             }
             is LabelAddViewHolder -> {
                 holder.itemView.checkedTextView.text = "'${getItem(position).title}' 라벨 만들기"
+                holder.itemView.setOnClickListener {
+                    addClickListener.invoke(getItem(0).title!!)
+                    labelAdd = false
+                }
             }
         }
     }

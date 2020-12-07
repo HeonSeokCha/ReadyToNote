@@ -54,7 +54,6 @@ class CreateNoteActivity : AppCompatActivity() {
         private const val PERMISSION_CODE_IMAGE = 1001
     }
     private var imagePath: String = ""
-    private var label: String = ""
     private var noteColor: String = "#333333"
     private lateinit var alreadyAvailableNote: Note
     private lateinit var binding: ActivityCreateNoteBinding
@@ -62,6 +61,7 @@ class CreateNoteActivity : AppCompatActivity() {
     private lateinit var dialogUrlAdd: AlertDialog
     private lateinit var dialogDelete: AlertDialog
     private lateinit var dialogLabelAdd: AlertDialog
+    private lateinit var label: MutableList<Label>
     private lateinit var labelAdapter: LabelAdapter
     private lateinit var viewModel: MainViewModel
     private lateinit var webLink: String
@@ -80,7 +80,6 @@ class CreateNoteActivity : AppCompatActivity() {
     private fun initView() {
         noteColor = "#333333"
         imagePath = ""
-        label = ""
         binding.txtDateTime.text = SimpleDateFormat("yyyy년 MM월 dd일 E",
             Locale.KOREA).format(Date())
         bottomSheetBehavior = BottomSheetBehavior.from(layoutMiscellaneous)
@@ -164,7 +163,7 @@ class CreateNoteActivity : AppCompatActivity() {
 
             val note = Note(
                 title = inputNoteTitle.text.toString(),
-                label = label,
+                label = "",
                 dateTime = txtDateTime.text.toString(),
                 subtitle = inputNoteSubtitle.text.toString(),
                 noteText = inputNoteText.text.toString(),
@@ -276,7 +275,6 @@ class CreateNoteActivity : AppCompatActivity() {
             && alreadyAvailableNote.color!!.isNotEmpty()) {
             when(alreadyAvailableNote.color) {
                 "#333333"-> {
-
                     layoutMiscellaneous.imageColorDefault.performClick()
                 }
                 "#FDBE3B"->layoutMiscellaneous.imageColorYellow.performClick()
@@ -351,7 +349,10 @@ class CreateNoteActivity : AppCompatActivity() {
             dialogLabelAdd.window!!.setBackgroundDrawable(ColorDrawable(0))
         }
         dialogView.textAdd.setOnClickListener {
-            TODO("if checked Item label = labelTitle")
+            Log.d("checkedLabel","$label")
+
+            dialogLabelAdd.dismiss()
+            closeKeyboard()
         }
 
         dialogView.textCancel.setOnClickListener {
@@ -363,11 +364,10 @@ class CreateNoteActivity : AppCompatActivity() {
     }
 
     private fun initLabelRecyclerview(view: View) {
+        label = mutableListOf()
         view.Rv_label.apply {
-            labelAdapter = LabelAdapter( clickListener = { labelTitle,labelChecked ->
-                label = if(labelChecked) {
-                    labelTitle
-                } else ""
+            labelAdapter = LabelAdapter( clickListener = { checkLabel ->
+                viewModel.insertLabel(checkLabel)
             },
             addClickListener = { labelTitle ->
                 viewModel.insertLabel(Label(labelTitle,false))

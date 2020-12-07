@@ -118,7 +118,11 @@
                     android:background="@drawable/background_note_subject"
                     android:text="@{model.label}"
                     android:textSize="12dp"
+                    android:ellipsize="end"
+                    android:singleLine="true"
                     app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/txtDateTime"
+                    app:layout_constraintHorizontal_bias="0.0"
                     app:layout_constraintStart_toStartOf="@+id/txtSubtitle"
                     app:layout_constraintTop_toBottomOf="@+id/txtSubtitle"
                     tools:text="Note" />

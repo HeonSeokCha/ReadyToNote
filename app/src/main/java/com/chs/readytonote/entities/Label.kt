@@ -11,7 +11,7 @@ data class Label(
     @ColumnInfo(name = "title")
     val title: String?,
     @ColumnInfo(name = "checked")
-    val checked: Boolean = false,
+    var checked: Boolean = false,
 ):Parcelable {
     @PrimaryKey(autoGenerate = true)
     var id: Int = 0
