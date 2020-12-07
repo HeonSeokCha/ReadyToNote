@@ -18,7 +18,7 @@ import java.util.*
 import kotlin.concurrent.schedule
 
 class LabelAdapter(
-    private val clickListener: (label: Label) -> Unit,
+    private val clickListener: (label: Label,position: Int) -> Unit,
     private val addClickListener: (title: String) -> Unit,
 ): ListAdapter<Label, RecyclerView.ViewHolder>(LabelDiffUtilCallback()) {
 
@@ -76,18 +76,17 @@ class LabelAdapter(
                                 selectPosition = -1
                             }
                             selectPosition != -1 -> {
-                                Log.d("else)","else")
+                                Log.d("else","else")
                                 for(i in currentList.indices) {
                                     currentList[i].checked = false
                                 }
-                                currentList[position].checked = true
                                 selectPosition = position
+                                currentList[position].checked = true
                             }
                         }
-
                     }
                     notifyDataSetChanged()
-                    clickListener.invoke(getItem(position))
+                    clickListener.invoke(getItem(position),position)
                 }
             }
             is LabelAddViewHolder -> {
@@ -119,9 +118,8 @@ class LabelAdapter(
                     submitList(temp)
                     false
                 }
-            } else if(search.isEmpty() && temp.isNotEmpty()){
+            } else {
                 labelAdd = false
-                submitList(searchList)
                 temp.clear()
             }
             Handler(Looper.getMainLooper()).post {

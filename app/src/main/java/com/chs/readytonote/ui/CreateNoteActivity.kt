@@ -55,13 +55,14 @@ class CreateNoteActivity : AppCompatActivity() {
     }
     private var imagePath: String = ""
     private var noteColor: String = "#333333"
+    private var label: String = ""
     private lateinit var alreadyAvailableNote: Note
     private lateinit var binding: ActivityCreateNoteBinding
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<ConstraintLayout>
     private lateinit var dialogUrlAdd: AlertDialog
     private lateinit var dialogDelete: AlertDialog
     private lateinit var dialogLabelAdd: AlertDialog
-    private lateinit var label: MutableList<Label>
+    private lateinit var labelList: MutableList<Label>
     private lateinit var labelAdapter: LabelAdapter
     private lateinit var viewModel: MainViewModel
     private lateinit var webLink: String
@@ -163,7 +164,7 @@ class CreateNoteActivity : AppCompatActivity() {
 
             val note = Note(
                 title = inputNoteTitle.text.toString(),
-                label = "",
+                label = label,
                 dateTime = txtDateTime.text.toString(),
                 subtitle = inputNoteSubtitle.text.toString(),
                 noteText = inputNoteText.text.toString(),
@@ -350,7 +351,12 @@ class CreateNoteActivity : AppCompatActivity() {
         }
         dialogView.textAdd.setOnClickListener {
             Log.d("checkedLabel","$label")
-
+            for(i in labelList.indices) {
+                viewModel.insertLabel(labelList[i])
+                if(labelList[i].checked) {
+                    label = labelList[i].title.toString()
+                }
+            }
             dialogLabelAdd.dismiss()
             closeKeyboard()
         }
@@ -364,10 +370,13 @@ class CreateNoteActivity : AppCompatActivity() {
     }
 
     private fun initLabelRecyclerview(view: View) {
-        label = mutableListOf()
         view.Rv_label.apply {
-            labelAdapter = LabelAdapter( clickListener = { checkLabel ->
-                viewModel.insertLabel(checkLabel)
+            labelAdapter = LabelAdapter( clickListener = { checkLabel,position ->
+                if(checkLabel.checked) {
+                    labelList[position].checked = true
+                } else {
+                    labelList[position]!!.checked = false
+                }
             },
             addClickListener = { labelTitle ->
                 viewModel.insertLabel(Label(labelTitle,false))
@@ -385,6 +394,7 @@ class CreateNoteActivity : AppCompatActivity() {
     private fun getLabel() {
         viewModel.getAllLabel().observe(this@CreateNoteActivity,{
             labelAdapter.submitList(it)
+            labelList = it
         })
     }
 
