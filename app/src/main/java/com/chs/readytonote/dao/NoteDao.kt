@@ -4,6 +4,8 @@ import androidx.lifecycle.LiveData
 import androidx.room.*
 import com.chs.readytonote.entities.Label
 import com.chs.readytonote.entities.Note
+import com.chs.readytonote.entities.NoteWithLabelList
+
 @Dao
 interface NoteDao {
     @Query("SELECT * FROM notes ORDER BY id DESC")
@@ -26,4 +28,8 @@ interface NoteDao {
 
     @Delete
     suspend fun deleteLabel(label: Label)
+
+    @Transaction
+    @Query("SELECT * FROM notes")
+    fun test(): LiveData<MutableList<NoteWithLabelList>>
 }

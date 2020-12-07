@@ -6,6 +6,7 @@ import com.chs.readytonote.dao.NoteDao
 import com.chs.readytonote.database.NotesDatabases
 import com.chs.readytonote.entities.Label
 import com.chs.readytonote.entities.Note
+import com.chs.readytonote.entities.NoteWithLabelList
 
 class NoteRepository (application: Application) {
 
@@ -25,6 +26,8 @@ class NoteRepository (application: Application) {
     }
 
     fun getLabels(): LiveData<MutableList<Label>> = dao.getAllLabels()
+
+    fun getTest(): LiveData<MutableList<NoteWithLabelList>> = dao.test()
 
     suspend fun insertLabel(label: Label) {
         dao.insertLabel(label)

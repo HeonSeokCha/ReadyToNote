@@ -66,17 +66,14 @@ class LabelAdapter(
                     holder.itemView.txtLabelTitle.apply {
                         when {
                             selectPosition == -1 -> {
-                                Log.d("selectPosition == -1)","selectPosition == -1)")
                                 currentList[position].checked = true
                                 selectPosition = position
                             }
                             selectPosition == position -> {
-                                Log.d("selectPosition == position","selectPosition == position")
                                 currentList[position].checked = false
                                 selectPosition = -1
                             }
                             selectPosition != -1 -> {
-                                Log.d("else","else")
                                 for(i in currentList.indices) {
                                     currentList[i].checked = false
                                 }
@@ -111,7 +108,7 @@ class LabelAdapter(
                     }
                 }
                 labelAdd = if(temp.isEmpty()) {
-                    temp.add(Label(search,false))
+                    temp.add(Label(null,search,false))
                     submitList(temp)
                     true
                 } else {

@@ -350,7 +350,6 @@ class CreateNoteActivity : AppCompatActivity() {
             dialogLabelAdd.window!!.setBackgroundDrawable(ColorDrawable(0))
         }
         dialogView.textAdd.setOnClickListener {
-            Log.d("checkedLabel","$label")
             for(i in labelList.indices) {
                 viewModel.insertLabel(labelList[i])
                 if(labelList[i].checked) {
@@ -379,7 +378,7 @@ class CreateNoteActivity : AppCompatActivity() {
                 }
             },
             addClickListener = { labelTitle ->
-                viewModel.insertLabel(Label(labelTitle,false))
+                viewModel.insertLabel(Label(null,labelTitle,false))
                 view.inputLabel.text.clear()
                 getLabel()
             })

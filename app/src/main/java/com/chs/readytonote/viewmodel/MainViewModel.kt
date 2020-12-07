@@ -29,6 +29,8 @@ class MainViewModel(application: Application):AndroidViewModel(application) {
 
     fun getAllLabel() = repository.getLabels()
 
+    fun getAllTest() = repository.getTest()
+
     fun insertLabel(label: Label) = viewModelScope.launch(Dispatchers.IO) {
         repository.insertLabel(label)
     }
