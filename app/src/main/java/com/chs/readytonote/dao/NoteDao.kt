@@ -20,8 +20,8 @@ interface NoteDao {
     @Query("DELETE FROM notes")
     suspend fun deleteNoteAll() : Int
 
-    @Query("SELECT * FROM label")
-    fun getAllLabels(): LiveData<MutableList<Label>>
+    @Query("SELECT * FROM label where note_id = :noteId")
+    fun getAllLabels(noteId:Int = 0): LiveData<MutableList<Label>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertLabel(label: Label)
@@ -29,7 +29,4 @@ interface NoteDao {
     @Delete
     suspend fun deleteLabel(label: Label)
 
-    @Transaction
-    @Query("SELECT * FROM notes")
-    fun test(): LiveData<MutableList<NoteWithLabelList>>
 }

@@ -53,6 +53,7 @@ class CreateNoteActivity : AppCompatActivity() {
         private const val IMAGE_PICK_CODE = 1000
         private const val PERMISSION_CODE_IMAGE = 1001
     }
+    private var noteId = 0
     private var imagePath: String = ""
     private var noteColor: String = "#333333"
     private var label: String = ""
@@ -172,9 +173,7 @@ class CreateNoteActivity : AppCompatActivity() {
                 color = noteColor,
                 webLink = webLink,
             )
-            if(::alreadyAvailableNote.isInitialized) {
-                note.id = alreadyAvailableNote.id
-            }
+            note.id = noteId
             viewModel.insertNote(note)
             closeKeyboard()
             setResult(Activity.RESULT_OK, Intent())
@@ -191,6 +190,8 @@ class CreateNoteActivity : AppCompatActivity() {
     }
 
     private fun setViewOrUpdateNote() {
+        noteId = alreadyAvailableNote.id
+        label = alreadyAvailableNote.label.toString()
         binding.inputNoteTitle.setText(alreadyAvailableNote.title)
         binding.inputNoteSubtitle.setText(alreadyAvailableNote.subtitle)
         binding.inputNoteText.setText(alreadyAvailableNote.noteText)
@@ -356,13 +357,13 @@ class CreateNoteActivity : AppCompatActivity() {
                     label = labelList[i].title.toString()
                 }
             }
-            dialogLabelAdd.dismiss()
             closeKeyboard()
+            dialogLabelAdd.dismiss()
         }
 
         dialogView.textCancel.setOnClickListener {
-            dialogLabelAdd.dismiss()
             closeKeyboard()
+            dialogLabelAdd.dismiss()
         }
         initLabelRecyclerview(dialogView)
         dialogLabelAdd.show()
@@ -378,7 +379,7 @@ class CreateNoteActivity : AppCompatActivity() {
                 }
             },
             addClickListener = { labelTitle ->
-                viewModel.insertLabel(Label(null,labelTitle,false))
+                viewModel.insertLabel(Label(noteId,labelTitle,false))
                 view.inputLabel.text.clear()
                 getLabel()
             })
@@ -391,7 +392,7 @@ class CreateNoteActivity : AppCompatActivity() {
     }
 
     private fun getLabel() {
-        viewModel.getAllLabel().observe(this@CreateNoteActivity,{
+        viewModel.getAllLabel(noteId).observe(this@CreateNoteActivity,{
             labelAdapter.submitList(it)
             labelList = it
         })

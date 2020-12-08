@@ -25,9 +25,7 @@ class NoteRepository (application: Application) {
         dao.deleteNote(note)
     }
 
-    fun getLabels(): LiveData<MutableList<Label>> = dao.getAllLabels()
-
-    fun getTest(): LiveData<MutableList<NoteWithLabelList>> = dao.test()
+    fun getLabels(noteId: Int): LiveData<MutableList<Label>> = dao.getAllLabels(noteId)
 
     suspend fun insertLabel(label: Label) {
         dao.insertLabel(label)
