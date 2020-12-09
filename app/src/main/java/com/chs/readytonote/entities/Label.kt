@@ -1,13 +1,16 @@
 package com.chs.readytonote.entities
 
-import android.os.Parcel
-import android.os.Parcelable
 import androidx.room.*
 
-@Entity(tableName = "label")
+@Entity(tableName = "label",
+    foreignKeys = [ForeignKey(entity = Note::class,
+        parentColumns = arrayOf("id"),
+        childColumns = arrayOf("note_id")
+    )]
+)
 data class Label(
     @ColumnInfo(name = "note_id")
-    val note_id: Int?,
+    var note_id: Int = 0,
     @ColumnInfo(name = "title")
     val title: String?,
     @ColumnInfo(name = "checked")
@@ -15,7 +18,6 @@ data class Label(
 ) {
     @PrimaryKey(autoGenerate = true)
     var id: Int = 0
-    constructor() : this(null,"필기",false)
 }
 
 data class NoteWithLabelList(

@@ -108,7 +108,7 @@ class LabelAdapter(
                     }
                 }
                 labelAdd = if(temp.isEmpty()) {
-                    temp.add(Label(null,search,false))
+                    temp.add(Label(note_id = 0,search,false))
                     submitList(temp)
                     true
                 } else {
