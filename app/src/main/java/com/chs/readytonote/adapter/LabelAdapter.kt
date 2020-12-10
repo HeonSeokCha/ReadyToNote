@@ -13,9 +13,9 @@ import com.chs.readytonote.databinding.ItemContainerLabelBinding
 import com.chs.readytonote.entities.Label
 import kotlinx.android.synthetic.main.item_add_label.view.*
 import kotlinx.android.synthetic.main.item_container_label.view.*
-import kotlinx.android.synthetic.main.layout_label.view.*
 import java.util.*
 import kotlin.concurrent.schedule
+import kotlin.properties.Delegates
 
 class LabelAdapter(
     private val clickListener: (label: Label,position: Int) -> Unit,
@@ -25,6 +25,7 @@ class LabelAdapter(
     class LabelViewHolder(val binding:ItemContainerLabelBinding):RecyclerView.ViewHolder(binding.root)
     class LabelAddViewHolder(binding:ItemAddLabelBinding):RecyclerView.ViewHolder(binding.root)
 
+    var checkedLabelId by Delegates.notNull<Int>()
     private var selectPosition: Int = -1
     private var labelAdd: Boolean = false
     private lateinit var temp: MutableList<Label>
@@ -61,6 +62,9 @@ class LabelAdapter(
                 holder.binding.model = getItem(position)
                 if(getItem(position).checked) {
                     selectPosition = position
+                }
+                if(getItem(position).id==0){
+                    holder.itemView.txtLabelTitle.isChecked = true
                 }
                 holder.itemView.setOnClickListener {
                     holder.itemView.txtLabelTitle.apply {
@@ -108,7 +112,7 @@ class LabelAdapter(
                     }
                 }
                 labelAdd = if(temp.isEmpty()) {
-                    temp.add(Label(note_id = 0,search,false))
+                    temp.add(Label(search,false))
                     submitList(temp)
                     true
                 } else {

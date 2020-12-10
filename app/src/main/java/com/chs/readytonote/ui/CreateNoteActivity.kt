@@ -35,6 +35,7 @@ import com.chs.readytonote.GlideApp
 import com.chs.readytonote.adapter.LabelAdapter
 import com.chs.readytonote.databinding.ActivityCreateNoteBinding
 import com.chs.readytonote.entities.Label
+import com.chs.readytonote.entities.LabelCheck
 import com.chs.readytonote.getFileName
 import com.chs.readytonote.getRealPathFromURI
 import com.chs.readytonote.viewmodel.MainViewModel
@@ -47,12 +48,15 @@ import kotlinx.android.synthetic.main.layout_delete_note.view.*
 import kotlinx.android.synthetic.main.layout_decorations.*
 import kotlinx.android.synthetic.main.layout_decorations.view.*
 import kotlinx.android.synthetic.main.layout_label.view.*
+import kotlin.properties.Delegates
 
 class CreateNoteActivity : AppCompatActivity() {
     companion object {
         private const val IMAGE_PICK_CODE = 1000
         private const val PERMISSION_CODE_IMAGE = 1001
     }
+
+    private var checkLabelId: Int = 0
     private var noteId = 0
     private var imagePath: String = ""
     private var noteColor: String = "#333333"
@@ -63,7 +67,6 @@ class CreateNoteActivity : AppCompatActivity() {
     private lateinit var dialogUrlAdd: AlertDialog
     private lateinit var dialogDelete: AlertDialog
     private lateinit var dialogLabelAdd: AlertDialog
-    private lateinit var labelList: MutableList<Label>
     private lateinit var labelAdapter: LabelAdapter
     private lateinit var viewModel: MainViewModel
     private lateinit var webLink: String
@@ -173,8 +176,10 @@ class CreateNoteActivity : AppCompatActivity() {
                 color = noteColor,
                 webLink = webLink,
             )
-            note.id = noteId
             viewModel.insertNote(note)
+            if(checkLabelId != null) {
+                viewModel.insertCheckLabel(LabelCheck(note.id, checkLabelId!!))
+            }
             closeKeyboard()
             setResult(Activity.RESULT_OK, Intent())
             finish()
@@ -190,7 +195,6 @@ class CreateNoteActivity : AppCompatActivity() {
     }
 
     private fun setViewOrUpdateNote() {
-        noteId = alreadyAvailableNote.id
         label = alreadyAvailableNote.label.toString()
         binding.inputNoteTitle.setText(alreadyAvailableNote.title)
         binding.inputNoteSubtitle.setText(alreadyAvailableNote.subtitle)
@@ -351,12 +355,7 @@ class CreateNoteActivity : AppCompatActivity() {
             dialogLabelAdd.window!!.setBackgroundDrawable(ColorDrawable(0))
         }
         dialogView.textAdd.setOnClickListener {
-            for(i in labelList.indices) {
-                viewModel.insertLabel(labelList[i])
-                if(labelList[i].checked) {
-                    label = labelList[i].title.toString()
-                }
-            }
+            viewModel.insertCheckLabel(LabelCheck(0,checkLabelId!!))
             closeKeyboard()
             dialogLabelAdd.dismiss()
         }
@@ -373,13 +372,13 @@ class CreateNoteActivity : AppCompatActivity() {
         view.Rv_label.apply {
             labelAdapter = LabelAdapter( clickListener = { checkLabel,position ->
                 if(checkLabel.checked) {
-                    labelList[position].checked = true
+                    checkLabelId = checkLabel.id
                 } else {
-                    labelList[position]!!.checked = false
+                    checkLabelId = 0
                 }
             },
             addClickListener = { labelTitle ->
-                viewModel.insertLabel(Label(noteId,labelTitle,false))
+                viewModel.insertLabel(Label(labelTitle,false))
                 view.inputLabel.text.clear()
                 getLabel()
             })
@@ -392,9 +391,14 @@ class CreateNoteActivity : AppCompatActivity() {
     }
 
     private fun getLabel() {
-        viewModel.getAllLabel(noteId).observe(this@CreateNoteActivity,{
+        viewModel.getAllLabel().observe(this@CreateNoteActivity,{
             labelAdapter.submitList(it)
-            labelList = it
+        })
+    }
+
+    private fun getCheckLabel() {
+        viewModel.getCheckLabel(checkLabelId).observe(this,{
+            TODO("여기서 ....")
         })
     }
 

@@ -1,16 +1,10 @@
 package com.chs.readytonote.entities
 
 import androidx.room.*
+import androidx.room.ForeignKey.CASCADE
 
-@Entity(tableName = "label",
-    foreignKeys = [ForeignKey(entity = Note::class,
-        parentColumns = arrayOf("id"),
-        childColumns = arrayOf("note_id")
-    )]
-)
+@Entity(tableName = "label")
 data class Label(
-    @ColumnInfo(name = "note_id")
-    var note_id: Int = 0,
     @ColumnInfo(name = "title")
     val title: String?,
     @ColumnInfo(name = "checked")
@@ -20,11 +14,22 @@ data class Label(
     var id: Int = 0
 }
 
-data class NoteWithLabelList(
-    @Embedded val note: Note,
-    @Relation(
-        parentColumn = "id",
-        entityColumn = "note_id"
-    )
-    val labelList: List<Label>
+
+@Entity(tableName = "label_check",
+        foreignKeys = [
+            ForeignKey(
+                entity = Note::class,
+                parentColumns = ["id"],
+                childColumns = ["note_id"],
+                onDelete = CASCADE
+        )]
 )
+data class LabelCheck(
+    @ColumnInfo(name = "note_id")
+    val note_id: Int,
+    @ColumnInfo(name = "checked_label_id")
+    val checkedLabelId: Int
+) {
+    @PrimaryKey(autoGenerate = true)
+    var id: Int = 0
+}

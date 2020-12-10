@@ -3,8 +3,8 @@ package com.chs.readytonote.dao
 import androidx.lifecycle.LiveData
 import androidx.room.*
 import com.chs.readytonote.entities.Label
+import com.chs.readytonote.entities.LabelCheck
 import com.chs.readytonote.entities.Note
-import com.chs.readytonote.entities.NoteWithLabelList
 
 @Dao
 interface NoteDao {
@@ -20,8 +20,8 @@ interface NoteDao {
     @Query("DELETE FROM notes")
     suspend fun deleteNoteAll() : Int
 
-    @Query("SELECT * FROM label where note_id = :noteId")
-    fun getAllLabels(noteId:Int = 0): LiveData<MutableList<Label>>
+    @Query("SELECT * FROM label")
+    fun getAllLabels(): LiveData<MutableList<Label>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertLabel(label: Label)
@@ -29,4 +29,9 @@ interface NoteDao {
     @Delete
     suspend fun deleteLabel(label: Label)
 
+    @Query("SELECT * FROM label_check where :note_id")
+    fun getCheckedLabel(note_id: Int): LiveData<MutableList<LabelCheck>>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertLabelCheck(check: LabelCheck)
 }
