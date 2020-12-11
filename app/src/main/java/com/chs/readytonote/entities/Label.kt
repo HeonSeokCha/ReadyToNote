@@ -15,20 +15,12 @@ data class Label(
 }
 
 
-@Entity(tableName = "label_check",
-        foreignKeys = [
-            ForeignKey(
-                entity = Note::class,
-                parentColumns = ["id"],
-                childColumns = ["note_id"],
-                onDelete = CASCADE
-        )]
-)
+@Entity(tableName = "label_check")
 data class LabelCheck(
     @ColumnInfo(name = "note_id")
-    val note_id: Int,
+    var note_id: Int,
     @ColumnInfo(name = "checked_label_id")
-    val checkedLabelId: Int
+    var checkedLabelId: Int
 ) {
     @PrimaryKey(autoGenerate = true)
     var id: Int = 0

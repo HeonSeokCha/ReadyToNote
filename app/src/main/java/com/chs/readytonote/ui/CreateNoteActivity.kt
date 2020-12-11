@@ -29,6 +29,7 @@ import kotlinx.android.synthetic.main.activity_create_note.*
 import java.text.SimpleDateFormat
 import java.util.*
 import androidx.core.content.ContextCompat.checkSelfPermission
+import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.load.resource.bitmap.DownsampleStrategy
 import com.chs.readytonote.GlideApp
@@ -48,6 +49,7 @@ import kotlinx.android.synthetic.main.layout_delete_note.view.*
 import kotlinx.android.synthetic.main.layout_decorations.*
 import kotlinx.android.synthetic.main.layout_decorations.view.*
 import kotlinx.android.synthetic.main.layout_label.view.*
+import kotlinx.coroutines.runBlocking
 import kotlin.properties.Delegates
 
 class CreateNoteActivity : AppCompatActivity() {
@@ -56,7 +58,6 @@ class CreateNoteActivity : AppCompatActivity() {
         private const val PERMISSION_CODE_IMAGE = 1001
     }
 
-    private var checkLabelId: Int = 0
     private var noteId = 0
     private var imagePath: String = ""
     private var noteColor: String = "#333333"
@@ -64,6 +65,7 @@ class CreateNoteActivity : AppCompatActivity() {
     private lateinit var alreadyAvailableNote: Note
     private lateinit var binding: ActivityCreateNoteBinding
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<ConstraintLayout>
+    private lateinit var checkLabel:LabelCheck
     private lateinit var dialogUrlAdd: AlertDialog
     private lateinit var dialogDelete: AlertDialog
     private lateinit var dialogLabelAdd: AlertDialog
@@ -98,17 +100,19 @@ class CreateNoteActivity : AppCompatActivity() {
         }
         layoutMiscellaneous.findViewById<TextView>(R.id.textMiscellaneous)
             .setOnClickListener {
-            if(bottomSheetBehavior.state != BottomSheetBehavior.STATE_EXPANDED) {
-                bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
-            } else {
-                bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+                bottomSheetBehavior.apply {
+                    if(this.state != BottomSheetBehavior.STATE_EXPANDED) {
+                        this.state = BottomSheetBehavior.STATE_EXPANDED
+                    } else {
+                        this.state = BottomSheetBehavior.STATE_COLLAPSED
+                    }
+                }
             }
-        }
         initMiscellaneous()
         setSubtitleIndicator(noteColor)
     }
 
-    private fun initClick(){
+    private fun initClick() {
         layoutAddImage.setOnClickListener {
             checkPermImage()
         }
@@ -176,9 +180,14 @@ class CreateNoteActivity : AppCompatActivity() {
                 color = noteColor,
                 webLink = webLink,
             )
-            viewModel.insertNote(note)
-            if(checkLabelId != null) {
-                viewModel.insertCheckLabel(LabelCheck(note.id, checkLabelId!!))
+            if(::checkLabel.isInitialized) {
+                checkLabel.copy(note_id = noteId)
+                viewModel.updateCheckLabel(checkLabel)
+            }
+            if(::alreadyAvailableNote.isInitialized) {
+                viewModel.updateNote(note)
+            } else {
+                viewModel.insertNote(note)
             }
             closeKeyboard()
             setResult(Activity.RESULT_OK, Intent())
@@ -195,6 +204,7 @@ class CreateNoteActivity : AppCompatActivity() {
     }
 
     private fun setViewOrUpdateNote() {
+        noteId = alreadyAvailableNote.id
         label = alreadyAvailableNote.label.toString()
         binding.inputNoteTitle.setText(alreadyAvailableNote.title)
         binding.inputNoteSubtitle.setText(alreadyAvailableNote.subtitle)
@@ -355,7 +365,7 @@ class CreateNoteActivity : AppCompatActivity() {
             dialogLabelAdd.window!!.setBackgroundDrawable(ColorDrawable(0))
         }
         dialogView.textAdd.setOnClickListener {
-            viewModel.insertCheckLabel(LabelCheck(0,checkLabelId!!))
+            viewModel.insertCheckLabel(checkLabel)
             closeKeyboard()
             dialogLabelAdd.dismiss()
         }
@@ -364,21 +374,24 @@ class CreateNoteActivity : AppCompatActivity() {
             closeKeyboard()
             dialogLabelAdd.dismiss()
         }
+        getCheckLabel()
         initLabelRecyclerview(dialogView)
         dialogLabelAdd.show()
     }
 
     private fun initLabelRecyclerview(view: View) {
         view.Rv_label.apply {
-            labelAdapter = LabelAdapter( clickListener = { checkLabel,position ->
-                if(checkLabel.checked) {
-                    checkLabelId = checkLabel.id
+            labelAdapter = LabelAdapter( clickListener = {
+                if(it.checked) {
+                    checkLabel.checkedLabelId = it.id
                 } else {
-                    checkLabelId = 0
+                    checkLabel.checkedLabelId = 0
                 }
+                Log.d("checkLabel","$checkLabel")
             },
             addClickListener = { labelTitle ->
                 viewModel.insertLabel(Label(labelTitle,false))
+                viewModel.insertCheckLabel(checkLabel)
                 view.inputLabel.text.clear()
                 getLabel()
             })
@@ -392,14 +405,17 @@ class CreateNoteActivity : AppCompatActivity() {
 
     private fun getLabel() {
         viewModel.getAllLabel().observe(this@CreateNoteActivity,{
+            for(i in it.indices) {
+                if(::checkLabel.isInitialized && it[i].id == checkLabel.checkedLabelId) {
+                    it[i].checked = true
+                }
+            }
             labelAdapter.submitList(it)
         })
     }
 
     private fun getCheckLabel() {
-        viewModel.getCheckLabel(checkLabelId).observe(this,{
-            TODO("여기서 ....")
-        })
+        TODO("get coroutine return value..")
     }
 
     private fun searchLabel(view: View) {
@@ -407,7 +423,6 @@ class CreateNoteActivity : AppCompatActivity() {
             override fun afterTextChanged(s: Editable?) {
                 labelAdapter.searchLabel(s.toString())
             }
-
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 labelAdapter.cancelTimer()
             }

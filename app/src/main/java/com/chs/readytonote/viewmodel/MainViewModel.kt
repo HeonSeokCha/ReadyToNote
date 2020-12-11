@@ -8,6 +8,7 @@ import com.chs.readytonote.entities.LabelCheck
 import com.chs.readytonote.repository.NoteRepository
 import com.chs.readytonote.entities.Note
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 
 class MainViewModel(application: Application):AndroidViewModel(application) {
@@ -20,12 +21,12 @@ class MainViewModel(application: Application):AndroidViewModel(application) {
         repository.insertNote(note)
     }
 
-    fun deleteNote(note:Note) = viewModelScope.launch(Dispatchers.IO) {
-        repository.deleteNote(note)
+    fun updateNote(note: Note) = viewModelScope.launch(Dispatchers.IO) {
+        repository.updateNote(note)
     }
 
-    fun allDelete() = viewModelScope.launch(Dispatchers.IO) {
-        repository.allDelete()
+    fun deleteNote(note: Note) = viewModelScope.launch(Dispatchers.IO) {
+        repository.deleteNote(note)
     }
 
     fun getAllLabel() = repository.getLabels()
@@ -34,17 +35,19 @@ class MainViewModel(application: Application):AndroidViewModel(application) {
         repository.insertLabel(label)
     }
 
-    fun deleteLabel(label: Label) = viewModelScope.launch(Dispatchers.IO) {
-        repository.deleteLabel(label)
-    }
-
     fun deleteAll() = viewModelScope.launch(Dispatchers.IO) {
         repository.allDelete()
     }
 
-    fun getCheckLabel(noteId: Int) = repository.getCheckLabel(noteId)
+    fun getCheckLabel(noteId: Int) = viewModelScope.async {
+        repository.getCheckLabel(noteId)
+    }
 
     fun insertCheckLabel(labelCheck: LabelCheck) = viewModelScope.launch(Dispatchers.IO) {
         repository.insertCheckLabel(labelCheck)
+    }
+
+    fun updateCheckLabel(labelCheck: LabelCheck) = viewModelScope.launch(Dispatchers.IO) {
+        repository.updateCheckLabel(labelCheck)
     }
 }

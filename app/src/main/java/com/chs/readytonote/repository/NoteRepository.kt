@@ -20,6 +20,10 @@ class NoteRepository (application: Application) {
         dao.insertNote(note)
     }
 
+    suspend fun updateNote(note: Note) {
+        dao.updateNote(note)
+    }
+
     suspend fun deleteNote(note: Note) {
         dao.deleteNote(note)
     }
@@ -38,11 +42,15 @@ class NoteRepository (application: Application) {
         dao.deleteNoteAll()
     }
 
-    fun getCheckLabel(noteId: Int): LiveData<MutableList<LabelCheck>> =
+    suspend fun getCheckLabel(noteId: Int): LabelCheck =
         dao.getCheckedLabel(noteId)
 
     suspend fun insertCheckLabel(labelCheck: LabelCheck) {
         dao.insertLabelCheck(labelCheck)
+    }
+
+    suspend fun updateCheckLabel(labelCheck: LabelCheck) {
+        dao.updateLabelCheck(labelCheck)
     }
 }
 

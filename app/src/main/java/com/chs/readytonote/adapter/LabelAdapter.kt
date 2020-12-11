@@ -18,14 +18,13 @@ import kotlin.concurrent.schedule
 import kotlin.properties.Delegates
 
 class LabelAdapter(
-    private val clickListener: (label: Label,position: Int) -> Unit,
+    private val clickListener: (label: Label) -> Unit,
     private val addClickListener: (title: String) -> Unit,
 ): ListAdapter<Label, RecyclerView.ViewHolder>(LabelDiffUtilCallback()) {
 
     class LabelViewHolder(val binding:ItemContainerLabelBinding):RecyclerView.ViewHolder(binding.root)
     class LabelAddViewHolder(binding:ItemAddLabelBinding):RecyclerView.ViewHolder(binding.root)
 
-    var checkedLabelId by Delegates.notNull<Int>()
     private var selectPosition: Int = -1
     private var labelAdd: Boolean = false
     private lateinit var temp: MutableList<Label>
@@ -63,9 +62,6 @@ class LabelAdapter(
                 if(getItem(position).checked) {
                     selectPosition = position
                 }
-                if(getItem(position).id==0){
-                    holder.itemView.txtLabelTitle.isChecked = true
-                }
                 holder.itemView.setOnClickListener {
                     holder.itemView.txtLabelTitle.apply {
                         when {
@@ -86,8 +82,8 @@ class LabelAdapter(
                             }
                         }
                     }
+                    clickListener.invoke(getItem(position))
                     notifyDataSetChanged()
-                    clickListener.invoke(getItem(position),position)
                 }
             }
             is LabelAddViewHolder -> {

@@ -14,6 +14,9 @@ interface NoteDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertNote(note: Note)
 
+    @Update
+    suspend fun updateNote(note: Note)
+
     @Delete()
     suspend fun deleteNote(note: Note)
 
@@ -29,9 +32,12 @@ interface NoteDao {
     @Delete
     suspend fun deleteLabel(label: Label)
 
-    @Query("SELECT * FROM label_check where :note_id")
-    fun getCheckedLabel(note_id: Int): LiveData<MutableList<LabelCheck>>
+    @Query("SELECT * FROM label_check where note_id = :note_id")
+    suspend fun getCheckedLabel(note_id: Int): LabelCheck
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertLabelCheck(check: LabelCheck)
+
+    @Update
+    suspend fun updateLabelCheck(check: LabelCheck)
 }
