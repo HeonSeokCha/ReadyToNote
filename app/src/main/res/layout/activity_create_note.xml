@@ -182,5 +182,6 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
-    <include layout="@layout/layout_decorations" />
+    <include android:id="@+id/layoutMiscellaneous"
+        layout="@layout/layout_decorations" />
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

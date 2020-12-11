@@ -20,13 +20,10 @@ import com.chs.readytonote.Preferences
 import com.chs.readytonote.R
 import com.chs.readytonote.adapter.NoteAdapter
 import com.chs.readytonote.databinding.ActivityMainBinding
+import com.chs.readytonote.databinding.LayoutThemeSelectBinding
 import com.chs.readytonote.entities.Note
 import com.chs.readytonote.viewmodel.MainViewModel
 import com.chs.readytonote.viewmodel.MainViewModelFactory
-import kotlinx.android.synthetic.main.activity_create_note.*
-import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.layout_add_url.view.*
-import kotlinx.android.synthetic.main.layout_theme_select.view.*
 
 
 class MainActivity : AppCompatActivity() {
@@ -213,17 +210,16 @@ class MainActivity : AppCompatActivity() {
 
     private fun showThemeDialog() {
         val builder: AlertDialog.Builder = AlertDialog.Builder(this)
-        val dialogView = LayoutInflater.from(this).inflate(R.layout.layout_theme_select,
-            (findViewById(R.id.layoutThemeContainer)))
-        builder.setView(dialogView)
+        val dialogView = LayoutThemeSelectBinding.inflate(LayoutInflater.from(this))
+        builder.setView(dialogView.root)
         dialogTheme = builder.create()
         if(dialogTheme.window!=null) {
             dialogTheme.window!!.setBackgroundDrawable(ColorDrawable(0))
         }
         when (Preferences.data) {
-            "WhiteMode" -> dialogView.rdo_white.isChecked = true
-            "DarkMode" -> dialogView.rdo_dark.isChecked = true
-            "Default" -> dialogView.rdo_default.isChecked = true
+            "WhiteMode" -> dialogView.rdoWhite.isChecked = true
+            "DarkMode" -> dialogView.rdoDark.isChecked = true
+            "Default" -> dialogView.rdoDefault.isChecked = true
         }
         dialogView.radioGroup.setOnCheckedChangeListener { _, checkedId ->
             when(checkedId) {
@@ -232,11 +228,11 @@ class MainActivity : AppCompatActivity() {
                 R.id.rdo_default -> Preferences.data = "Default"
             }
         }
-        dialogView.btn_ok.setOnClickListener {
+        dialogView.btnOk.setOnClickListener {
             dialogTheme.dismiss()
             this@MainActivity.recreate()
         }
-        dialogView.btn_cancel.setOnClickListener {
+        dialogView.btnCancel.setOnClickListener {
             dialogTheme.dismiss()
         }
         dialogTheme.show()

@@ -14,15 +14,11 @@ import android.widget.ImageView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.request.target.CustomTarget
-import com.bumptech.glide.request.target.Target
-import com.bumptech.glide.request.transition.Transition
 
 import com.chs.readytonote.GlideApp
 import com.chs.readytonote.R
 import com.chs.readytonote.databinding.ItemContainerNoteBinding
 import com.chs.readytonote.entities.Note
-import kotlinx.android.synthetic.main.item_container_note.view.*
 import java.util.*
 import kotlin.concurrent.schedule
 
@@ -32,8 +28,50 @@ class NoteAdapter (
     private val checkClickListener: (checkList: MutableMap<Int, Note>) -> Unit,
     private val longClickListener: (chkState: Boolean) -> Unit
 ) : ListAdapter<Note, NoteAdapter.NoteViewHolder>(NoteDiffUtilCallback()) {
-    class NoteViewHolder(val binding: ItemContainerNoteBinding)
-        : RecyclerView.ViewHolder(binding.root)
+    inner class NoteViewHolder(val binding: ItemContainerNoteBinding)
+        : RecyclerView.ViewHolder(binding.root) {
+            fun bind(){
+                binding.txtDateTime.text = getItem(adapterPosition).dateTime!!.split("년 ")[1]
+                if(getItem(adapterPosition).color != "#333333") {
+                    binding.layoutNote.setCardBackgroundColor(
+                        Color.parseColor(getItem(adapterPosition).color))
+                }
+
+                if(getItem(adapterPosition).color=="#FDBE3B") {
+                    binding.txtTitle.setTextColor(Color.parseColor("#000000"))
+                    binding.txtSubtitle.setTextColor(Color.parseColor("#000000"))
+                    binding.txtDateTime.setTextColor(Color.parseColor("#000000"))
+                }
+
+                if(getItem(adapterPosition).label.isNullOrEmpty()) {
+                    binding.txtLabel.visibility = View.GONE
+                }
+
+                if(getItem(adapterPosition).imgPath!!.isNotEmpty()) {
+                    binding.imageNote.visibility = View.VISIBLE
+                    GlideApp.with(binding.root)
+                        .load(getItem(adapterPosition).imgPath)
+                        .placeholder(R.color.colorNoteDefaultColor)
+                        .into(binding.imageNote)
+                } else {
+                    binding.imageNote.visibility = View.GONE
+                }
+                when {
+                    checkBox -> {
+                        binding.imgCheck.apply {
+                            visibility = View.VISIBLE
+                            isActivated = isSelectModeOn
+                        }
+                    }
+                    else -> {
+                        binding.imgCheck.apply {
+                            visibility = View.GONE
+                            isActivated = false
+                        }
+                    }
+                }
+            }
+        }
 
     private lateinit var temp: MutableList<Note>
     private lateinit var timerTask: TimerTask
@@ -63,15 +101,15 @@ class NoteAdapter (
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NoteViewHolder {
-        val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.item_container_note, parent, false)
-        val viewHolder = NoteViewHolder(ItemContainerNoteBinding.bind(view))
+        val inflate = LayoutInflater.from(parent.context)
+        val view = ItemContainerNoteBinding.inflate(inflate, parent, false)
+        val viewHolder = NoteViewHolder(view)
         view.layoutNote.setOnClickListener {
             if (checkBox) {
-                view.img_check.apply {
+                view.imgCheck.apply {
                     isActivated = !this.isActivated
                 }
-                if (view.img_check.isActivated) {
+                if (view.imgCheck.isActivated) {
                     checkList[viewHolder.adapterPosition] = getItem(viewHolder.adapterPosition)
                 } else {
                     checkList.remove(viewHolder.adapterPosition)
@@ -90,8 +128,8 @@ class NoteAdapter (
             if(!checkBox) {
                 editItemMode(true)
                 longClickListener(checkBox)
-                if(!view.layoutNote.img_check.isActivated)
-                    view.layoutNote.img_check.isActivated = true
+                if(!view.imgCheck.isActivated)
+                    view.imgCheck.isActivated = true
             }
             return@setOnLongClickListener true
         }
@@ -101,44 +139,7 @@ class NoteAdapter (
     @SuppressLint("ResourceAsColor")
     override fun onBindViewHolder(holder: NoteViewHolder, position: Int) {
         holder.binding.model = getItem(position)
-        with(holder.itemView) {
-            this.txtDateTime.text = getItem(position).dateTime!!.split("년 ")[1]
-
-            if(getItem(position).color != "#333333") {
-                this.layoutNote.setCardBackgroundColor(
-                    Color.parseColor(getItem(position).color))
-            }
-
-            if(getItem(position).color=="#FDBE3B") {
-                this.txtTitle.setTextColor(Color.parseColor("#000000"))
-                this.txtSubtitle.setTextColor(Color.parseColor("#000000"))
-                this.txtDateTime.setTextColor(Color.parseColor("#000000"))
-            }
-
-            if(getItem(position).label.isNullOrEmpty()) {
-                this.txtLabel.visibility = View.GONE
-            }
-
-            if(getItem(position).imgPath!!.isNotEmpty()) {
-                this.imageNote.visibility = View.VISIBLE
-                GlideApp.with(this)
-                    .load(getItem(position).imgPath)
-                    .placeholder(R.color.colorNoteDefaultColor)
-                    .into(this.imageNote)
-            } else {
-                this.imageNote.visibility = View.GONE
-            }
-            when {
-                checkBox -> {
-                    this.img_check.visibility = View.VISIBLE
-                    this.img_check.isActivated = isSelectModeOn
-                }
-                else -> {
-                    this.img_check.visibility = View.GONE
-                    this.img_check.isActivated = false
-                }
-            }
-        }
+        holder.bind()
     }
 
     override fun getItemId(position: Int): Long = getItem(position).id.toLong()
