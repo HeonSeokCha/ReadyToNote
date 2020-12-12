@@ -39,9 +39,7 @@ class MainViewModel(application: Application):AndroidViewModel(application) {
         repository.allDelete()
     }
 
-    fun getCheckLabel(noteId: Int) = viewModelScope.async {
-        repository.getCheckLabel(noteId)
-    }
+    fun getCheckLabel(noteId: Int) = repository.getCheckLabel(noteId)
 
     fun insertCheckLabel(labelCheck: LabelCheck) = viewModelScope.launch(Dispatchers.IO) {
         repository.insertCheckLabel(labelCheck)
@@ -50,4 +48,6 @@ class MainViewModel(application: Application):AndroidViewModel(application) {
     fun updateCheckLabel(labelCheck: LabelCheck) = viewModelScope.launch(Dispatchers.IO) {
         repository.updateCheckLabel(labelCheck)
     }
+
+    fun getLastNoteId() = repository.getLastNoteId()
 }

@@ -28,6 +28,7 @@ import com.chs.readytonote.entities.Note
 import java.text.SimpleDateFormat
 import java.util.*
 import androidx.core.content.ContextCompat.checkSelfPermission
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.viewbinding.ViewBinding
 import com.bumptech.glide.load.resource.bitmap.DownsampleStrategy
@@ -41,6 +42,10 @@ import com.chs.readytonote.getRealPathFromURI
 import com.chs.readytonote.viewmodel.MainViewModel
 import com.chs.readytonote.viewmodel.MainViewModelFactory
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.flow
 
 class CreateNoteActivity : AppCompatActivity() {
     companion object {
@@ -72,6 +77,7 @@ class CreateNoteActivity : AppCompatActivity() {
             .get(MainViewModel::class.java)
         initView()
         initClick()
+        getCheckLabel()
     }
 
     private fun initView() {
@@ -169,14 +175,18 @@ class CreateNoteActivity : AppCompatActivity() {
                 color = noteColor,
                 webLink = webLink,
             )
-            if(::checkLabel.isInitialized) {
-                checkLabel.copy(note_id = noteId)
-                viewModel.updateCheckLabel(checkLabel)
-            }
             if(::alreadyAvailableNote.isInitialized) {
                 note.id = alreadyAvailableNote.id
             }
             viewModel.insertNote(note)
+            if(::checkLabel.isInitialized && noteId == 0) {
+                viewModel.getLastNoteId().observe(this,{
+                    checkLabel.note_id = it
+                    viewModel.updateCheckLabel(checkLabel)
+                })
+            } else {
+                viewModel.updateCheckLabel(checkLabel)
+            }
             closeKeyboard()
             setResult(Activity.RESULT_OK, Intent())
             finish()
@@ -359,7 +369,6 @@ class CreateNoteActivity : AppCompatActivity() {
             closeKeyboard()
             dialogLabelAdd.dismiss()
         }
-        getCheckLabel()
         initLabelRecyclerview(dialogView)
         dialogLabelAdd.show()
     }
@@ -390,17 +399,21 @@ class CreateNoteActivity : AppCompatActivity() {
 
     private fun getLabel() {
         viewModel.getAllLabel().observe(this@CreateNoteActivity,{
+            Log.d("checkLabel","$checkLabel")
             for(i in it.indices) {
                 if(::checkLabel.isInitialized && it[i].id == checkLabel.checkedLabelId) {
                     it[i].checked = true
                 }
+                Log.d("label",it[i].toString())
             }
             labelAdapter.submitList(it)
         })
     }
 
     private fun getCheckLabel() {
-        TODO("get coroutine return value..")
+        viewModel.getCheckLabel(noteId).observe(this,{
+            checkLabel = it ?: LabelCheck(noteId,0)
+       })
     }
 
     private fun searchLabel(view: LayoutLabelBinding) {

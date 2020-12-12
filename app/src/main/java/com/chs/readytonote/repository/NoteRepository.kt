@@ -7,6 +7,8 @@ import com.chs.readytonote.database.NotesDatabases
 import com.chs.readytonote.entities.Label
 import com.chs.readytonote.entities.LabelCheck
 import com.chs.readytonote.entities.Note
+import kotlinx.coroutines.flow.Flow
+
 class NoteRepository (application: Application) {
 
     private val dao: NoteDao by lazy {
@@ -42,7 +44,7 @@ class NoteRepository (application: Application) {
         dao.deleteNoteAll()
     }
 
-    suspend fun getCheckLabel(noteId: Int): LabelCheck =
+    fun getCheckLabel(noteId: Int): LiveData<LabelCheck> =
         dao.getCheckedLabel(noteId)
 
     suspend fun insertCheckLabel(labelCheck: LabelCheck) {
@@ -52,5 +54,7 @@ class NoteRepository (application: Application) {
     suspend fun updateCheckLabel(labelCheck: LabelCheck) {
         dao.updateLabelCheck(labelCheck)
     }
+
+    fun getLastNoteId(): LiveData<Int> = dao.getLastNoteId()
 }
 

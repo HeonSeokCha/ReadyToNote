@@ -15,7 +15,7 @@
     <color name="colorNoteYellow">#FEBD3D</color>
     <color name="colorNoteRed">#FF4842</color>
     <color name="colorNoteBlue">#3A52FC</color>
-    <color name="colorNoteBlack">#000000</color>
+    <color name="colorNotePurple">#967FFA</color>
     <color name="colorDelete">#FF4842</color>
     <color name="colorSearchBackground">#333333</color>
 </resources>
