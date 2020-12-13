@@ -53,7 +53,8 @@ class CreateNoteActivity : AppCompatActivity() {
         private const val PERMISSION_CODE_IMAGE = 1001
     }
 
-    private var noteId = 0
+    private var noteId: Int = 0
+    private var lastNoteId: Long = 0L
     private var imagePath: String = ""
     private var noteColor: String = "#333333"
     private var label: String = ""
@@ -178,15 +179,14 @@ class CreateNoteActivity : AppCompatActivity() {
             if(::alreadyAvailableNote.isInitialized) {
                 note.id = alreadyAvailableNote.id
             }
-            viewModel.insertNote(note)
-            if(::checkLabel.isInitialized && noteId == 0) {
-                viewModel.getLastNoteId().observe(this,{
-                    checkLabel.note_id = it
+            viewModel.insertNote(note).observe(this,{ insertId ->
+                if(::checkLabel.isInitialized && note.id == 0) {
+                    checkLabel.note_id = insertId.toInt()
                     viewModel.updateCheckLabel(checkLabel)
-                })
-            } else {
-                viewModel.updateCheckLabel(checkLabel)
-            }
+                } else {
+                    viewModel.updateCheckLabel(checkLabel)
+                }
+            })
             closeKeyboard()
             setResult(Activity.RESULT_OK, Intent())
             finish()
@@ -195,6 +195,7 @@ class CreateNoteActivity : AppCompatActivity() {
 
     private fun deleteNote(note:Note) {
         viewModel.deleteNote(note)
+        viewModel.deleteCheckLabel(note.id)
         val intent = Intent()
         intent.putExtra("isNoteDelete",true)
         setResult(Activity.RESULT_OK,intent)
@@ -209,12 +210,12 @@ class CreateNoteActivity : AppCompatActivity() {
         binding.inputNoteText.setText(alreadyAvailableNote.noteText)
 
         if (alreadyAvailableNote.imgPath!!.isNotEmpty()) {
+            imagePath = alreadyAvailableNote.imgPath!!
             binding.imageNote.visibility = View.VISIBLE
+            binding.imageDelete.visibility = View.VISIBLE
             GlideApp.with(this).load(alreadyAvailableNote.imgPath)
                 .error(R.drawable.ic_done)
                 .into(binding.imageNote)
-            imagePath = alreadyAvailableNote.imgPath!!
-            binding.imageDelete.visibility = View.VISIBLE
         }
         if (alreadyAvailableNote.webLink!!.isNotEmpty()) {
             binding.txtWebUrl.text = alreadyAvailableNote.webLink
@@ -378,10 +379,11 @@ class CreateNoteActivity : AppCompatActivity() {
             labelAdapter = LabelAdapter( clickListener = {
                 if(it.checked) {
                     checkLabel.checkedLabelId = it.id
+                    label = it.title.toString()
                 } else {
                     checkLabel.checkedLabelId = 0
+                    label = ""
                 }
-                Log.d("checkLabel","$checkLabel")
             },
             addClickListener = { labelTitle ->
                 viewModel.insertLabel(Label(labelTitle,false))
@@ -399,12 +401,10 @@ class CreateNoteActivity : AppCompatActivity() {
 
     private fun getLabel() {
         viewModel.getAllLabel().observe(this@CreateNoteActivity,{
-            Log.d("checkLabel","$checkLabel")
             for(i in it.indices) {
                 if(::checkLabel.isInitialized && it[i].id == checkLabel.checkedLabelId) {
                     it[i].checked = true
                 }
-                Log.d("label",it[i].toString())
             }
             labelAdapter.submitList(it)
         })
@@ -477,7 +477,6 @@ class CreateNoteActivity : AppCompatActivity() {
             GlideApp.with(this).load(data!!.data)
                 .into(binding.imageNote)
             imagePath = getRealPathFromURI(this, data.data!!)!!
-            Log.d("ImagePath","${contentResolver.getFileName(data.data!!)}")
             binding.imageDelete.visibility = View.VISIBLE
             bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
         }

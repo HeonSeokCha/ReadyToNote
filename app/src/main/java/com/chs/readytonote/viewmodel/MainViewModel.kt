@@ -2,6 +2,8 @@ package com.chs.readytonote.viewmodel
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.chs.readytonote.entities.Label
 import com.chs.readytonote.entities.LabelCheck
@@ -17,8 +19,13 @@ class MainViewModel(application: Application):AndroidViewModel(application) {
 
     fun getAllNotes() = repository.getNotes()
 
-    fun insertNote(note: Note) = viewModelScope.launch(Dispatchers.IO) {
-        repository.insertNote(note)
+    fun insertNote(note: Note): LiveData<Long> {
+        val lastId = MutableLiveData<Long>()
+        viewModelScope.launch(Dispatchers.IO) {
+            val id = repository.insertNote(note)
+            lastId.postValue(id)
+        }
+        return lastId
     }
 
     fun updateNote(note: Note) = viewModelScope.launch(Dispatchers.IO) {
@@ -45,9 +52,11 @@ class MainViewModel(application: Application):AndroidViewModel(application) {
         repository.insertCheckLabel(labelCheck)
     }
 
+    fun deleteCheckLabel(noteId: Int) = viewModelScope.launch(Dispatchers.IO){
+        repository.deleteCheckLabel(noteId)
+    }
+
     fun updateCheckLabel(labelCheck: LabelCheck) = viewModelScope.launch(Dispatchers.IO) {
         repository.updateCheckLabel(labelCheck)
     }
-
-    fun getLastNoteId() = repository.getLastNoteId()
 }

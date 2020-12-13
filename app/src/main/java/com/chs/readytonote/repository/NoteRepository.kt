@@ -7,7 +7,6 @@ import com.chs.readytonote.database.NotesDatabases
 import com.chs.readytonote.entities.Label
 import com.chs.readytonote.entities.LabelCheck
 import com.chs.readytonote.entities.Note
-import kotlinx.coroutines.flow.Flow
 
 class NoteRepository (application: Application) {
 
@@ -18,9 +17,7 @@ class NoteRepository (application: Application) {
 
     fun getNotes(): LiveData<MutableList<Note>> = dao.getAllNotes()
 
-    suspend fun insertNote(note: Note) {
-        dao.insertNote(note)
-    }
+    suspend fun insertNote(note: Note):Long = dao.insertNote(note)
 
     suspend fun updateNote(note: Note) {
         dao.updateNote(note)
@@ -36,10 +33,6 @@ class NoteRepository (application: Application) {
         dao.insertLabel(label)
     }
 
-    suspend fun deleteLabel(label: Label) {
-        dao.deleteLabel(label)
-    }
-
     suspend fun allDelete() {
         dao.deleteNoteAll()
     }
@@ -51,10 +44,12 @@ class NoteRepository (application: Application) {
         dao.insertLabelCheck(labelCheck)
     }
 
+    suspend fun deleteCheckLabel(noteId: Int) {
+        dao.deleteLabelCheck(noteId)
+    }
+
     suspend fun updateCheckLabel(labelCheck: LabelCheck) {
         dao.updateLabelCheck(labelCheck)
     }
-
-    fun getLastNoteId(): LiveData<Int> = dao.getLastNoteId()
 }
 

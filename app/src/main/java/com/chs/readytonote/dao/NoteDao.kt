@@ -5,7 +5,6 @@ import androidx.room.*
 import com.chs.readytonote.entities.Label
 import com.chs.readytonote.entities.LabelCheck
 import com.chs.readytonote.entities.Note
-import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface NoteDao {
@@ -13,12 +12,12 @@ interface NoteDao {
     fun getAllNotes(): LiveData<MutableList<Note>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertNote(note: Note)
+    suspend fun insertNote(note: Note): Long
 
     @Update
     suspend fun updateNote(note: Note)
 
-    @Delete()
+    @Delete
     suspend fun deleteNote(note: Note)
 
     @Query("DELETE FROM notes")
@@ -30,18 +29,16 @@ interface NoteDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertLabel(label: Label)
 
-    @Delete
-    suspend fun deleteLabel(label: Label)
-
     @Query("SELECT * FROM label_check where note_id = :note_id")
     fun getCheckedLabel(note_id: Int): LiveData<LabelCheck>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertLabelCheck(check: LabelCheck)
 
+    @Query("DELETE FROM label_check where note_id = :note_id")
+    suspend fun deleteLabelCheck(note_id: Int)
+
     @Update
     suspend fun updateLabelCheck(check: LabelCheck)
 
-    @Query("SELECT id FROM notes ORDER BY id DESC LIMIT 1")
-    fun getLastNoteId(): LiveData<Int>
 }
