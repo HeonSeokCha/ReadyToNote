@@ -1,7 +1,7 @@
 # ReadyToNote
 This is Simple Todo Note.
   
-* Thanks to Chirag Kachhadiya : https://www.youtube.com/c/ChiragKachhadiya94/featured
+* UI Concept : https://dribbble.com/shots/11123324-Notes-App
 
 * Application Screen
 <div>
