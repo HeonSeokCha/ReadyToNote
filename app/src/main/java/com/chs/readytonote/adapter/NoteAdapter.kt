@@ -5,6 +5,7 @@ import android.content.Context
 import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.graphics.drawable.Drawable
+import android.graphics.drawable.GradientDrawable
 import android.os.Handler
 import android.os.Looper
 import android.view.LayoutInflater
@@ -28,19 +29,36 @@ class NoteAdapter (
     private val checkClickListener: (checkList: MutableMap<Int, Note>) -> Unit,
     private val longClickListener: (chkState: Boolean) -> Unit
 ) : ListAdapter<Note, NoteAdapter.NoteViewHolder>(NoteDiffUtilCallback()) {
-    inner class NoteViewHolder(val binding: ItemContainerNoteBinding)
+
+    private lateinit var temp: MutableList<Note>
+    private lateinit var timerTask: TimerTask
+    private val checkList: MutableMap<Int, Note> by lazy { mutableMapOf() }
+    private val searchList: List<Note> by lazy { currentList }
+    private var checkBox: Boolean = false
+    private var isSelectModeOn: Boolean = false
+
+    inner class NoteViewHolder(private val binding: ItemContainerNoteBinding)
         : RecyclerView.ViewHolder(binding.root) {
             fun bind(){
-                binding.txtDateTime.text = getItem(adapterPosition).dateTime!!.split("년 ")[1]
+                binding.model = getItem(adapterPosition)
+                binding.txtDateTime.text = getItem(adapterPosition)
+                    .dateTime!!.split("년 ")[1]
                 if(getItem(adapterPosition).color != "#333333") {
                     binding.layoutNote.setCardBackgroundColor(
                         Color.parseColor(getItem(adapterPosition).color))
                 }
 
+                var gradientDrawable = binding.txtLabel.background as GradientDrawable
                 if(getItem(adapterPosition).color=="#FDBE3B") {
                     binding.txtTitle.setTextColor(Color.parseColor("#000000"))
                     binding.txtSubtitle.setTextColor(Color.parseColor("#000000"))
                     binding.txtDateTime.setTextColor(Color.parseColor("#000000"))
+                    binding.txtLabel.setTextColor(Color.parseColor("#000000"))
+                    gradientDrawable.setStroke(2,
+                        Color.parseColor("#000000"))
+                } else {
+                    gradientDrawable.setStroke(2,
+                        binding.root.context.getColor(R.color.colorWhite))
                 }
 
                 if(getItem(adapterPosition).label.isNullOrEmpty()) {
@@ -72,15 +90,6 @@ class NoteAdapter (
                 }
             }
         }
-
-    private lateinit var temp: MutableList<Note>
-    private lateinit var timerTask: TimerTask
-    private val checkList: MutableMap<Int, Note> by lazy { mutableMapOf() }
-    private val searchList: List<Note> by lazy { currentList }
-    private var checkBox: Boolean = false
-    private var isSelectModeOn: Boolean = false
-
-
     fun editItemMode(chk: Boolean) {
         checkBox = chk
         notifyDataSetChanged()
@@ -138,7 +147,6 @@ class NoteAdapter (
 
     @SuppressLint("ResourceAsColor")
     override fun onBindViewHolder(holder: NoteViewHolder, position: Int) {
-        holder.binding.model = getItem(position)
         holder.bind()
     }
 

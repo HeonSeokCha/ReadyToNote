@@ -19,8 +19,9 @@ class LabelAdapter(
     private val addClickListener: (title: String) -> Unit,
 ): ListAdapter<Label, RecyclerView.ViewHolder>(LabelDiffUtilCallback()) {
 
-    inner class LabelViewHolder(val binding:ItemContainerLabelBinding):RecyclerView.ViewHolder(binding.root) {
+    inner class LabelViewHolder(private val binding:ItemContainerLabelBinding):RecyclerView.ViewHolder(binding.root) {
         fun bind() {
+            binding.model = getItem(adapterPosition)
             if(getItem(adapterPosition).checked) {
                 selectPosition = adapterPosition
             }
@@ -49,8 +50,8 @@ class LabelAdapter(
             }
         }
     }
-    inner class LabelAddViewHolder(val binding:ItemAddLabelBinding):RecyclerView.ViewHolder(binding.root) {
-        fun Addbind() {
+    inner class LabelAddViewHolder(private val binding:ItemAddLabelBinding):RecyclerView.ViewHolder(binding.root) {
+        fun addBind() {
             binding.checkedTextView.text = "'${getItem(adapterPosition).title}' 라벨 만들기"
             binding.root.setOnClickListener {
                 addClickListener.invoke(getItem(0).title!!)
@@ -93,11 +94,10 @@ class LabelAdapter(
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when(holder){
             is LabelViewHolder -> {
-                holder.binding.model = getItem(position)
                 holder.bind()
             }
             is LabelAddViewHolder -> {
-                holder.Addbind()
+                holder.addBind()
             }
         }
     }

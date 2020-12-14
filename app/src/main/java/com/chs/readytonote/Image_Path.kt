@@ -1,14 +1,10 @@
 package com.chs.readytonote
 
 import android.content.ContentResolver
-import android.content.ContentUris
 import android.content.Context
 import android.database.Cursor
 import android.net.Uri
-import android.os.Environment
-import android.provider.DocumentsContract
 import android.provider.MediaStore
-import android.provider.OpenableColumns
 import androidx.loader.content.CursorLoader
 import com.bumptech.glide.annotation.GlideModule
 import com.bumptech.glide.module.AppGlideModule

@@ -95,6 +95,7 @@ class MainActivity : AppCompatActivity() {
                 startActivityForResult(
                     Intent(this,
                         CreateNoteActivity::class.java), REQUEST_CODE_ADD_NOTE)
+                overridePendingTransition(R.anim.slide_in_right, R.anim.hold)
             }
         }
         binding.btnDarkMode.setOnClickListener {
@@ -113,6 +114,7 @@ class MainActivity : AppCompatActivity() {
                     putExtra("note", note)
                 }
                 startActivityForResult(intent, REQUEST_CODE_UPDATE_NOTE)
+                overridePendingTransition(R.anim.slide_in_right, R.anim.hold)
             }, longClickListener = { chkState ->
                 if (chkState) {
                     editMode = true
@@ -202,6 +204,7 @@ class MainActivity : AppCompatActivity() {
                         putExtra("shortCutImage", true)
                     }
                     startActivityForResult(intent, REQUEST_CODE_ADD_NOTE)
+                    overridePendingTransition(R.anim.slide_in_right, R.anim.hold)
                 }
             }
             return@setOnMenuItemClickListener false

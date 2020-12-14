@@ -487,6 +487,8 @@ class CreateNoteActivity : AppCompatActivity() {
             bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
         } else {
             super.onBackPressed()
+            overridePendingTransition(R.anim.hold,
+                R.anim.slide_out_left)
         }
     }
 }
