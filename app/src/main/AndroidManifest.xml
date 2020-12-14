@@ -15,9 +15,9 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name=".ui.CreateNoteActivity"
-            android:screenOrientation="fullSensor" android:windowSoftInputMode="stateHidden"/>
+            android:screenOrientation="portrait" android:windowSoftInputMode="stateHidden"/>
         <activity android:name=".ui.MainActivity"
-            android:screenOrientation="fullSensor" android:windowSoftInputMode="stateHidden">
+            android:screenOrientation="portrait" android:windowSoftInputMode="stateHidden">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

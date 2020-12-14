@@ -53,15 +53,15 @@ class MainActivity : AppCompatActivity() {
 
     private fun checkTheme() {
         when (Preferences.data) {
-            "WhiteMode" ->{
+            "WhiteMode" -> {
                 AppCompatDelegate.setDefaultNightMode(
                     AppCompatDelegate.MODE_NIGHT_NO)
             }
-            "DarkMode" ->{
+            "DarkMode" -> {
                 AppCompatDelegate.setDefaultNightMode(
                     AppCompatDelegate.MODE_NIGHT_YES)
             }
-            "Default" ->{
+            "Default" -> {
                 if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.Q) {
                     AppCompatDelegate.setDefaultNightMode(
                         AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
@@ -81,8 +81,7 @@ class MainActivity : AppCompatActivity() {
                     viewModel.deleteNote(i)
                 }
                 Toast.makeText(this,
-                    "${checkList.size}개의 노트가 삭제되었습니다.",
-                    Toast.LENGTH_SHORT).show()
+                    "${checkList.size}개의 노트가 삭제되었습니다.", Toast.LENGTH_SHORT).show()
                 checkList.clear()
                 editMode = false
                 notesAdapter.editItemMode(false)
@@ -141,10 +140,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun getNote() {
+        checkList = mutableMapOf()
         viewModel.getAllNotes().observe(this, { notes ->
             notesAdapter.submitList(notes)
         })
-        checkList = mutableMapOf()
     }
 
     private fun searchNote() {
@@ -157,16 +156,6 @@ class MainActivity : AppCompatActivity() {
             }
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
         })
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if(requestCode == REQUEST_CODE_ADD_NOTE && resultCode == RESULT_OK) {
-            getNote()
-            Toast.makeText(this, "노트 추가됨", Toast.LENGTH_SHORT).show()
-        } else if(requestCode == REQUEST_CODE_UPDATE_NOTE && resultCode == RESULT_OK) {
-            getNote()
-        }
     }
 
     @SuppressLint("UseCompatLoadingForDrawables")
@@ -216,7 +205,7 @@ class MainActivity : AppCompatActivity() {
         val dialogView = LayoutThemeSelectBinding.inflate(LayoutInflater.from(this))
         builder.setView(dialogView.root)
         dialogTheme = builder.create()
-        if(dialogTheme.window!=null) {
+        if(dialogTheme.window != null) {
             dialogTheme.window!!.setBackgroundDrawable(ColorDrawable(0))
         }
         when (Preferences.data) {
@@ -239,6 +228,16 @@ class MainActivity : AppCompatActivity() {
             dialogTheme.dismiss()
         }
         dialogTheme.show()
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if(requestCode == REQUEST_CODE_ADD_NOTE && resultCode == RESULT_OK) {
+            getNote()
+            Toast.makeText(this, "노트 추가됨", Toast.LENGTH_SHORT).show()
+        } else if(requestCode == REQUEST_CODE_UPDATE_NOTE && resultCode == RESULT_OK) {
+            getNote()
+        }
     }
 
     @SuppressLint("UseCompatLoadingForDrawables")

@@ -18,7 +18,6 @@ import android.util.Patterns
 import android.view.LayoutInflater
 import android.view.View
 import android.view.inputmethod.InputMethodManager
-import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -28,24 +27,16 @@ import com.chs.readytonote.entities.Note
 import java.text.SimpleDateFormat
 import java.util.*
 import androidx.core.content.ContextCompat.checkSelfPermission
-import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.viewbinding.ViewBinding
 import com.bumptech.glide.load.resource.bitmap.DownsampleStrategy
-import com.chs.readytonote.GlideApp
+import com.chs.readytonote.viewmodel.GlideApp
 import com.chs.readytonote.adapter.LabelAdapter
 import com.chs.readytonote.databinding.*
 import com.chs.readytonote.entities.Label
 import com.chs.readytonote.entities.LabelCheck
-import com.chs.readytonote.getFileName
-import com.chs.readytonote.getRealPathFromURI
 import com.chs.readytonote.viewmodel.MainViewModel
 import com.chs.readytonote.viewmodel.MainViewModelFactory
 import com.google.android.material.bottomsheet.BottomSheetBehavior
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.flow
 
 class CreateNoteActivity : AppCompatActivity() {
     companion object {
@@ -54,7 +45,6 @@ class CreateNoteActivity : AppCompatActivity() {
     }
 
     private var noteId: Int = 0
-    private var lastNoteId: Long = 0L
     private var imagePath: String = ""
     private var noteColor: String = "#333333"
     private var label: String = ""
@@ -82,30 +72,28 @@ class CreateNoteActivity : AppCompatActivity() {
     }
 
     private fun initView() {
-        noteColor = "#333333"
-        imagePath = ""
-        binding.txtDateTime.text = SimpleDateFormat("yyyy년 MM월 dd일 E",
-            Locale.KOREA).format(Date())
-        bottomSheetBehavior = BottomSheetBehavior.from(binding.layoutMiscellaneous.root)
-
         if(intent.getBooleanExtra("isViewOrUpdate",false)) {
             alreadyAvailableNote = intent.getParcelableExtra("note")
+            binding.layoutMiscellaneous.layoutDeleteNote.visibility = View.VISIBLE
             setViewOrUpdateNote()
         }
         if(intent.getBooleanExtra("shortCutImage",false)) {
             checkPermImage()
         }
+        initMiscellaneous()
+        setSubtitleIndicator()
+        bottomSheetBehavior = BottomSheetBehavior.from(binding.layoutMiscellaneous.root)
+        binding.txtDateTime.text = SimpleDateFormat("yyyy년 MM월 dd일 E",
+            Locale.KOREA).format(Date())
         binding.layoutMiscellaneous.textMiscellaneous.setOnClickListener {
-                bottomSheetBehavior.apply {
-                    if(this.state != BottomSheetBehavior.STATE_EXPANDED) {
-                        this.state = BottomSheetBehavior.STATE_EXPANDED
-                    } else {
-                        this.state = BottomSheetBehavior.STATE_COLLAPSED
-                    }
+            bottomSheetBehavior.apply {
+                if(this.state != BottomSheetBehavior.STATE_EXPANDED) {
+                    this.state = BottomSheetBehavior.STATE_EXPANDED
+                } else {
+                    this.state = BottomSheetBehavior.STATE_COLLAPSED
                 }
             }
-        initMiscellaneous()
-        setSubtitleIndicator(noteColor)
+        }
     }
 
     private fun initClick() {
@@ -144,12 +132,9 @@ class CreateNoteActivity : AppCompatActivity() {
             binding.imageDeleteUrl.visibility = View.GONE
         }
 
-        if(::alreadyAvailableNote.isInitialized) {
-            binding.layoutMiscellaneous.layoutDeleteNote.visibility = View.VISIBLE
-            binding.layoutMiscellaneous.layoutDeleteNote.setOnClickListener {
-                bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
-                showDeleteDialog()
-            }
+        binding.layoutMiscellaneous.layoutDeleteNote.setOnClickListener {
+            bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+            showDeleteDialog()
         }
     }
 
@@ -205,6 +190,7 @@ class CreateNoteActivity : AppCompatActivity() {
     private fun setViewOrUpdateNote() {
         noteId = alreadyAvailableNote.id
         label = alreadyAvailableNote.label.toString()
+        noteColor = alreadyAvailableNote.color.toString()
         binding.inputNoteTitle.setText(alreadyAvailableNote.title)
         binding.inputNoteSubtitle.setText(alreadyAvailableNote.subtitle)
         binding.inputNoteText.setText(alreadyAvailableNote.noteText)
@@ -224,9 +210,10 @@ class CreateNoteActivity : AppCompatActivity() {
         }
     }
 
-    private fun setSubtitleIndicator(color:String) {
+    private fun setSubtitleIndicator() {
+        Log.d("noteColor","$noteColor")
         var gradientDrawable = binding.viewSubtitleIndicator.background as GradientDrawable
-        if(noteColor=="#333333") {
+        if(noteColor == "#333333") {
             gradientDrawable.setColor(resources.getColor(R.color.colorNoteDefaultColor,null))
         } else {
             gradientDrawable.setColor(Color.parseColor(noteColor))
@@ -242,7 +229,7 @@ class CreateNoteActivity : AppCompatActivity() {
                 imageColorRed.setImageResource(0)
                 imageColorBlue.setImageResource(0)
                 imageColorPurple.setImageResource(0)
-                setSubtitleIndicator(noteColor)
+                setSubtitleIndicator()
             }
 
             imageColorYellow.setOnClickListener {
@@ -252,7 +239,7 @@ class CreateNoteActivity : AppCompatActivity() {
                 imageColorRed.setImageResource(0)
                 imageColorBlue.setImageResource(0)
                 imageColorPurple.setImageResource(0)
-                setSubtitleIndicator(noteColor)
+                setSubtitleIndicator()
             }
 
             imageColorRed.setOnClickListener {
@@ -262,7 +249,7 @@ class CreateNoteActivity : AppCompatActivity() {
                 imageColorRed.setImageResource(R.drawable.ic_done)
                 imageColorBlue.setImageResource(0)
                 imageColorPurple.setImageResource(0)
-                setSubtitleIndicator(noteColor)
+                setSubtitleIndicator()
             }
 
             imageColorBlue.setOnClickListener {
@@ -272,7 +259,7 @@ class CreateNoteActivity : AppCompatActivity() {
                 imageColorRed.setImageResource(0)
                 imageColorBlue.setImageResource(R.drawable.ic_done)
                 imageColorPurple.setImageResource(0)
-                setSubtitleIndicator(noteColor)
+                setSubtitleIndicator()
             }
 
             imageColorPurple.setOnClickListener {
@@ -282,20 +269,18 @@ class CreateNoteActivity : AppCompatActivity() {
                 imageColorRed.setImageResource(0)
                 imageColorBlue.setImageResource(0)
                 imageColorPurple.setImageResource(R.drawable.ic_done)
-                setSubtitleIndicator(noteColor)
+                setSubtitleIndicator()
             }
-        }
 
-        if(::alreadyAvailableNote.isInitialized
-            && alreadyAvailableNote.color!!.isNotEmpty()) {
-            when(alreadyAvailableNote.color) {
-                "#333333"-> {
-                    binding.layoutMiscellaneous.imageColorDefault.performClick()
+            if(::alreadyAvailableNote.isInitialized
+                && alreadyAvailableNote.color!!.isNotEmpty()) {
+                when(alreadyAvailableNote.color) {
+                    "#333333" -> imageColorDefault.performClick()
+                    "#FDBE3B" -> imageColorYellow.performClick()
+                    "#FF4842" -> imageColorRed.performClick()
+                    "#3A52FC" -> imageColorBlue.performClick()
+                    "#967FFA" -> imageColorPurple.performClick()
                 }
-                "#FDBE3B"->binding.layoutMiscellaneous.imageColorYellow.performClick()
-                "#FF4842"->binding.layoutMiscellaneous.imageColorRed.performClick()
-                "#3A52FC"->binding.layoutMiscellaneous.imageColorBlue.performClick()
-                "#967FFA"->binding.layoutMiscellaneous.imageColorPurple.performClick()
             }
         }
     }
@@ -305,7 +290,7 @@ class CreateNoteActivity : AppCompatActivity() {
         val dialogView = LayoutAddUrlBinding.inflate(LayoutInflater.from(this))
         builder.setView(dialogView.root)
         dialogUrlAdd = builder.create()
-        if(dialogUrlAdd.window!=null) {
+        if(dialogUrlAdd.window != null) {
             dialogUrlAdd.window!!.setBackgroundDrawable(ColorDrawable(0))
         }
         dialogView.inputUrl.requestFocus()
@@ -323,8 +308,8 @@ class CreateNoteActivity : AppCompatActivity() {
                     closeKeyboard()
                     binding.txtWebUrl.text = dialogView.inputUrl.text
                     binding.txtWebUrl.visibility = View.VISIBLE
-                    dialogUrlAdd.dismiss()
                     binding.imageDeleteUrl.visibility = View.VISIBLE
+                    dialogUrlAdd.dismiss()
                 }
             }
         }
@@ -392,21 +377,18 @@ class CreateNoteActivity : AppCompatActivity() {
                 getLabel()
             })
             labelAdapter.setHasStableIds(true)
-            this.layoutManager = LinearLayoutManager(this@CreateNoteActivity)
-            this.adapter = labelAdapter
+            layoutManager = LinearLayoutManager(this@CreateNoteActivity)
+            adapter = labelAdapter
             getLabel()
             searchLabel(view)
         }
     }
 
     private fun getLabel() {
-        viewModel.getAllLabel().observe(this@CreateNoteActivity,{
-            for(i in it.indices) {
-                if(::checkLabel.isInitialized && it[i].id == checkLabel.checkedLabelId) {
-                    it[i].checked = true
-                }
-            }
-            labelAdapter.submitList(it)
+        viewModel.getAllLabel().observe(this@CreateNoteActivity,{ labelList ->
+            labelList.filter { it.id == checkLabel.checkedLabelId }
+                .forEach { it.checked = true }
+            labelAdapter.submitList(labelList)
         })
     }
 
@@ -450,21 +432,24 @@ class CreateNoteActivity : AppCompatActivity() {
     private fun pickImageFromGallery() {
         val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
         if(intent.resolveActivity(packageManager)!= null) {
-            intent.type = "image/*"
-            intent.flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
+            intent.apply {
+                type = "image/*"
+                flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
+            }
             startActivityForResult(intent, IMAGE_PICK_CODE)
         }
     }
 
     override fun onRequestPermissionsResult(requestCode: Int,
-                                            permissions: Array<out String>, grantResults: IntArray) {
+        permissions: Array<out String>, grantResults: IntArray) {
         when(requestCode) {
             PERMISSION_CODE_IMAGE -> {
                 if (grantResults.isNotEmpty() &&
                     grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     pickImageFromGallery()
                 }
-                else Toast.makeText(this, "Permission denied", Toast.LENGTH_SHORT).show()
+                else Toast.makeText(this,
+                    "Permission denied", Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -472,12 +457,10 @@ class CreateNoteActivity : AppCompatActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if(resultCode==Activity.RESULT_OK && requestCode == IMAGE_PICK_CODE) {
+            GlideApp.with(this).load(data!!.data).into(binding.imageNote)
             binding.imageNote.visibility = View.VISIBLE
-            DownsampleStrategy.SampleSizeRounding.QUALITY
-            GlideApp.with(this).load(data!!.data)
-                .into(binding.imageNote)
-            imagePath = getRealPathFromURI(this, data.data!!)!!
             binding.imageDelete.visibility = View.VISIBLE
+            imagePath = viewModel.getRealPathFromURI(this, data.data!!)!!
             bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
         }
     }
