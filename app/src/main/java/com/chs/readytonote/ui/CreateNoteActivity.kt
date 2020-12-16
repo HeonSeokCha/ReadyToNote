@@ -460,7 +460,7 @@ class CreateNoteActivity : AppCompatActivity() {
             GlideApp.with(this).load(data!!.data).into(binding.imageNote)
             binding.imageNote.visibility = View.VISIBLE
             binding.imageDelete.visibility = View.VISIBLE
-            imagePath = viewModel.getRealPathFromURI(this, data.data!!)!!
+            imagePath = viewModel.getRealPathFromURI(data.data!!)!!
             bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
         }
     }

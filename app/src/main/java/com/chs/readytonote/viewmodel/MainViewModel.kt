@@ -25,6 +25,7 @@ class MyGlide : AppGlideModule()
 class MainViewModel(application: Application):AndroidViewModel(application) {
 
     private var repository: NoteRepository = NoteRepository(application)
+    private var context = application
 
     fun getAllNotes() = repository.getNotes()
 
@@ -61,7 +62,7 @@ class MainViewModel(application: Application):AndroidViewModel(application) {
         repository.updateCheckLabel(labelCheck)
     }
 
-    fun getRealPathFromURI(context: Context, contentUri: Uri): String? {
+    fun getRealPathFromURI(contentUri: Uri): String? {
         val proj = arrayOf(MediaStore.Images.Media.DATA)
         val loader = CursorLoader(context, contentUri, proj, null, null, null)
         val cursor: Cursor? = loader.loadInBackground()

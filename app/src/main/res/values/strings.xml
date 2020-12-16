@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">ReadyToNote</string>
+    <string name="version">1.00</string>
 </resources>
