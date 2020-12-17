@@ -80,8 +80,7 @@ class MainActivity : AppCompatActivity() {
                 for(i in checkList.values) {
                     viewModel.deleteNote(i)
                 }
-                Toast.makeText(this,
-                    "${checkList.size}개의 노트가 삭제되었습니다.", Toast.LENGTH_SHORT).show()
+                showToast("${checkList.size}개의 노트가 삭제되었습니다.")
                 checkList.clear()
                 editMode = false
                 notesAdapter.editItemMode(false)
@@ -230,11 +229,15 @@ class MainActivity : AppCompatActivity() {
         dialogTheme.show()
     }
 
+    private fun showToast(msg: String) {
+        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
+    }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if(requestCode == REQUEST_CODE_ADD_NOTE && resultCode == RESULT_OK) {
             getNote()
-            Toast.makeText(this, "노트 추가됨", Toast.LENGTH_SHORT).show()
+            showToast("노트 추가됨")
         } else if(requestCode == REQUEST_CODE_UPDATE_NOTE && resultCode == RESULT_OK) {
             getNote()
         }

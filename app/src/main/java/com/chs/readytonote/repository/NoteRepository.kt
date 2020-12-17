@@ -17,28 +17,19 @@ class NoteRepository (application: Application) {
 
     fun getNotes(): LiveData<MutableList<Note>> = dao.getAllNotes()
 
-    suspend fun insertNote(note: Note):Long = dao.insertNote(note)
+    fun getLabels(): LiveData<MutableList<Label>> = dao.getAllLabels()
 
-    suspend fun updateNote(note: Note) {
-        dao.updateNote(note)
-    }
+    fun getCheckLabel(noteId: Int): LiveData<LabelCheck> = dao.getCheckedLabel(noteId)
+
+    suspend fun insertNote(note: Note):Long = dao.insertNote(note)
 
     suspend fun deleteNote(note: Note) {
         dao.deleteNote(note)
     }
 
-    fun getLabels(): LiveData<MutableList<Label>> = dao.getAllLabels()
-
     suspend fun insertLabel(label: Label) {
         dao.insertLabel(label)
     }
-
-    suspend fun allDelete() {
-        dao.deleteNoteAll()
-    }
-
-    fun getCheckLabel(noteId: Int): LiveData<LabelCheck> =
-        dao.getCheckedLabel(noteId)
 
     suspend fun insertCheckLabel(labelCheck: LabelCheck) {
         dao.insertLabelCheck(labelCheck)
