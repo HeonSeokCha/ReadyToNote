@@ -33,7 +33,7 @@ class NoteAdapter (
 
     inner class NoteViewHolder(private val binding: ItemContainerNoteBinding)
         : RecyclerView.ViewHolder(binding.root) {
-            fun bind(){
+            fun bind() {
                 binding.model = getItem(adapterPosition)
                 binding.txtDateTime.text = getItem(adapterPosition)
                     .dateTime!!.split("년 ")[1]
