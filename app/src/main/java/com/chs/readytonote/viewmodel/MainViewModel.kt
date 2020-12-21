@@ -5,10 +5,7 @@ import android.content.Context
 import android.database.Cursor
 import android.net.Uri
 import android.provider.MediaStore
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import androidx.loader.content.CursorLoader
 import com.bumptech.glide.annotation.GlideModule
 import com.bumptech.glide.module.AppGlideModule
@@ -21,6 +18,15 @@ import kotlinx.coroutines.launch
 
 @GlideModule
 class MyGlide : AppGlideModule()
+
+class MainViewModelFactory(private val application: Application): ViewModelProvider.Factory{
+    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+        if(modelClass.isAssignableFrom(MainViewModel::class.java)){
+            return MainViewModel(application) as T
+        }
+        throw IllegalArgumentException("Unknown ViewModel Class")
+    }
+}
 
 class MainViewModel(application: Application):AndroidViewModel(application) {
 
@@ -63,13 +69,17 @@ class MainViewModel(application: Application):AndroidViewModel(application) {
     }
 
     fun getRealPathFromURI(contentUri: Uri): String? {
-        val proj = arrayOf(MediaStore.Images.Media.DATA)
-        val loader = CursorLoader(context, contentUri, proj, null, null, null)
-        val cursor: Cursor? = loader.loadInBackground()
-        val column_index = cursor!!.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)
-        cursor.moveToFirst()
-        val result = cursor.getString(column_index)
-        cursor.close()
-        return result
+        var path: String = ""
+        var cursor = context.contentResolver.query(contentUri,
+            null,null,null,null)
+        if(cursor == null) {
+            path = contentUri.path.toString()
+        } else {
+            cursor.moveToFirst()
+            var index = cursor.getColumnIndex("_data")
+            path = cursor.getString(index)
+            cursor.close()
+        }
+        return path
     }
 }

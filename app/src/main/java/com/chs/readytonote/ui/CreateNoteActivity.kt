@@ -28,7 +28,6 @@ import java.text.SimpleDateFormat
 import java.util.*
 import androidx.core.content.ContextCompat.checkSelfPermission
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.bumptech.glide.load.resource.bitmap.DownsampleStrategy
 import com.chs.readytonote.viewmodel.GlideApp
 import com.chs.readytonote.adapter.LabelAdapter
 import com.chs.readytonote.databinding.*
