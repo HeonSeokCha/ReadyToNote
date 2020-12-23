@@ -10,6 +10,7 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -142,7 +143,15 @@ class MainActivity : AppCompatActivity() {
         checkList = mutableMapOf()
         viewModel.getAllNotes().observe(this, { notes ->
             notesAdapter.submitList(notes)
+            emptyList(notes.isEmpty())
+
         })
+    }
+
+    private fun emptyList(empty: Boolean) = if(empty) {
+        binding.layoutEmptyNote.emptyNote.visibility = View.VISIBLE
+    } else {
+        binding.layoutEmptyNote.emptyNote.visibility = View.GONE
     }
 
     private fun searchNote() {
