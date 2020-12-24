@@ -17,6 +17,8 @@ class NoteRepository (application: Application) {
 
     fun getNotes(): LiveData<MutableList<Note>> = dao.getAllNotes()
 
+    fun searchNotes(searchWord: String): LiveData<MutableList<Note>> = dao.searchNotes(searchWord)
+
     fun getLabels(): LiveData<MutableList<Label>> = dao.getAllLabels()
 
     fun getCheckLabel(noteId: Int): LiveData<LabelCheck> = dao.getCheckedLabel(noteId)

@@ -17,6 +17,9 @@ interface NoteDao {
     @Update
     suspend fun updateNote(note: Note)
 
+    @Query("SELECT * FROM notes where title = :searchWord or subtitle = :searchWord")
+    fun searchNotes(searchWord: String): LiveData<MutableList<Note>>
+
     @Delete
     suspend fun deleteNote(note: Note)
 

@@ -1,4 +1,4 @@
-package com.chs.readytonote.viewmodel
+ package com.chs.readytonote.viewmodel
 
 import android.app.Application
 import android.content.Context
@@ -19,9 +19,10 @@ import kotlinx.coroutines.launch
 @GlideModule
 class MyGlide : AppGlideModule()
 
-class MainViewModelFactory(private val application: Application): ViewModelProvider.Factory{
+class MainViewModelFactory(
+    private val application: Application): ViewModelProvider.Factory {
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-        if(modelClass.isAssignableFrom(MainViewModel::class.java)){
+        if(modelClass.isAssignableFrom(MainViewModel::class.java)) {
             return MainViewModel(application) as T
         }
         throw IllegalArgumentException("Unknown ViewModel Class")
@@ -43,6 +44,8 @@ class MainViewModel(application: Application):AndroidViewModel(application) {
         }
         return lastId
     }
+
+    fun searchNotes(searchWord: String) = repository.searchNotes(searchWord)
 
     fun deleteNote(note: Note) = viewModelScope.launch(Dispatchers.IO) {
         repository.deleteNote(note)
