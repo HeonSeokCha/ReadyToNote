@@ -19,7 +19,8 @@ class LabelAdapter(
     private val addClickListener: (title: String) -> Unit,
 ): ListAdapter<Label, RecyclerView.ViewHolder>(LabelDiffUtilCallback()) {
 
-    inner class LabelViewHolder(private val binding:ItemContainerLabelBinding):RecyclerView.ViewHolder(binding.root) {
+    inner class LabelViewHolder(private val binding:ItemContainerLabelBinding)
+        : RecyclerView.ViewHolder(binding.root) {
         fun bind() {
             binding.model = getItem(adapterPosition)
             if(getItem(adapterPosition).checked) {

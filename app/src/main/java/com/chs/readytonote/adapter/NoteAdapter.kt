@@ -10,7 +10,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.chs.readytonote.viewmodel.GlideApp
 import com.chs.readytonote.R
 import com.chs.readytonote.databinding.ItemContainerNoteBinding
 import com.chs.readytonote.entities.Note
@@ -35,38 +34,14 @@ class NoteAdapter (
         : RecyclerView.ViewHolder(binding.root) {
             fun bind() {
                 binding.model = getItem(adapterPosition)
-                binding.txtDateTime.text = getItem(adapterPosition)
-                    .dateTime!!.split("년 ")[1]
-                if(getItem(adapterPosition).color != "#333333") {
-                    binding.layoutNote.setCardBackgroundColor(
-                        Color.parseColor(getItem(adapterPosition).color))
-                }
-
-                var gradientDrawable = binding.txtLabel.background as GradientDrawable
-                if(getItem(adapterPosition).color=="#FDBE3B") {
-                    binding.txtTitle.setTextColor(Color.parseColor("#000000"))
-                    binding.txtSubtitle.setTextColor(Color.parseColor("#000000"))
-                    binding.txtDateTime.setTextColor(Color.parseColor("#000000"))
-                    binding.txtLabel.setTextColor(Color.parseColor("#000000"))
-                    gradientDrawable.setStroke(2,
-                        Color.parseColor("#000000"))
-                } else {
-                    gradientDrawable.setStroke(2,
-                        binding.root.context.getColor(R.color.colorWhite))
-                }
-
                 if(getItem(adapterPosition).label.isNullOrEmpty()) {
                     binding.txtLabel.visibility = View.GONE
                 }
 
-                if(getItem(adapterPosition).imgPath!!.isNotEmpty()) {
-                    binding.imageNote.visibility = View.VISIBLE
-                    GlideApp.with(binding.root)
-                        .load(getItem(adapterPosition).imgPath)
-                        .placeholder(R.color.colorNoteDefaultColor)
-                        .into(binding.imageNote)
-                } else {
+                if (getItem(adapterPosition).imgPath!!.isEmpty()) {
                     binding.imageNote.visibility = View.GONE
+                } else {
+                    binding.imageNote.visibility = View.VISIBLE
                 }
                 when {
                     checkBox -> {
@@ -139,33 +114,9 @@ class NoteAdapter (
         return viewHolder
     }
 
-    @SuppressLint("ResourceAsColor")
     override fun onBindViewHolder(holder: NoteViewHolder, position: Int) {
         holder.bind()
     }
 
     override fun getItemId(position: Int): Long = getItem(position).id.toLong()
-
-    fun search(search: String) {
-        timerTask = Timer().schedule(500) {
-            if (search.isNotEmpty()) {
-                temp = mutableListOf()
-                for (note in searchList) {
-                    if(note.title!!.toLowerCase().contains(search.toLowerCase()) ||
-                        note.subtitle!!.toLowerCase().contains(search.toLowerCase())) {
-                        temp.add(note)
-                    }
-                    submitList(temp)
-                }
-            } else submitList(searchList)
-            Handler(Looper.getMainLooper()).post {
-                notifyDataSetChanged()
-            }
-        }
-    }
-
-    fun cancelTimer() {
-        if(::timerTask.isInitialized)
-            timerTask.cancel()
-    }
 }

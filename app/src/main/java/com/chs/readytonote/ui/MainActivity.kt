@@ -157,11 +157,16 @@ class MainActivity : AppCompatActivity() {
     private fun searchNote() {
         binding.inputSearch.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(p0: Editable?) {
-                notesAdapter.search(p0.toString())
+                viewModel.searchNotes(p0.toString()).observe(this@MainActivity,{
+                    if(p0!!.isNotEmpty()) {
+                        notesAdapter.submitList(it)
+                    } else {
+                        getNote()
+                    }
+                    notesAdapter.notifyDataSetChanged()
+                })
             }
-            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                notesAdapter.cancelTimer()
-            }
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
         })
     }

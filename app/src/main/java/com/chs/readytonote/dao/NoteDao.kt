@@ -17,7 +17,8 @@ interface NoteDao {
     @Update
     suspend fun updateNote(note: Note)
 
-    @Query("SELECT * FROM notes where title = :searchWord or subtitle = :searchWord")
+    @Query("SELECT * FROM notes where UPPER(title) LIKE '%'||UPPER(:searchWord)||'%' " +
+            "or UPPER(subtitle) LIKE '%'||UPPER(:searchWord)||'%'")
     fun searchNotes(searchWord: String): LiveData<MutableList<Note>>
 
     @Delete
