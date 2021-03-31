@@ -210,7 +210,6 @@ class CreateNoteActivity : AppCompatActivity() {
     }
 
     private fun setSubtitleIndicator() {
-        Log.d("noteColor","$noteColor")
         var gradientDrawable = binding.viewSubtitleIndicator.background as GradientDrawable
         if(noteColor == "#333333") {
             gradientDrawable.setColor(resources.getColor(R.color.colorNoteDefaultColor,null))

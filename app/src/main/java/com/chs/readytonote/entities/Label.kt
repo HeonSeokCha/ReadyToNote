@@ -13,15 +13,3 @@ data class Label(
     @PrimaryKey(autoGenerate = true)
     var id: Int = 0
 }
-
-
-@Entity(tableName = "label_check")
-data class LabelCheck(
-    @ColumnInfo(name = "note_id")
-    var note_id: Int,
-    @ColumnInfo(name = "checked_label_id")
-    var checkedLabelId: Int
-) {
-    @PrimaryKey(autoGenerate = true)
-    var id: Int = 0
-}

@@ -32,21 +32,23 @@ class MainActivity : AppCompatActivity() {
         private const val REQUEST_CODE_ADD_NOTE = 1
         private const val REQUEST_CODE_UPDATE_NOTE = 2
     }
-    private lateinit var binding: ActivityMainBinding
+
+    private var _binding: ActivityMainBinding? = null
+    private val binding get() = _binding!!
     private lateinit var dialogTheme: AlertDialog
     private lateinit var notesAdapter: NoteAdapter
     private lateinit var viewModel: MainViewModel
-    private lateinit var checkList: MutableMap<Int,Note>
+    private lateinit var checkList: MutableMap<Int, Note>
     private var editMode: Boolean = false
     private var noteClickPosition = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         checkTheme()
         super.onCreate(savedInstanceState)
-        binding = ActivityMainBinding.inflate(layoutInflater)
+        _binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         viewModel = ViewModelProvider(this, MainViewModelFactory(application))
-            .get(MainViewModel::class.java)
+                .get(MainViewModel::class.java)
         initClick()
         initRecyclerView()
         initMenu()
@@ -56,19 +58,19 @@ class MainActivity : AppCompatActivity() {
         when (Preferences.data) {
             "WhiteMode" -> {
                 AppCompatDelegate.setDefaultNightMode(
-                    AppCompatDelegate.MODE_NIGHT_NO)
+                        AppCompatDelegate.MODE_NIGHT_NO)
             }
             "DarkMode" -> {
                 AppCompatDelegate.setDefaultNightMode(
-                    AppCompatDelegate.MODE_NIGHT_YES)
+                        AppCompatDelegate.MODE_NIGHT_YES)
             }
             "Default" -> {
-                if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.Q) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                     AppCompatDelegate.setDefaultNightMode(
-                        AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
+                            AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
                 } else {
                     AppCompatDelegate.setDefaultNightMode(
-                        AppCompatDelegate.MODE_NIGHT_AUTO_BATTERY)
+                            AppCompatDelegate.MODE_NIGHT_AUTO_BATTERY)
                 }
             }
         }
@@ -77,8 +79,8 @@ class MainActivity : AppCompatActivity() {
     @SuppressLint("UseCompatLoadingForDrawables")
     private fun initClick() {
         binding.imgAddNoteMain.setOnClickListener {
-            if(editMode && ::checkList.isInitialized) {
-                for(i in checkList.values) {
+            if (editMode && ::checkList.isInitialized) {
+                for (i in checkList.values) {
                     viewModel.deleteNote(i)
                 }
                 showToast("${checkList.size}개의 노트가 삭제되었습니다.")
@@ -92,8 +94,8 @@ class MainActivity : AppCompatActivity() {
                 getNote()
             } else {
                 startActivityForResult(
-                    Intent(this,
-                        CreateNoteActivity::class.java), REQUEST_CODE_ADD_NOTE)
+                        Intent(this,
+                                CreateNoteActivity::class.java), REQUEST_CODE_ADD_NOTE)
                 overridePendingTransition(R.anim.slide_in_right, R.anim.hold)
             }
         }
@@ -105,10 +107,10 @@ class MainActivity : AppCompatActivity() {
     @SuppressLint("UseCompatLoadingForDrawables")
     private fun initRecyclerView() {
         binding.RvNotes.apply {
-            notesAdapter = NoteAdapter( clickListener = { note, position ->
+            notesAdapter = NoteAdapter(clickListener = { note, position ->
                 noteClickPosition = position
                 val intent = Intent(this@MainActivity,
-                    CreateNoteActivity::class.java).apply {
+                        CreateNoteActivity::class.java).apply {
                     putExtra("isViewOrUpdate", true)
                     putExtra("note", note)
                 }
@@ -119,19 +121,19 @@ class MainActivity : AppCompatActivity() {
                     editMode = true
                     binding.imgAddNoteMain.isEnabled = false
                     binding.imgAddNoteMain.setImageDrawable(
-                        resources.getDrawable(R.drawable.ic_delete, null))
+                            resources.getDrawable(R.drawable.ic_delete, null))
                     binding.bottomAppBar.replaceMenu(R.menu.select_note)
                 } else {
                     editMode = false
                     binding.imgAddNoteMain.setImageDrawable(
-                resources.getDrawable(R.drawable.ic_add, null))
+                            resources.getDrawable(R.drawable.ic_add, null))
                 }
             }, checkClickListener = { notes ->
-                    checkList = notes
-                    binding.imgAddNoteMain.isEnabled = checkList.isNotEmpty()
-                }
+                checkList = notes
+                binding.imgAddNoteMain.isEnabled = checkList.isNotEmpty()
+            }
             )
-            this.layoutManager = StaggeredGridLayoutManager(2,1)
+            this.layoutManager = StaggeredGridLayoutManager(2, 1)
             notesAdapter.setHasStableIds(true)
             this.adapter = notesAdapter
             getNote()
@@ -144,11 +146,10 @@ class MainActivity : AppCompatActivity() {
         viewModel.getAllNotes().observe(this, { notes ->
             notesAdapter.submitList(notes)
             emptyList(notes.isEmpty())
-
         })
     }
 
-    private fun emptyList(empty: Boolean) = if(empty) {
+    private fun emptyList(empty: Boolean) = if (empty) {
         binding.layoutEmptyNote.emptyNote.visibility = View.VISIBLE
     } else {
         binding.layoutEmptyNote.emptyNote.visibility = View.GONE
@@ -157,8 +158,8 @@ class MainActivity : AppCompatActivity() {
     private fun searchNote() {
         binding.inputSearch.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(p0: Editable?) {
-                viewModel.searchNotes(p0.toString()).observe(this@MainActivity,{
-                    if(p0!!.isNotEmpty()) {
+                viewModel.searchNotes(p0.toString()).observe(this@MainActivity, {
+                    if (p0!!.isNotEmpty()) {
                         notesAdapter.submitList(it)
                     } else {
                         getNote()
@@ -166,33 +167,34 @@ class MainActivity : AppCompatActivity() {
                     notesAdapter.notifyDataSetChanged()
                 })
             }
+
             override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
         })
     }
 
     @SuppressLint("UseCompatLoadingForDrawables")
-    private fun initMenu(){
+    private fun initMenu() {
         var click = false
         binding.bottomAppBar.replaceMenu(R.menu.main_note)
         binding.bottomAppBar.setOnMenuItemClickListener {
-            when(it.itemId) {
+            when (it.itemId) {
                 R.id.main_menu_edit -> {
                     click = false
                     editMode = true
                     notesAdapter.editItemMode(true)
                     binding.imgAddNoteMain.isEnabled = false
                     binding.imgAddNoteMain.setImageDrawable(
-                        resources.getDrawable(R.drawable.ic_delete, null)
+                            resources.getDrawable(R.drawable.ic_delete, null)
                     )
                     binding.bottomAppBar.replaceMenu(R.menu.select_note)
                 }
                 R.id.main_menu_selectAll -> {
-                    click = if(!click &&
-                        checkList.size!=notesAdapter.currentList.size) {
+                    click = if (!click &&
+                            checkList.size != notesAdapter.currentList.size) {
                         notesAdapter.selectAll(true)
                         true
-                    } else if(checkList.size==notesAdapter.currentList.size) {
+                    } else if (checkList.size == notesAdapter.currentList.size) {
                         notesAdapter.selectAll(false)
                         false
                     } else {
@@ -202,7 +204,7 @@ class MainActivity : AppCompatActivity() {
                 }
                 R.id.main_menu_shortcut_photo -> {
                     val intent = Intent(this@MainActivity,
-                        CreateNoteActivity::class.java).apply {
+                            CreateNoteActivity::class.java).apply {
                         putExtra("shortCutImage", true)
                     }
                     startActivityForResult(intent, REQUEST_CODE_ADD_NOTE)
@@ -218,7 +220,7 @@ class MainActivity : AppCompatActivity() {
         val dialogView = LayoutThemeSelectBinding.inflate(LayoutInflater.from(this))
         builder.setView(dialogView.root)
         dialogTheme = builder.create()
-        if(dialogTheme.window != null) {
+        if (dialogTheme.window != null) {
             dialogTheme.window!!.setBackgroundDrawable(ColorDrawable(0))
         }
         when (Preferences.data) {
@@ -227,7 +229,7 @@ class MainActivity : AppCompatActivity() {
             "Default" -> dialogView.rdoDefault.isChecked = true
         }
         dialogView.radioGroup.setOnCheckedChangeListener { _, checkedId ->
-            when(checkedId) {
+            when (checkedId) {
                 R.id.rdo_dark -> Preferences.data = "DarkMode"
                 R.id.rdo_white -> Preferences.data = "WhiteMode"
                 R.id.rdo_default -> Preferences.data = "Default"
@@ -249,27 +251,32 @@ class MainActivity : AppCompatActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if(requestCode == REQUEST_CODE_ADD_NOTE && resultCode == RESULT_OK) {
+        if (requestCode == REQUEST_CODE_ADD_NOTE && resultCode == RESULT_OK) {
             getNote()
             showToast("노트 추가됨")
-        } else if(requestCode == REQUEST_CODE_UPDATE_NOTE && resultCode == RESULT_OK) {
+        } else if (requestCode == REQUEST_CODE_UPDATE_NOTE && resultCode == RESULT_OK) {
             getNote()
         }
     }
 
     @SuppressLint("UseCompatLoadingForDrawables")
     override fun onBackPressed() {
-        if(editMode) {
+        if (editMode) {
             editMode = false
             notesAdapter.selectAll(false)
             notesAdapter.editItemMode(false)
             binding.bottomAppBar.replaceMenu(R.menu.main_note)
             binding.imgAddNoteMain.isEnabled = true
             binding.imgAddNoteMain.setImageDrawable(
-                resources.getDrawable(R.drawable.ic_add, null)
+                    resources.getDrawable(R.drawable.ic_add, null)
             )
         } else {
             super.onBackPressed()
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        _binding = null
     }
 }
