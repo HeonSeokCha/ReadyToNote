@@ -3,21 +3,19 @@ package com.chs.readytonote
 import android.annotation.SuppressLint
 import android.content.res.Configuration
 import android.graphics.Color
-import android.os.Build
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.appcompat.app.AppCompatDelegate
 import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
 import androidx.databinding.BindingAdapter
+import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
-import com.chs.readytonote.viewmodel.GlideApp
 
 object Binding {
     @BindingAdapter("imageSrc")
     @JvmStatic
     fun loadImage(imageView: ImageView,path: String) {
-        GlideApp.with(imageView.context).load(path)
+        Glide.with(imageView.context).load(path)
             .placeholder(R.color.colorNoteDefaultColor)
             .transition(DrawableTransitionOptions().crossFade())
             .error(R.drawable.ic_delete)

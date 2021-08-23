@@ -16,9 +16,6 @@ import com.chs.readytonote.entities.Note
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-@GlideModule
-class MyGlide : AppGlideModule()
-
 class MainViewModelFactory(
     private val application: Application): ViewModelProvider.Factory {
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
@@ -32,7 +29,6 @@ class MainViewModelFactory(
 class MainViewModel(application: Application):AndroidViewModel(application) {
 
     private var repository: NoteRepository = NoteRepository(application)
-    private var context = application
 
     fun getAllNotes() = repository.getNotes()
 
@@ -71,18 +67,4 @@ class MainViewModel(application: Application):AndroidViewModel(application) {
         repository.updateCheckLabel(labelCheck)
     }
 
-    fun getRealPathFromURI(contentUri: Uri): String? {
-        var path: String = ""
-        var cursor = context.contentResolver.query(contentUri,
-            null,null,null,null)
-        if(cursor == null) {
-            path = contentUri.path.toString()
-        } else {
-            cursor.moveToFirst()
-            var index = cursor.getColumnIndex("_data")
-            path = cursor.getString(index)
-            cursor.close()
-        }
-        return path
-    }
 }

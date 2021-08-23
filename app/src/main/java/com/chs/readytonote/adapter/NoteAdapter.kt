@@ -32,13 +32,44 @@ class NoteAdapter (
 
     inner class NoteViewHolder(private val binding: ItemContainerNoteBinding)
         : RecyclerView.ViewHolder(binding.root) {
-            fun bind() {
-                binding.model = getItem(adapterPosition)
-                if(getItem(adapterPosition).label.isNullOrEmpty()) {
+
+        init {
+            binding.layoutNote.setOnClickListener {
+                if (checkBox) {
+                    binding.imgCheck.apply {
+                        isActivated = !this.isActivated
+                    }
+                    if (binding.imgCheck.isActivated) {
+                        checkList[layoutPosition] = getItem(layoutPosition)
+                    } else {
+                        checkList.remove(layoutPosition)
+                    }
+                    checkClickListener.invoke(checkList)
+
+                } else {
+                    clickListener.invoke(
+                        getItem(layoutPosition),
+                        layoutPosition
+                    )
+                }
+            }
+
+            binding.layoutNote.setOnLongClickListener {
+                if(!checkBox) {
+                    editItemMode(true)
+                    longClickListener(checkBox)
+                    binding.imgCheck.isActivated = !binding.imgCheck.isActivated
+                }
+                return@setOnLongClickListener true
+            }
+        }
+            fun bind(note: Note) {
+                binding.model = note
+                if(note.label.isNullOrEmpty()) {
                     binding.txtLabel.visibility = View.GONE
                 }
 
-                if (getItem(adapterPosition).imgPath!!.isEmpty()) {
+                if (note.imgPath!!.isEmpty()) {
                     binding.imageNote.visibility = View.GONE
                 } else {
                     binding.imageNote.visibility = View.VISIBLE
@@ -81,41 +112,11 @@ class NoteAdapter (
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NoteViewHolder {
         val inflate = LayoutInflater.from(parent.context)
         val view = ItemContainerNoteBinding.inflate(inflate, parent, false)
-        val viewHolder = NoteViewHolder(view)
-        view.layoutNote.setOnClickListener {
-            if (checkBox) {
-                view.imgCheck.apply {
-                    isActivated = !this.isActivated
-                }
-                if (view.imgCheck.isActivated) {
-                    checkList[viewHolder.adapterPosition] = getItem(viewHolder.adapterPosition)
-                } else {
-                    checkList.remove(viewHolder.adapterPosition)
-                }
-                checkClickListener.invoke(checkList)
-
-            } else {
-                clickListener.invoke(
-                    getItem(viewHolder.adapterPosition),
-                    viewHolder.adapterPosition
-                )
-            }
-        }
-
-        view.layoutNote.setOnLongClickListener {
-            if(!checkBox) {
-                editItemMode(true)
-                longClickListener(checkBox)
-                if(!view.imgCheck.isActivated)
-                    view.imgCheck.isActivated = true
-            }
-            return@setOnLongClickListener true
-        }
-        return viewHolder
+        return NoteViewHolder(view)
     }
 
     override fun onBindViewHolder(holder: NoteViewHolder, position: Int) {
-        holder.bind()
+        holder.bind(getItem(position))
     }
 
     override fun getItemId(position: Int): Long = getItem(position).id.toLong()

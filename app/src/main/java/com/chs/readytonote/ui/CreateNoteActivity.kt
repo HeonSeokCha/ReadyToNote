@@ -13,7 +13,6 @@ import android.os.Bundle
 import android.provider.MediaStore
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.util.Patterns
 import android.view.LayoutInflater
 import android.view.View
@@ -27,8 +26,10 @@ import com.chs.readytonote.entities.Note
 import java.text.SimpleDateFormat
 import java.util.*
 import androidx.core.content.ContextCompat.checkSelfPermission
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.chs.readytonote.viewmodel.GlideApp
+import com.bumptech.glide.Glide
+import com.chs.readytonote.Util
 import com.chs.readytonote.adapter.LabelAdapter
 import com.chs.readytonote.databinding.*
 import com.chs.readytonote.entities.Label
@@ -72,7 +73,7 @@ class CreateNoteActivity : AppCompatActivity() {
 
     private fun initView() {
         if(intent.getBooleanExtra("isViewOrUpdate",false)) {
-            alreadyAvailableNote = intent.getParcelableExtra("note")
+            alreadyAvailableNote = intent.getParcelableExtra("note")!!
             binding.layoutMiscellaneous.layoutDeleteNote.visibility = View.VISIBLE
             setViewOrUpdateNote()
         }
@@ -198,7 +199,7 @@ class CreateNoteActivity : AppCompatActivity() {
             imagePath = alreadyAvailableNote.imgPath!!
             binding.imageNote.visibility = View.VISIBLE
             binding.imageDelete.visibility = View.VISIBLE
-            GlideApp.with(this).load(alreadyAvailableNote.imgPath)
+            Glide.with(this).load(alreadyAvailableNote.imgPath)
                 .error(R.drawable.ic_done)
                 .into(binding.imageNote)
         }
@@ -440,6 +441,7 @@ class CreateNoteActivity : AppCompatActivity() {
 
     override fun onRequestPermissionsResult(requestCode: Int,
         permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         when(requestCode) {
             PERMISSION_CODE_IMAGE -> {
                 if (grantResults.isNotEmpty() &&
@@ -455,10 +457,10 @@ class CreateNoteActivity : AppCompatActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if(resultCode==Activity.RESULT_OK && requestCode == IMAGE_PICK_CODE) {
-            GlideApp.with(this).load(data!!.data).into(binding.imageNote)
-            binding.imageNote.visibility = View.VISIBLE
-            binding.imageDelete.visibility = View.VISIBLE
-            imagePath = viewModel.getRealPathFromURI(data.data!!)!!
+            Glide.with(this).load(data!!.data).into(binding.imageNote)
+            binding.imageNote.isVisible = false
+            binding.imageDelete.isVisible = false
+            imagePath = Util.getRealPathFromURI(this, data.data!!)!!
             bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
         }
     }

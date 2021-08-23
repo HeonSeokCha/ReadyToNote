@@ -21,43 +21,50 @@ class LabelAdapter(
 
     inner class LabelViewHolder(private val binding:ItemContainerLabelBinding)
         : RecyclerView.ViewHolder(binding.root) {
-        fun bind() {
-            binding.model = getItem(adapterPosition)
-            if(getItem(adapterPosition).checked) {
-                selectPosition = adapterPosition
-            }
+        init {
             binding.root.setOnClickListener {
                 binding.txtLabelTitle.apply {
                     when {
                         selectPosition == -1 -> {
-                            currentList[adapterPosition].checked = true
-                            selectPosition = adapterPosition
+                            currentList[layoutPosition].checked = true
+                            selectPosition = layoutPosition
                         }
-                        selectPosition == adapterPosition -> {
-                            currentList[adapterPosition].checked = false
+                        selectPosition == layoutPosition -> {
+                            currentList[layoutPosition].checked = false
                             selectPosition = -1
                         }
                         selectPosition != -1 -> {
                             for(i in currentList.indices) {
                                 currentList[i].checked = false
                             }
-                            selectPosition = adapterPosition
-                            currentList[adapterPosition].checked = true
+                            selectPosition = layoutPosition
+                            currentList[layoutPosition].checked = true
                         }
                     }
                 }
-                clickListener.invoke(getItem(adapterPosition))
+                clickListener.invoke(getItem(layoutPosition))
                 notifyDataSetChanged()
             }
         }
+
+        fun bind(label: Label, position: Int) {
+            binding.model = label
+            if(label.checked) {
+                selectPosition = position
+            }
+        }
     }
+
     inner class LabelAddViewHolder(private val binding:ItemAddLabelBinding):RecyclerView.ViewHolder(binding.root) {
-        fun addBind() {
-            binding.checkedTextView.text = "'${getItem(adapterPosition).title}' 라벨 만들기"
+        init {
             binding.root.setOnClickListener {
                 addClickListener.invoke(getItem(0).title!!)
                 labelAdd = false
             }
+        }
+
+        fun addBind(label: Label) {
+            binding.checkedTextView.text = "'${label.title}' 라벨 만들기"
         }
     }
 
@@ -95,10 +102,10 @@ class LabelAdapter(
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when(holder){
             is LabelViewHolder -> {
-                holder.bind()
+                holder.bind(getItem(position), position)
             }
             is LabelAddViewHolder -> {
-                holder.addBind()
+                holder.addBind(getItem(position))
             }
         }
     }
@@ -110,7 +117,9 @@ class LabelAdapter(
         timerTask = Timer().schedule(500) {
             if(search.isNotEmpty()) {
                 for (label in searchList) {
-                    if (label.title!!.toLowerCase().contains(search.toLowerCase())) {
+                    if (label.title!!.lowercase(Locale.getDefault()).contains(search.lowercase(
+                            Locale.getDefault()
+                        ))) {
                         temp.add(label)
                     }
                 }

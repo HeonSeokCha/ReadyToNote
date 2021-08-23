@@ -17,6 +17,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
+import com.bumptech.glide.Glide
+import com.chs.readytonote.Constants
 import com.chs.readytonote.Preferences
 import com.chs.readytonote.R
 import com.chs.readytonote.adapter.NoteAdapter
@@ -56,15 +58,15 @@ class MainActivity : AppCompatActivity() {
 
     private fun checkTheme() {
         when (Preferences.data) {
-            "WhiteMode" -> {
+            Constants.WHITE_MODE -> {
                 AppCompatDelegate.setDefaultNightMode(
                         AppCompatDelegate.MODE_NIGHT_NO)
             }
-            "DarkMode" -> {
+            Constants.DARK_MODE -> {
                 AppCompatDelegate.setDefaultNightMode(
                         AppCompatDelegate.MODE_NIGHT_YES)
             }
-            "Default" -> {
+            Constants.DEFAULT_MODE -> {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                     AppCompatDelegate.setDefaultNightMode(
                             AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
@@ -224,15 +226,15 @@ class MainActivity : AppCompatActivity() {
             dialogTheme.window!!.setBackgroundDrawable(ColorDrawable(0))
         }
         when (Preferences.data) {
-            "WhiteMode" -> dialogView.rdoWhite.isChecked = true
-            "DarkMode" -> dialogView.rdoDark.isChecked = true
-            "Default" -> dialogView.rdoDefault.isChecked = true
+            Constants.WHITE_MODE-> dialogView.rdoWhite.isChecked = true
+            Constants.DARK_MODE -> dialogView.rdoDark.isChecked = true
+            Constants.DEFAULT_MODE -> dialogView.rdoDefault.isChecked = true
         }
         dialogView.radioGroup.setOnCheckedChangeListener { _, checkedId ->
             when (checkedId) {
-                R.id.rdo_dark -> Preferences.data = "DarkMode"
-                R.id.rdo_white -> Preferences.data = "WhiteMode"
-                R.id.rdo_default -> Preferences.data = "Default"
+                R.id.rdo_white -> Preferences.data = Constants.WHITE_MODE
+                R.id.rdo_dark -> Preferences.data = Constants.DARK_MODE
+                R.id.rdo_default -> Preferences.data = Constants.DEFAULT_MODE
             }
         }
         dialogView.btnOk.setOnClickListener {
@@ -259,17 +261,18 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    @SuppressLint("UseCompatLoadingForDrawables")
     override fun onBackPressed() {
         if (editMode) {
             editMode = false
             notesAdapter.selectAll(false)
             notesAdapter.editItemMode(false)
             binding.bottomAppBar.replaceMenu(R.menu.main_note)
-            binding.imgAddNoteMain.isEnabled = true
-            binding.imgAddNoteMain.setImageDrawable(
-                    resources.getDrawable(R.drawable.ic_add, null)
-            )
+            binding.imgAddNoteMain.apply {
+                isEnabled = true
+                Glide.with(this)
+                    .load(R.drawable.ic_add)
+                    .into(this)
+            }
         } else {
             super.onBackPressed()
         }

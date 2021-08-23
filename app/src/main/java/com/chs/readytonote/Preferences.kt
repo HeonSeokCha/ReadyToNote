@@ -15,7 +15,7 @@ object Preferences {
     }
 
     var data: String
-        get() = preferences.getString(DATA, "Default") ?: ""
+        get() = preferences.getString(DATA, Constants.DEFAULT_MODE) ?: ""
         set(value) = preferences.edit {
             putString(DATA, value)
         }
