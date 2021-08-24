@@ -457,11 +457,13 @@ class CreateNoteActivity : AppCompatActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if(resultCode==Activity.RESULT_OK && requestCode == IMAGE_PICK_CODE) {
-            Glide.with(this).load(data!!.data).into(binding.imageNote)
-            binding.imageNote.isVisible = false
-            binding.imageDelete.isVisible = false
-            imagePath = Util.getRealPathFromURI(this, data.data!!)!!
-            bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+            if (data != null) {
+                Glide.with(this).load(data.data).into(binding.imageNote)
+                binding.imageNote.isVisible = true
+                binding.imageDelete.isVisible = true
+                imagePath = Util.getRealPathFromURI(this, data.data!!)!!
+                bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+            }
         }
     }
 
