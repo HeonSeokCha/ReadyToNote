@@ -1,27 +1,20 @@
 package com.chs.readytonote.repository
 
-import android.app.Application
-import androidx.lifecycle.LiveData
 import com.chs.readytonote.dao.NoteDao
-import com.chs.readytonote.database.NotesDatabases
 import com.chs.readytonote.entities.Label
 import com.chs.readytonote.entities.LabelCheck
 import com.chs.readytonote.entities.Note
+import kotlinx.coroutines.flow.Flow
 
-class NoteRepository (application: Application) {
+class NoteRepository (private val dao: NoteDao) {
 
-    private val dao: NoteDao by lazy {
-        val db = NotesDatabases.getInstance(application)
-        db.noteDao()
-    }
+    fun getNotes() : Flow<List<Note>> = dao.getAllNotes()
 
-    fun getNotes(): LiveData<MutableList<Note>> = dao.getAllNotes()
+    fun searchNotes(searchWord: String): Flow<List<Note>> = dao.searchNotes(searchWord)
 
-    fun searchNotes(searchWord: String): LiveData<MutableList<Note>> = dao.searchNotes(searchWord)
+    fun getLabels(): Flow<List<Label>> = dao.getAllLabels()
 
-    fun getLabels(): LiveData<MutableList<Label>> = dao.getAllLabels()
-
-    fun getCheckLabel(noteId: Int): LiveData<LabelCheck> = dao.getCheckedLabel(noteId)
+    fun getCheckLabel(noteId: Int): Flow<LabelCheck> = dao.getCheckedLabel(noteId)
 
     suspend fun insertNote(note: Note):Long = dao.insertNote(note)
 

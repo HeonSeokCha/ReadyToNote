@@ -9,28 +9,30 @@ import androidx.lifecycle.*
 import androidx.loader.content.CursorLoader
 import com.bumptech.glide.annotation.GlideModule
 import com.bumptech.glide.module.AppGlideModule
+import com.chs.readytonote.Resource
 import com.chs.readytonote.entities.Label
 import com.chs.readytonote.entities.LabelCheck
 import com.chs.readytonote.repository.NoteRepository
 import com.chs.readytonote.entities.Note
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
-
-class MainViewModelFactory(
-    private val application: Application): ViewModelProvider.Factory {
-    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-        if(modelClass.isAssignableFrom(MainViewModel::class.java)) {
-            return MainViewModel(application) as T
-        }
-        throw IllegalArgumentException("Unknown ViewModel Class")
-    }
-}
-
 class MainViewModel(application: Application):AndroidViewModel(application) {
 
     private var repository: NoteRepository = NoteRepository(application)
 
-    fun getAllNotes() = repository.getNotes()
+    fun getAllNotes() {
+        viewModelScope.launch {
+            repository.getNotes().catch { e ->
+                Resource.Error(e.message.toString())
+            }.collect {
+                Resource.Success(it)
+            }
+        }
+    }
 
     fun insertNote(note: Note): LiveData<Long> {
         val lastId = MutableLiveData<Long>()
