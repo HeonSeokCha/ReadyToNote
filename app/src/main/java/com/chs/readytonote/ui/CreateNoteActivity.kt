@@ -1,4 +1,5 @@
 package com.chs.readytonote.ui
+
 import android.Manifest
 import android.app.Activity
 import android.content.Context
@@ -27,6 +28,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 import androidx.core.content.ContextCompat.checkSelfPermission
 import androidx.core.view.isVisible
+import androidx.lifecycle.ViewModel
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.chs.readytonote.Util
@@ -35,7 +37,6 @@ import com.chs.readytonote.databinding.*
 import com.chs.readytonote.entities.Label
 import com.chs.readytonote.entities.LabelCheck
 import com.chs.readytonote.viewmodel.MainViewModel
-import com.chs.readytonote.viewmodel.MainViewModelFactory
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 
 class CreateNoteActivity : AppCompatActivity() {
@@ -51,7 +52,7 @@ class CreateNoteActivity : AppCompatActivity() {
     private lateinit var alreadyAvailableNote: Note
     private lateinit var binding: ActivityCreateNoteBinding
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<ConstraintLayout>
-    private lateinit var checkLabel:LabelCheck
+    private lateinit var checkLabel: LabelCheck
     private lateinit var dialogUrlAdd: AlertDialog
     private lateinit var dialogDelete: AlertDialog
     private lateinit var dialogLabelAdd: AlertDialog
@@ -64,30 +65,31 @@ class CreateNoteActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityCreateNoteBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        viewModel = ViewModelProvider(this,MainViewModelFactory(application))
-            .get(MainViewModel::class.java)
+        viewModel = MainViewModel(application)
         initView()
         initClick()
         getCheckLabel()
     }
 
     private fun initView() {
-        if(intent.getBooleanExtra("isViewOrUpdate",false)) {
+        if (intent.getBooleanExtra("isViewOrUpdate", false)) {
             alreadyAvailableNote = intent.getParcelableExtra("note")!!
             binding.layoutMiscellaneous.layoutDeleteNote.visibility = View.VISIBLE
             setViewOrUpdateNote()
         }
-        if(intent.getBooleanExtra("shortCutImage",false)) {
+        if (intent.getBooleanExtra("shortCutImage", false)) {
             checkPermImage()
         }
         initMiscellaneous()
         setSubtitleIndicator()
         bottomSheetBehavior = BottomSheetBehavior.from(binding.layoutMiscellaneous.root)
-        binding.txtDateTime.text = SimpleDateFormat("yyyy년 MM월 dd일 E",
-            Locale.KOREA).format(Date())
+        binding.txtDateTime.text = SimpleDateFormat(
+            "yyyy년 MM월 dd일 E",
+            Locale.KOREA
+        ).format(Date())
         binding.layoutMiscellaneous.textMiscellaneous.setOnClickListener {
             bottomSheetBehavior.apply {
-                if(this.state != BottomSheetBehavior.STATE_EXPANDED) {
+                if (this.state != BottomSheetBehavior.STATE_EXPANDED) {
                     this.state = BottomSheetBehavior.STATE_EXPANDED
                 } else {
                     this.state = BottomSheetBehavior.STATE_COLLAPSED
@@ -139,15 +141,20 @@ class CreateNoteActivity : AppCompatActivity() {
     }
 
     private fun saveNote() {
-        if(binding.inputNoteTitle.text.trim().isNullOrEmpty()) {
-            Toast.makeText(this,
-                "Note title can't be empty!", Toast.LENGTH_SHORT).show()
-        } else if(binding.inputNoteSubtitle.text.trim().isNullOrEmpty()
-            && binding.inputNoteText.text.trim().isNullOrEmpty()) {
-            Toast.makeText(this,
-                "Note can't be empty!", Toast.LENGTH_SHORT).show()
+        if (binding.inputNoteTitle.text.trim().isNullOrEmpty()) {
+            Toast.makeText(
+                this,
+                "Note title can't be empty!", Toast.LENGTH_SHORT
+            ).show()
+        } else if (binding.inputNoteSubtitle.text.trim().isNullOrEmpty()
+            && binding.inputNoteText.text.trim().isNullOrEmpty()
+        ) {
+            Toast.makeText(
+                this,
+                "Note can't be empty!", Toast.LENGTH_SHORT
+            ).show()
         } else {
-            webLink = if(binding.txtWebUrl.text.trim().isNotEmpty()) {
+            webLink = if (binding.txtWebUrl.text.trim().isNotEmpty()) {
                 binding.txtWebUrl.text.toString()
             } else ""
 
@@ -161,11 +168,11 @@ class CreateNoteActivity : AppCompatActivity() {
                 color = noteColor,
                 webLink = webLink,
             )
-            if(::alreadyAvailableNote.isInitialized) {
+            if (::alreadyAvailableNote.isInitialized) {
                 note.id = alreadyAvailableNote.id
             }
-            viewModel.insertNote(note).observe(this,{ insertId ->
-                if(::checkLabel.isInitialized && note.id == 0) {
+            viewModel.insertNote(note).observe(this, { insertId ->
+                if (::checkLabel.isInitialized && note.id == 0) {
                     checkLabel.note_id = insertId.toInt()
                     viewModel.updateCheckLabel(checkLabel)
                 } else {
@@ -178,12 +185,12 @@ class CreateNoteActivity : AppCompatActivity() {
         }
     }
 
-    private fun deleteNote(note:Note) {
+    private fun deleteNote(note: Note) {
         viewModel.deleteNote(note)
         viewModel.deleteCheckLabel(note.id)
         val intent = Intent()
-        intent.putExtra("isNoteDelete",true)
-        setResult(Activity.RESULT_OK,intent)
+        intent.putExtra("isNoteDelete", true)
+        setResult(Activity.RESULT_OK, intent)
         finish()
     }
 
@@ -212,8 +219,8 @@ class CreateNoteActivity : AppCompatActivity() {
 
     private fun setSubtitleIndicator() {
         var gradientDrawable = binding.viewSubtitleIndicator.background as GradientDrawable
-        if(noteColor == "#333333") {
-            gradientDrawable.setColor(resources.getColor(R.color.colorNoteDefaultColor,null))
+        if (noteColor == "#333333") {
+            gradientDrawable.setColor(resources.getColor(R.color.colorNoteDefaultColor, null))
         } else {
             gradientDrawable.setColor(Color.parseColor(noteColor))
         }
@@ -271,9 +278,10 @@ class CreateNoteActivity : AppCompatActivity() {
                 setSubtitleIndicator()
             }
 
-            if(::alreadyAvailableNote.isInitialized
-                && alreadyAvailableNote.color!!.isNotEmpty()) {
-                when(alreadyAvailableNote.color) {
+            if (::alreadyAvailableNote.isInitialized
+                && alreadyAvailableNote.color!!.isNotEmpty()
+            ) {
+                when (alreadyAvailableNote.color) {
                     "#333333" -> imageColorDefault.performClick()
                     "#FDBE3B" -> imageColorYellow.performClick()
                     "#FF4842" -> imageColorRed.performClick()
@@ -285,23 +293,27 @@ class CreateNoteActivity : AppCompatActivity() {
     }
 
     private fun showAddUrlDialog() {
-        val builder:AlertDialog.Builder = AlertDialog.Builder(this)
+        val builder: AlertDialog.Builder = AlertDialog.Builder(this)
         val dialogView = LayoutAddUrlBinding.inflate(LayoutInflater.from(this))
         builder.setView(dialogView.root)
         dialogUrlAdd = builder.create()
-        if(dialogUrlAdd.window != null) {
+        if (dialogUrlAdd.window != null) {
             dialogUrlAdd.window!!.setBackgroundDrawable(ColorDrawable(0))
         }
         dialogView.inputUrl.requestFocus()
         dialogView.textAdd.setOnClickListener {
             when {
                 dialogView.inputUrl.text.toString().trim().isEmpty() -> {
-                    Toast.makeText(this@CreateNoteActivity,
-                        "Enter URL", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        this@CreateNoteActivity,
+                        "Enter URL", Toast.LENGTH_SHORT
+                    ).show()
                 }
                 !Patterns.WEB_URL.matcher(dialogView.inputUrl.text.toString()).matches() -> {
-                    Toast.makeText(this@CreateNoteActivity,
-                        "Enter valid URL", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        this@CreateNoteActivity,
+                        "Enter valid URL", Toast.LENGTH_SHORT
+                    ).show()
                 }
                 else -> {
                     closeKeyboard()
@@ -319,11 +331,11 @@ class CreateNoteActivity : AppCompatActivity() {
     }
 
     private fun showDeleteDialog() {
-        val builder:AlertDialog.Builder = AlertDialog.Builder(this)
+        val builder: AlertDialog.Builder = AlertDialog.Builder(this)
         val dialogView = LayoutDeleteNoteBinding.inflate(LayoutInflater.from(this))
         builder.setView(dialogView.root)
         dialogDelete = builder.create()
-        if(dialogDelete.window != null) {
+        if (dialogDelete.window != null) {
             dialogDelete.window!!.setBackgroundDrawable(ColorDrawable(0))
         }
         dialogView.txtDeleteNote.setOnClickListener {
@@ -337,11 +349,11 @@ class CreateNoteActivity : AppCompatActivity() {
     }
 
     private fun showLabelDialog() {
-        val builder:AlertDialog.Builder = AlertDialog.Builder(this)
+        val builder: AlertDialog.Builder = AlertDialog.Builder(this)
         val dialogView = LayoutLabelBinding.inflate(LayoutInflater.from(this))
         builder.setView(dialogView.root)
         dialogLabelAdd = builder.create()
-        if(dialogLabelAdd.window != null) {
+        if (dialogLabelAdd.window != null) {
             dialogLabelAdd.window!!.setBackgroundDrawable(ColorDrawable(0))
         }
         dialogView.textAdd.setOnClickListener {
@@ -360,8 +372,8 @@ class CreateNoteActivity : AppCompatActivity() {
 
     private fun initLabelRecyclerview(view: LayoutLabelBinding) {
         view.RvLabel.apply {
-            labelAdapter = LabelAdapter( clickListener = {
-                if(it.checked) {
+            labelAdapter = LabelAdapter(clickListener = {
+                if (it.checked) {
                     checkLabel.checkedLabelId = it.id
                     label = it.title.toString()
                 } else {
@@ -369,12 +381,12 @@ class CreateNoteActivity : AppCompatActivity() {
                     label = ""
                 }
             },
-            addClickListener = { labelTitle ->
-                viewModel.insertLabel(Label(labelTitle,false))
-                viewModel.insertCheckLabel(checkLabel)
-                view.inputLabel.text.clear()
-                getLabel()
-            })
+                addClickListener = { labelTitle ->
+                    viewModel.insertLabel(Label(labelTitle, false))
+                    viewModel.insertCheckLabel(checkLabel)
+                    view.inputLabel.text.clear()
+                    getLabel()
+                })
             labelAdapter.setHasStableIds(true)
             layoutManager = LinearLayoutManager(this@CreateNoteActivity)
             adapter = labelAdapter
@@ -384,7 +396,7 @@ class CreateNoteActivity : AppCompatActivity() {
     }
 
     private fun getLabel() {
-        viewModel.getAllLabel().observe(this@CreateNoteActivity,{ labelList ->
+        viewModel.getAllLabel().observe(this@CreateNoteActivity, { labelList ->
             labelList.filter { it.id == checkLabel.checkedLabelId }
                 .forEach { it.checked = true }
             labelAdapter.submitList(labelList)
@@ -392,9 +404,9 @@ class CreateNoteActivity : AppCompatActivity() {
     }
 
     private fun getCheckLabel() {
-        viewModel.getCheckLabel(noteId).observe(this,{
-            checkLabel = it ?: LabelCheck(noteId,0)
-       })
+        viewModel.getCheckLabel(noteId).observe(this, {
+            checkLabel = it ?: LabelCheck(noteId, 0)
+        })
     }
 
     private fun searchLabel(view: LayoutLabelBinding) {
@@ -402,26 +414,31 @@ class CreateNoteActivity : AppCompatActivity() {
             override fun afterTextChanged(s: Editable?) {
                 labelAdapter.searchLabel(s.toString())
             }
+
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 labelAdapter.cancelTimer()
             }
+
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
         })
     }
 
     private fun closeKeyboard() {
-        if(this.currentFocus != null) {
+        if (this.currentFocus != null) {
             val inputMethodManager = getSystemService(
-                Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                Context.INPUT_METHOD_SERVICE
+            ) as InputMethodManager
             inputMethodManager.hideSoftInputFromWindow(
-                this.currentFocus!!.windowToken, 0)
+                this.currentFocus!!.windowToken, 0
+            )
         }
     }
 
     private fun checkPermImage() {
-        if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.M) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) ==
-                PackageManager.PERMISSION_DENIED) {
+                PackageManager.PERMISSION_DENIED
+            ) {
                 val permissions = arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE)
                 requestPermissions(permissions, PERMISSION_CODE_IMAGE)
             } else pickImageFromGallery()
@@ -430,7 +447,7 @@ class CreateNoteActivity : AppCompatActivity() {
 
     private fun pickImageFromGallery() {
         val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
-        if(intent.resolveActivity(packageManager)!= null) {
+        if (intent.resolveActivity(packageManager) != null) {
             intent.apply {
                 type = "image/*"
                 flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
@@ -439,24 +456,28 @@ class CreateNoteActivity : AppCompatActivity() {
         }
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int,
-        permissions: Array<out String>, grantResults: IntArray) {
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>, grantResults: IntArray
+    ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        when(requestCode) {
+        when (requestCode) {
             PERMISSION_CODE_IMAGE -> {
                 if (grantResults.isNotEmpty() &&
-                    grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    grantResults[0] == PackageManager.PERMISSION_GRANTED
+                ) {
                     pickImageFromGallery()
-                }
-                else Toast.makeText(this,
-                    "Permission denied", Toast.LENGTH_SHORT).show()
+                } else Toast.makeText(
+                    this,
+                    "Permission denied", Toast.LENGTH_SHORT
+                ).show()
             }
         }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if(resultCode==Activity.RESULT_OK && requestCode == IMAGE_PICK_CODE) {
+        if (resultCode == Activity.RESULT_OK && requestCode == IMAGE_PICK_CODE) {
             if (data != null) {
                 Glide.with(this).load(data.data).into(binding.imageNote)
                 binding.imageNote.isVisible = true
@@ -468,12 +489,14 @@ class CreateNoteActivity : AppCompatActivity() {
     }
 
     override fun onBackPressed() {
-        if(bottomSheetBehavior.state == BottomSheetBehavior.STATE_EXPANDED) {
+        if (bottomSheetBehavior.state == BottomSheetBehavior.STATE_EXPANDED) {
             bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
         } else {
             super.onBackPressed()
-            overridePendingTransition(R.anim.hold,
-                R.anim.slide_out_left)
+            overridePendingTransition(
+                R.anim.hold,
+                R.anim.slide_out_left
+            )
         }
     }
 }

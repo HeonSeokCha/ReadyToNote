@@ -1,14 +1,21 @@
 package com.chs.readytonote.repository
 
+import android.app.Application
 import com.chs.readytonote.dao.NoteDao
+import com.chs.readytonote.database.NotesDatabases
 import com.chs.readytonote.entities.Label
 import com.chs.readytonote.entities.LabelCheck
 import com.chs.readytonote.entities.Note
 import kotlinx.coroutines.flow.Flow
 
-class NoteRepository (private val dao: NoteDao) {
+class NoteRepository(application: Application) {
 
-    fun getNotes() : Flow<List<Note>> = dao.getAllNotes()
+    private val dao: NoteDao by lazy {
+        val db = NotesDatabases.getInstance(application)
+        db.noteDao()
+    }
+
+    fun getNotes(): Flow<List<Note>> = dao.getAllNotes()
 
     fun searchNotes(searchWord: String): Flow<List<Note>> = dao.searchNotes(searchWord)
 
@@ -16,7 +23,7 @@ class NoteRepository (private val dao: NoteDao) {
 
     fun getCheckLabel(noteId: Int): Flow<LabelCheck> = dao.getCheckedLabel(noteId)
 
-    suspend fun insertNote(note: Note):Long = dao.insertNote(note)
+    suspend fun insertNote(note: Note): Long = dao.insertNote(note)
 
     suspend fun deleteNote(note: Note) {
         dao.deleteNote(note)

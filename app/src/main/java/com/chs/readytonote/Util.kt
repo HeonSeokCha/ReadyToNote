@@ -9,9 +9,11 @@ object Util {
         contentUri: Uri
     ): String? {
         var path: String = ""
-        var cursor = mContext.contentResolver.query(contentUri,
-            null,null,null,null)
-        if(cursor == null) {
+        var cursor = mContext.contentResolver.query(
+            contentUri,
+            null, null, null, null
+        )
+        if (cursor == null) {
             path = contentUri.path.toString()
         } else {
             cursor.moveToFirst()

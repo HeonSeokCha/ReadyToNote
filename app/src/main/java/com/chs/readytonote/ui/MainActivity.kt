@@ -2,32 +2,36 @@ package com.chs.readytonote.ui
 
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.content.Intent
 import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
-import androidx.lifecycle.ViewModelProvider
+import androidx.datastore.preferences.core.stringPreferencesKey
+import androidx.datastore.preferences.preferencesDataStore
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.bumptech.glide.Glide
 import com.chs.readytonote.Constants
-import com.chs.readytonote.Preferences
+import com.chs.readytonote.DataStoreModule
 import com.chs.readytonote.R
 import com.chs.readytonote.adapter.NoteAdapter
 import com.chs.readytonote.databinding.ActivityMainBinding
 import com.chs.readytonote.databinding.LayoutThemeSelectBinding
 import com.chs.readytonote.entities.Note
 import com.chs.readytonote.viewmodel.MainViewModel
-import com.chs.readytonote.viewmodel.MainViewModelFactory
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 
+private val Context.dataStore by preferencesDataStore(name = Constants.DATA_STORE)
 
 class MainActivity : AppCompatActivity() {
     companion object {
@@ -37,41 +41,54 @@ class MainActivity : AppCompatActivity() {
 
     private var _binding: ActivityMainBinding? = null
     private val binding get() = _binding!!
+
     private lateinit var dialogTheme: AlertDialog
     private lateinit var notesAdapter: NoteAdapter
     private lateinit var viewModel: MainViewModel
     private lateinit var checkList: MutableMap<Int, Note>
+    private var selectUI: String = Constants.DEFAULT_MODE
     private var editMode: Boolean = false
     private var noteClickPosition = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        checkTheme()
         super.onCreate(savedInstanceState)
+        viewModel = MainViewModel(application)
+        checkTheme()
         _binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        viewModel = MainViewModel(application)
         initClick()
         initRecyclerView()
         initMenu()
     }
 
     private fun checkTheme() {
-        when (Preferences.data) {
-            Constants.WHITE_MODE -> {
-                AppCompatDelegate.setDefaultNightMode(
-                        AppCompatDelegate.MODE_NIGHT_NO)
-            }
-            Constants.DARK_MODE -> {
-                AppCompatDelegate.setDefaultNightMode(
-                        AppCompatDelegate.MODE_NIGHT_YES)
-            }
-            Constants.DEFAULT_MODE -> {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                    AppCompatDelegate.setDefaultNightMode(
-                            AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
-                } else {
-                    AppCompatDelegate.setDefaultNightMode(
-                            AppCompatDelegate.MODE_NIGHT_AUTO_BATTERY)
+        lifecycleScope.launch {
+            this@MainActivity.dataStore.data.collect {
+                when (it[stringPreferencesKey(Constants.UI_STATUS)]) {
+                    Constants.WHITE_MODE -> {
+                        AppCompatDelegate.setDefaultNightMode(
+                            AppCompatDelegate.MODE_NIGHT_NO
+                        )
+                        selectUI = Constants.WHITE_MODE
+                    }
+                    Constants.DARK_MODE -> {
+                        AppCompatDelegate.setDefaultNightMode(
+                            AppCompatDelegate.MODE_NIGHT_YES
+                        )
+                        selectUI = Constants.DARK_MODE
+                    }
+                    Constants.DEFAULT_MODE -> {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                            AppCompatDelegate.setDefaultNightMode(
+                                AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
+                            )
+                        } else {
+                            AppCompatDelegate.setDefaultNightMode(
+                                AppCompatDelegate.MODE_NIGHT_AUTO_BATTERY
+                            )
+                        }
+                        selectUI = Constants.DEFAULT_MODE
+                    }
                 }
             }
         }
@@ -89,14 +106,17 @@ class MainActivity : AppCompatActivity() {
                 editMode = false
                 notesAdapter.editItemMode(false)
                 binding.imgAddNoteMain.setImageDrawable(
-                        resources.getDrawable(R.drawable.ic_add, null)
+                    resources.getDrawable(R.drawable.ic_add, null)
                 )
                 binding.bottomAppBar.replaceMenu(R.menu.main_note)
                 getNote()
             } else {
                 startActivityForResult(
-                        Intent(this,
-                                CreateNoteActivity::class.java), REQUEST_CODE_ADD_NOTE)
+                    Intent(
+                        this,
+                        CreateNoteActivity::class.java
+                    ), REQUEST_CODE_ADD_NOTE
+                )
                 overridePendingTransition(R.anim.slide_in_right, R.anim.hold)
             }
         }
@@ -110,8 +130,10 @@ class MainActivity : AppCompatActivity() {
         binding.RvNotes.apply {
             notesAdapter = NoteAdapter(clickListener = { note, position ->
                 noteClickPosition = position
-                val intent = Intent(this@MainActivity,
-                        CreateNoteActivity::class.java).apply {
+                val intent = Intent(
+                    this@MainActivity,
+                    CreateNoteActivity::class.java
+                ).apply {
                     putExtra("isViewOrUpdate", true)
                     putExtra("note", note)
                 }
@@ -122,12 +144,14 @@ class MainActivity : AppCompatActivity() {
                     editMode = true
                     binding.imgAddNoteMain.isEnabled = false
                     binding.imgAddNoteMain.setImageDrawable(
-                            resources.getDrawable(R.drawable.ic_delete, null))
+                        resources.getDrawable(R.drawable.ic_delete, null)
+                    )
                     binding.bottomAppBar.replaceMenu(R.menu.select_note)
                 } else {
                     editMode = false
                     binding.imgAddNoteMain.setImageDrawable(
-                            resources.getDrawable(R.drawable.ic_add, null))
+                        resources.getDrawable(R.drawable.ic_add, null)
+                    )
                 }
             }, checkClickListener = { notes ->
                 checkList = notes
@@ -186,13 +210,14 @@ class MainActivity : AppCompatActivity() {
                     notesAdapter.editItemMode(true)
                     binding.imgAddNoteMain.isEnabled = false
                     binding.imgAddNoteMain.setImageDrawable(
-                            resources.getDrawable(R.drawable.ic_delete, null)
+                        resources.getDrawable(R.drawable.ic_delete, null)
                     )
                     binding.bottomAppBar.replaceMenu(R.menu.select_note)
                 }
                 R.id.main_menu_selectAll -> {
                     click = if (!click &&
-                            checkList.size != notesAdapter.currentList.size) {
+                        checkList.size != notesAdapter.currentList.size
+                    ) {
                         notesAdapter.selectAll(true)
                         true
                     } else if (checkList.size == notesAdapter.currentList.size) {
@@ -204,8 +229,10 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
                 R.id.main_menu_shortcut_photo -> {
-                    val intent = Intent(this@MainActivity,
-                            CreateNoteActivity::class.java).apply {
+                    val intent = Intent(
+                        this@MainActivity,
+                        CreateNoteActivity::class.java
+                    ).apply {
                         putExtra("shortCutImage", true)
                     }
                     startActivityForResult(intent, REQUEST_CODE_ADD_NOTE)
@@ -224,19 +251,22 @@ class MainActivity : AppCompatActivity() {
         if (dialogTheme.window != null) {
             dialogTheme.window!!.setBackgroundDrawable(ColorDrawable(0))
         }
-        when (Preferences.data) {
-            Constants.WHITE_MODE-> dialogView.rdoWhite.isChecked = true
+
+        when (selectUI) {
+            Constants.WHITE_MODE -> dialogView.rdoWhite.isChecked = true
             Constants.DARK_MODE -> dialogView.rdoDark.isChecked = true
             Constants.DEFAULT_MODE -> dialogView.rdoDefault.isChecked = true
         }
+
         dialogView.radioGroup.setOnCheckedChangeListener { _, checkedId ->
             when (checkedId) {
-                R.id.rdo_white -> Preferences.data = Constants.WHITE_MODE
-                R.id.rdo_dark -> Preferences.data = Constants.DARK_MODE
-                R.id.rdo_default -> Preferences.data = Constants.DEFAULT_MODE
+                R.id.rdo_white -> selectUI = Constants.WHITE_MODE
+                R.id.rdo_dark -> selectUI = Constants.DARK_MODE
+                R.id.rdo_default -> selectUI = Constants.DEFAULT_MODE
             }
         }
         dialogView.btnOk.setOnClickListener {
+            viewModel.setUiMode(selectUI)
             dialogTheme.dismiss()
             this@MainActivity.recreate()
         }

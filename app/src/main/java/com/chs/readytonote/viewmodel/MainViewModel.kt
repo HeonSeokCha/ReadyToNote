@@ -1,38 +1,34 @@
- package com.chs.readytonote.viewmodel
+package com.chs.readytonote.viewmodel
 
 import android.app.Application
-import android.content.Context
-import android.database.Cursor
-import android.net.Uri
-import android.provider.MediaStore
+import androidx.datastore.core.DataStore
 import androidx.lifecycle.*
-import androidx.loader.content.CursorLoader
-import com.bumptech.glide.annotation.GlideModule
-import com.bumptech.glide.module.AppGlideModule
-import com.chs.readytonote.Resource
+import com.chs.readytonote.Constants
+import com.chs.readytonote.DataStoreModule
 import com.chs.readytonote.entities.Label
 import com.chs.readytonote.entities.LabelCheck
 import com.chs.readytonote.repository.NoteRepository
 import com.chs.readytonote.entities.Note
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
-class MainViewModel(application: Application):AndroidViewModel(application) {
 
-    private var repository: NoteRepository = NoteRepository(application)
+class MainViewModel(
+    application: Application
+) : ViewModel() {
 
-    fun getAllNotes() {
-        viewModelScope.launch {
-            repository.getNotes().catch { e ->
-                Resource.Error(e.message.toString())
-            }.collect {
-                Resource.Success(it)
-            }
-        }
+    private val repository by lazy {
+        NoteRepository(application)
     }
+
+    private val dataStore by lazy {
+        DataStoreModule(application)
+    }
+
+    fun getAllNotes() = repository.getNotes().asLiveData()
 
     fun insertNote(note: Note): LiveData<Long> {
         val lastId = MutableLiveData<Long>()
@@ -43,25 +39,25 @@ class MainViewModel(application: Application):AndroidViewModel(application) {
         return lastId
     }
 
-    fun searchNotes(searchWord: String) = repository.searchNotes(searchWord)
+    fun searchNotes(searchWord: String) = repository.searchNotes(searchWord).asLiveData()
 
     fun deleteNote(note: Note) = viewModelScope.launch(Dispatchers.IO) {
         repository.deleteNote(note)
     }
 
-    fun getAllLabel() = repository.getLabels()
+    fun getAllLabel() = repository.getLabels().asLiveData()
 
     fun insertLabel(label: Label) = viewModelScope.launch(Dispatchers.IO) {
         repository.insertLabel(label)
     }
 
-    fun getCheckLabel(noteId: Int) = repository.getCheckLabel(noteId)
+    fun getCheckLabel(noteId: Int) = repository.getCheckLabel(noteId).asLiveData()
 
     fun insertCheckLabel(labelCheck: LabelCheck) = viewModelScope.launch(Dispatchers.IO) {
         repository.insertCheckLabel(labelCheck)
     }
 
-    fun deleteCheckLabel(noteId: Int) = viewModelScope.launch(Dispatchers.IO){
+    fun deleteCheckLabel(noteId: Int) = viewModelScope.launch(Dispatchers.IO) {
         repository.deleteCheckLabel(noteId)
     }
 
@@ -69,4 +65,11 @@ class MainViewModel(application: Application):AndroidViewModel(application) {
         repository.updateCheckLabel(labelCheck)
     }
 
+    fun getUiFlow(): Flow<String> = dataStore.getUIStatus
+
+    fun setUiMode(uiStatus: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            dataStore.setUIStatus(uiStatus)
+        }
+    }
 }

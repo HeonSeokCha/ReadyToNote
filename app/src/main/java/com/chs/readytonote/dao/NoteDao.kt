@@ -18,15 +18,17 @@ interface NoteDao {
     @Update
     suspend fun updateNote(note: Note)
 
-    @Query("SELECT * FROM notes where UPPER(title) LIKE '%'||UPPER(:searchWord)||'%' " +
-            "or UPPER(subtitle) LIKE '%'||UPPER(:searchWord)||'%'")
+    @Query(
+        "SELECT * FROM notes where UPPER(title) LIKE '%'||UPPER(:searchWord)||'%' " +
+                "or UPPER(subtitle) LIKE '%'||UPPER(:searchWord)||'%'"
+    )
     fun searchNotes(searchWord: String): Flow<List<Note>>
 
     @Delete
     suspend fun deleteNote(note: Note)
 
     @Query("DELETE FROM notes")
-    suspend fun deleteNoteAll() : Int
+    suspend fun deleteNoteAll(): Int
 
     @Query("SELECT * FROM label")
     fun getAllLabels(): Flow<List<Label>>
