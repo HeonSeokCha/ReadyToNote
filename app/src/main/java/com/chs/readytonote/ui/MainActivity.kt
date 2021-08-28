@@ -2,7 +2,6 @@ package com.chs.readytonote.ui
 
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.content.Intent
 import android.graphics.drawable.ColorDrawable
 import android.os.Build
@@ -15,23 +14,19 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.view.isVisible
 import androidx.datastore.preferences.core.stringPreferencesKey
-import androidx.datastore.preferences.preferencesDataStore
-import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.bumptech.glide.Glide
 import com.chs.readytonote.Constants
-import com.chs.readytonote.DataStoreModule
 import com.chs.readytonote.R
 import com.chs.readytonote.adapter.NoteAdapter
+import com.chs.readytonote.dataStore
 import com.chs.readytonote.databinding.ActivityMainBinding
 import com.chs.readytonote.databinding.LayoutThemeSelectBinding
 import com.chs.readytonote.entities.Note
-import com.chs.readytonote.viewmodel.MainViewModel
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.launch
-
-private val Context.dataStore by preferencesDataStore(name = Constants.DATA_STORE)
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.runBlocking
 
 class MainActivity : AppCompatActivity() {
     companion object {
@@ -51,44 +46,45 @@ class MainActivity : AppCompatActivity() {
     private var noteClickPosition = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        viewModel = MainViewModel(application)
         checkTheme()
+        super.onCreate(savedInstanceState)
         _binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        viewModel = MainViewModel(application)
         initClick()
         initRecyclerView()
         initMenu()
+        viewModel.getAllNotes()
     }
 
     private fun checkTheme() {
-        lifecycleScope.launch {
-            this@MainActivity.dataStore.data.collect {
-                when (it[stringPreferencesKey(Constants.UI_STATUS)]) {
-                    Constants.WHITE_MODE -> {
+        runBlocking {
+            when (this@MainActivity.dataStore.data.first()
+                    [stringPreferencesKey(Constants.UI_STATUS)]
+            ) {
+                Constants.WHITE_MODE -> {
+                    AppCompatDelegate.setDefaultNightMode(
+                        AppCompatDelegate.MODE_NIGHT_NO
+                    )
+                    selectUI = Constants.WHITE_MODE
+                }
+                Constants.DARK_MODE -> {
+                    AppCompatDelegate.setDefaultNightMode(
+                        AppCompatDelegate.MODE_NIGHT_YES
+                    )
+                    selectUI = Constants.DARK_MODE
+                }
+                Constants.DEFAULT_MODE -> {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                         AppCompatDelegate.setDefaultNightMode(
-                            AppCompatDelegate.MODE_NIGHT_NO
+                            AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
                         )
-                        selectUI = Constants.WHITE_MODE
-                    }
-                    Constants.DARK_MODE -> {
+                    } else {
                         AppCompatDelegate.setDefaultNightMode(
-                            AppCompatDelegate.MODE_NIGHT_YES
+                            AppCompatDelegate.MODE_NIGHT_AUTO_BATTERY
                         )
-                        selectUI = Constants.DARK_MODE
                     }
-                    Constants.DEFAULT_MODE -> {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                            AppCompatDelegate.setDefaultNightMode(
-                                AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
-                            )
-                        } else {
-                            AppCompatDelegate.setDefaultNightMode(
-                                AppCompatDelegate.MODE_NIGHT_AUTO_BATTERY
-                            )
-                        }
-                        selectUI = Constants.DEFAULT_MODE
-                    }
+                    selectUI = Constants.DEFAULT_MODE
                 }
             }
         }
@@ -168,16 +164,16 @@ class MainActivity : AppCompatActivity() {
 
     private fun getNote() {
         checkList = mutableMapOf()
-        viewModel.getAllNotes().observe(this, { notes ->
+        viewModel.noteLiveData.observe(this, { notes ->
             notesAdapter.submitList(notes)
-            emptyList(notes.isEmpty())
+            if (notes.isEmpty()) {
+                emptyList(true)
+            }
         })
     }
 
-    private fun emptyList(empty: Boolean) = if (empty) {
-        binding.layoutEmptyNote.emptyNote.visibility = View.VISIBLE
-    } else {
-        binding.layoutEmptyNote.emptyNote.visibility = View.GONE
+    private fun emptyList(empty: Boolean) {
+        binding.layoutEmptyNote.root.isVisible = empty
     }
 
     private fun searchNote() {

@@ -15,7 +15,7 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 import java.io.IOException
 
-private val Context.dataStore by preferencesDataStore(name = Constants.DATA_STORE)
+val Context.dataStore by preferencesDataStore(name = Constants.DATA_STORE)
 
 class DataStoreModule(private val context: Context) {
 

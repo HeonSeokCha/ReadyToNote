@@ -21,14 +21,12 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.lifecycle.ViewModelProvider
 import com.chs.readytonote.R
 import com.chs.readytonote.entities.Note
 import java.text.SimpleDateFormat
 import java.util.*
 import androidx.core.content.ContextCompat.checkSelfPermission
 import androidx.core.view.isVisible
-import androidx.lifecycle.ViewModel
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.chs.readytonote.Util
@@ -36,7 +34,6 @@ import com.chs.readytonote.adapter.LabelAdapter
 import com.chs.readytonote.databinding.*
 import com.chs.readytonote.entities.Label
 import com.chs.readytonote.entities.LabelCheck
-import com.chs.readytonote.viewmodel.MainViewModel
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 
 class CreateNoteActivity : AppCompatActivity() {

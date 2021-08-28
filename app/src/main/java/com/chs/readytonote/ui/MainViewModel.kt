@@ -1,10 +1,11 @@
-package com.chs.readytonote.viewmodel
+package com.chs.readytonote.ui
 
 import android.app.Application
 import androidx.datastore.core.DataStore
 import androidx.lifecycle.*
 import com.chs.readytonote.Constants
 import com.chs.readytonote.DataStoreModule
+import com.chs.readytonote.ResourceStatus
 import com.chs.readytonote.entities.Label
 import com.chs.readytonote.entities.LabelCheck
 import com.chs.readytonote.repository.NoteRepository
@@ -15,6 +16,7 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 class MainViewModel(
     application: Application
@@ -28,7 +30,19 @@ class MainViewModel(
         DataStoreModule(application)
     }
 
-    fun getAllNotes() = repository.getNotes().asLiveData()
+    private val _noteLiveData = MutableLiveData<ArrayList<Note>>()
+    val noteLiveData: LiveData<ArrayList<Note>> get() = _noteLiveData
+
+    private val noteList: ArrayList<Note> = arrayListOf()
+
+    fun getAllNotes() {
+        viewModelScope.launch {
+            repository.getNotes().collect {
+                noteList.addAll(it)
+                _noteLiveData.value = noteList
+            }
+        }
+    }
 
     fun insertNote(note: Note): LiveData<Long> {
         val lastId = MutableLiveData<Long>()
@@ -36,13 +50,19 @@ class MainViewModel(
             val id = repository.insertNote(note)
             lastId.postValue(id)
         }
+        noteList.add(note)
+        _noteLiveData.value = noteList
         return lastId
     }
 
     fun searchNotes(searchWord: String) = repository.searchNotes(searchWord).asLiveData()
 
-    fun deleteNote(note: Note) = viewModelScope.launch(Dispatchers.IO) {
-        repository.deleteNote(note)
+    fun deleteNote(note: Note) {
+        viewModelScope.launch {
+            repository.deleteNote(note)
+        }
+        noteList.remove(note)
+        _noteLiveData.value = noteList
     }
 
     fun getAllLabel() = repository.getLabels().asLiveData()
@@ -65,11 +85,13 @@ class MainViewModel(
         repository.updateCheckLabel(labelCheck)
     }
 
-    fun getUiFlow(): Flow<String> = dataStore.getUIStatus
-
     fun setUiMode(uiStatus: String) {
         viewModelScope.launch(Dispatchers.IO) {
             dataStore.setUIStatus(uiStatus)
         }
+    }
+
+    fun destroyView() {
+
     }
 }
