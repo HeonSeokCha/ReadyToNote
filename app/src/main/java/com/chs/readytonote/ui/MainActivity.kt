@@ -10,6 +10,7 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -39,7 +40,6 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var dialogTheme: AlertDialog
     private lateinit var notesAdapter: NoteAdapter
-    private lateinit var viewModel: MainViewModel
     private lateinit var checkList: MutableMap<Int, Note>
     private var selectUI: String = Constants.DEFAULT_MODE
     private var editMode: Boolean = false
@@ -50,7 +50,6 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         _binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        viewModel = MainViewModel(application)
         initClick()
         initRecyclerView()
         initMenu()
@@ -90,7 +89,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    @SuppressLint("UseCompatLoadingForDrawables")
     private fun initClick() {
         binding.imgAddNoteMain.setOnClickListener {
             if (editMode && ::checkList.isInitialized) {
@@ -101,9 +99,7 @@ class MainActivity : AppCompatActivity() {
                 checkList.clear()
                 editMode = false
                 notesAdapter.editItemMode(false)
-                binding.imgAddNoteMain.setImageDrawable(
-                    resources.getDrawable(R.drawable.ic_add, null)
-                )
+                drawImageView(R.drawable.ic_add, binding.imgAddNoteMain)
                 binding.bottomAppBar.replaceMenu(R.menu.main_note)
                 getNote()
             } else {
@@ -121,7 +117,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    @SuppressLint("UseCompatLoadingForDrawables")
     private fun initRecyclerView() {
         binding.RvNotes.apply {
             notesAdapter = NoteAdapter(clickListener = { note, position ->
@@ -139,15 +134,11 @@ class MainActivity : AppCompatActivity() {
                 if (chkState) {
                     editMode = true
                     binding.imgAddNoteMain.isEnabled = false
-                    binding.imgAddNoteMain.setImageDrawable(
-                        resources.getDrawable(R.drawable.ic_delete, null)
-                    )
+                    drawImageView(R.drawable.ic_delete, binding.imgAddNoteMain)
                     binding.bottomAppBar.replaceMenu(R.menu.select_note)
                 } else {
                     editMode = false
-                    binding.imgAddNoteMain.setImageDrawable(
-                        resources.getDrawable(R.drawable.ic_add, null)
-                    )
+                    drawImageView(R.drawable.ic_add, binding.imgAddNoteMain)
                 }
             }, checkClickListener = { notes ->
                 checkList = notes
@@ -194,7 +185,6 @@ class MainActivity : AppCompatActivity() {
         })
     }
 
-    @SuppressLint("UseCompatLoadingForDrawables")
     private fun initMenu() {
         var click = false
         binding.bottomAppBar.replaceMenu(R.menu.main_note)
@@ -205,9 +195,7 @@ class MainActivity : AppCompatActivity() {
                     editMode = true
                     notesAdapter.editItemMode(true)
                     binding.imgAddNoteMain.isEnabled = false
-                    binding.imgAddNoteMain.setImageDrawable(
-                        resources.getDrawable(R.drawable.ic_delete, null)
-                    )
+                    drawImageView(R.drawable.ic_delete, binding.imgAddNoteMain)
                     binding.bottomAppBar.replaceMenu(R.menu.select_note)
                 }
                 R.id.main_menu_selectAll -> {
@@ -274,6 +262,12 @@ class MainActivity : AppCompatActivity() {
 
     private fun showToast(msg: String) {
         Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
+    }
+
+    private fun drawImageView(layoutId: Int, targetView: ImageView) {
+        Glide.with(this)
+            .load(layoutId)
+            .into(targetView)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

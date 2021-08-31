@@ -177,6 +177,7 @@ class CreateNoteActivity : AppCompatActivity() {
                 }
             })
             closeKeyboard()
+            viewModel.insertNote(note)
             setResult(Activity.RESULT_OK, Intent())
             finish()
         }
