@@ -28,6 +28,7 @@ import java.util.*
 import androidx.core.content.ContextCompat.checkSelfPermission
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
+import coil.load
 import com.bumptech.glide.Glide
 import com.chs.readytonote.Util
 import com.chs.readytonote.adapter.LabelAdapter
@@ -204,9 +205,9 @@ class CreateNoteActivity : AppCompatActivity() {
             imagePath = alreadyAvailableNote.imgPath!!
             binding.imageNote.visibility = View.VISIBLE
             binding.imageDelete.visibility = View.VISIBLE
-            Glide.with(this).load(alreadyAvailableNote.imgPath)
-                .error(R.drawable.ic_done)
-                .into(binding.imageNote)
+            binding.imageNote.load(alreadyAvailableNote.imgPath) {
+                error(R.drawable.ic_done)
+            }
         }
         if (alreadyAvailableNote.webLink!!.isNotEmpty()) {
             binding.txtWebUrl.text = alreadyAvailableNote.webLink
@@ -477,7 +478,6 @@ class CreateNoteActivity : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == Activity.RESULT_OK && requestCode == IMAGE_PICK_CODE) {
             if (data != null) {
-                Glide.with(this).load(data.data).into(binding.imageNote)
                 binding.imageNote.isVisible = true
                 binding.imageDelete.isVisible = true
                 imagePath = Util.getRealPathFromURI(this, data.data!!)!!

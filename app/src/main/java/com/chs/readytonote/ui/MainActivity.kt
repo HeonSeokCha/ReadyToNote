@@ -265,9 +265,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun drawImageView(layoutId: Int, targetView: ImageView) {
-        Glide.with(this)
-            .load(layoutId)
-            .into(targetView)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -288,9 +285,6 @@ class MainActivity : AppCompatActivity() {
             binding.bottomAppBar.replaceMenu(R.menu.main_note)
             binding.imgAddNoteMain.apply {
                 isEnabled = true
-                Glide.with(this)
-                    .load(R.drawable.ic_add)
-                    .into(this)
             }
         } else {
             super.onBackPressed()

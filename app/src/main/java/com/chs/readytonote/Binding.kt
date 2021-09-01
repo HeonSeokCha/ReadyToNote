@@ -8,18 +8,17 @@ import android.widget.TextView
 import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
 import androidx.databinding.BindingAdapter
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
+import coil.load
 
 object Binding {
     @BindingAdapter("imageSrc")
     @JvmStatic
-    fun loadImage(imageView: ImageView,path: String) {
-        Glide.with(imageView.context).load(path)
-            .placeholder(R.color.colorNoteDefaultColor)
-            .transition(DrawableTransitionOptions().crossFade())
-            .error(R.drawable.ic_delete)
-            .into(imageView)
+    fun loadImage(imageView: ImageView, path: String) {
+        imageView.load(path) {
+            crossfade(true)
+            crossfade(400)
+            error(R.drawable.ic_delete)
+        }
     }
 
     @BindingAdapter("dateSplit")
@@ -49,12 +48,14 @@ object Binding {
     @BindingAdapter("textColor")
     @JvmStatic
     fun setTextColor(textView: TextView, color: String) {
-        if(color == "#FDBE3B") {
+        if (color == "#FDBE3B") {
             textView.setTextColor(
-                ContextCompat.getColor(textView.context,R.color.colorBlack))
+                ContextCompat.getColor(textView.context, R.color.colorBlack)
+            )
         } else {
             textView.setTextColor(
-                ContextCompat.getColor(textView.context,R.color.colorText))
+                ContextCompat.getColor(textView.context, R.color.colorText)
+            )
         }
     }
 
@@ -62,7 +63,7 @@ object Binding {
     @BindingAdapter("labelColor")
     @JvmStatic
     fun setLabelColor(textView: TextView, color: String) {
-        if(color == "#FDBE3B") {
+        if (color == "#FDBE3B") {
             textView.setBackgroundResource(R.drawable.background_note_label_black)
         } else {
             textView.setBackgroundResource(R.drawable.background_note_label)
