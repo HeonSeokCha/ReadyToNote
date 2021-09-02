@@ -7,6 +7,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import androidx.databinding.BindingAdapter
 import coil.load
 
@@ -14,10 +15,13 @@ object Binding {
     @BindingAdapter("imageSrc")
     @JvmStatic
     fun loadImage(imageView: ImageView, path: String) {
-        imageView.load(path) {
-            crossfade(true)
-            crossfade(400)
-            error(R.drawable.ic_delete)
+        if (path != null) {
+            imageView.isVisible = true
+            imageView.load(path) {
+                crossfade(true)
+                crossfade(400)
+                error(R.drawable.ic_delete)
+            }
         }
     }
 
@@ -50,11 +54,11 @@ object Binding {
     fun setTextColor(textView: TextView, color: String) {
         if (color == "#FDBE3B") {
             textView.setTextColor(
-                ContextCompat.getColor(textView.context, R.color.colorBlack)
+                textView.context.getColor(R.color.colorBlack)
             )
         } else {
             textView.setTextColor(
-                ContextCompat.getColor(textView.context, R.color.colorText)
+                textView.context.getColor(R.color.colorText)
             )
         }
     }

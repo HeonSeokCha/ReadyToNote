@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
+import androidx.navigation.fragment.findNavController
 import com.chs.readytonote.R
 import com.chs.readytonote.databinding.FragmentHomeBinding
 import com.chs.readytonote.databinding.FragmentNoteBinding
@@ -29,7 +30,8 @@ class HomeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
     }
 
-    private fun
+    private fun initClick() {
+    }
 
     override fun onDestroyView() {
         super.onDestroyView()

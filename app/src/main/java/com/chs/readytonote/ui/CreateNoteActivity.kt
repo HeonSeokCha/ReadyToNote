@@ -29,7 +29,6 @@ import androidx.core.content.ContextCompat.checkSelfPermission
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import coil.load
-import com.bumptech.glide.Glide
 import com.chs.readytonote.Util
 import com.chs.readytonote.adapter.LabelAdapter
 import com.chs.readytonote.databinding.*

@@ -1,22 +1,15 @@
 package com.chs.readytonote.ui
 
 import android.app.Application
-import androidx.datastore.core.DataStore
 import androidx.lifecycle.*
-import com.chs.readytonote.Constants
 import com.chs.readytonote.DataStoreModule
-import com.chs.readytonote.ResourceStatus
 import com.chs.readytonote.entities.Label
 import com.chs.readytonote.entities.LabelCheck
 import com.chs.readytonote.repository.NoteRepository
 import com.chs.readytonote.entities.Note
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 
 class MainViewModel(
     application: Application
