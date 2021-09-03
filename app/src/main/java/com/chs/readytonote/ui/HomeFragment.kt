@@ -28,9 +28,14 @@ class HomeFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        initClick()
     }
 
     private fun initClick() {
+        binding.imgAddNoteMain.setOnClickListener {
+            val action = HomeFragmentDirections.actionHomeFragmentToNoteFragment()
+            findNavController().navigate(action)
+        }
     }
 
     override fun onDestroyView() {

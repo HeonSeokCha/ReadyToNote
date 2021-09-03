@@ -15,23 +15,23 @@
         app:defaultNavHost="true"
         app:navGraph="@navigation/nav_graph" />
 
-    <com.google.android.material.bottomappbar.BottomAppBar
-        android:id="@+id/bottomAppBar"
-        style="@style/Widget.MaterialComponents.BottomAppBar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        app:backgroundTint="@color/colorQuickActionBackground"
-        app:fabAlignmentMode="center"
-        app:fabCradleMargin="8dp" />
+<!--    <com.google.android.material.bottomappbar.BottomAppBar-->
+<!--        android:id="@+id/bottomAppBar"-->
+<!--        style="@style/Widget.MaterialComponents.BottomAppBar"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_gravity="bottom"-->
+<!--        app:backgroundTint="@color/colorQuickActionBackground"-->
+<!--        app:fabAlignmentMode="center"-->
+<!--        app:fabCradleMargin="8dp" />-->
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/imgAddNoteMain"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/ic_add"
-        app:backgroundTint="@color/colorAccent"
-        app:fabSize="normal"
-        app:layout_anchor="@id/bottomAppBar" />
+<!--    <com.google.android.material.floatingactionbutton.FloatingActionButton-->
+<!--        android:id="@+id/imgAddNoteMain"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:src="@drawable/ic_add"-->
+<!--        app:backgroundTint="@color/colorAccent"-->
+<!--        app:fabSize="normal"-->
+<!--        app:layout_anchor="@id/bottomAppBar" />-->
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

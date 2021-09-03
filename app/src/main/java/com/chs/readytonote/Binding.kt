@@ -14,7 +14,7 @@ import coil.load
 object Binding {
     @BindingAdapter("imageSrc")
     @JvmStatic
-    fun loadImage(imageView: ImageView, path: String) {
+    fun loadImage(imageView: ImageView, path: String?) {
         if (path != null) {
             imageView.isVisible = true
             imageView.load(path) {

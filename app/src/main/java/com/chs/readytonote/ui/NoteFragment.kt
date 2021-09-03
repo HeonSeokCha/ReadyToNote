@@ -16,6 +16,7 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
 import com.chs.readytonote.R
 import com.chs.readytonote.Util
+import com.chs.readytonote.databinding.FragmentHomeBinding
 import com.chs.readytonote.databinding.FragmentNoteBinding
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import java.text.SimpleDateFormat
@@ -60,7 +61,9 @@ class NoteFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_note, container, false)
+        _binding =
+            FragmentNoteBinding.bind(inflater.inflate(R.layout.fragment_note, container, false))
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -72,7 +75,6 @@ class NoteFragment : Fragment() {
     private fun initView() {
         bottomSheetBehavior = BottomSheetBehavior.from(binding.layoutMiscellaneous.root)
         binding.txtDateTime.text = SimpleDateFormat("yyyy년 MM월 dd일 E", Locale.KOREA).format(Date())
-        binding.model
     }
 
     private fun initClick() {
