@@ -18,6 +18,7 @@ import com.chs.readytonote.R
 import com.chs.readytonote.Util
 import com.chs.readytonote.databinding.FragmentHomeBinding
 import com.chs.readytonote.databinding.FragmentNoteBinding
+import com.chs.readytonote.entities.Note
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import java.text.SimpleDateFormat
 import java.util.*
@@ -89,6 +90,25 @@ class NoteFragment : Fragment() {
         }
 
         binding.imgBack.setOnClickListener {
+            // todo naviagteUp
+        }
+
+        binding.imgSave.setOnClickListener {
+            with(binding.model) {
+                viewModel.insertNote(
+                    Note(
+                        this.title,
+                        this.label,
+                        this.dateTime,
+                        this.subtitle,
+                        this.noteText,
+                        this.imgPath,
+                        this.color,
+                        this.webLink
+                    )
+                )
+                // todo naviagteUp
+            }
         }
 
         binding.layoutMiscellaneous.layoutAddImage.setOnClickListener {

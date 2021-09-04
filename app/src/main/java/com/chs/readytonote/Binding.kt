@@ -15,13 +15,11 @@ object Binding {
     @BindingAdapter("imageSrc")
     @JvmStatic
     fun loadImage(imageView: ImageView, path: String?) {
-        if (path != null) {
-            imageView.isVisible = true
-            imageView.load(path) {
-                crossfade(true)
-                crossfade(400)
-                error(R.drawable.ic_delete)
-            }
+        imageView.isVisible = !path.isNullOrEmpty()
+        imageView.load(path) {
+            crossfade(true)
+            crossfade(400)
+            error(R.drawable.ic_delete)
         }
     }
 

@@ -17,10 +17,8 @@ import java.util.*
 import kotlin.concurrent.schedule
 
 
-class NoteAdapter (
-    private val clickListener: (note: Note, position: Int) -> Unit,
-    private val checkClickListener: (checkList: MutableMap<Int, Note>) -> Unit,
-    private val longClickListener: (chkState: Boolean) -> Unit
+class NoteAdapter(
+    private val clickListener: ClickListener
 ) : ListAdapter<Note, NoteAdapter.NoteViewHolder>(NoteDiffUtilCallback()) {
 
     private lateinit var temp: MutableList<Note>
@@ -30,8 +28,14 @@ class NoteAdapter (
     private var checkBox: Boolean = false
     private var isSelectModeOn: Boolean = false
 
-    inner class NoteViewHolder(private val binding: ItemContainerNoteBinding)
-        : RecyclerView.ViewHolder(binding.root) {
+    interface ClickListener {
+        fun clickListener(note: Note, position: Int)
+        fun checkClickListener(checkList: MutableMap<Int, Note>)
+        fun longClickListener(chkState: Boolean)
+    }
+
+    inner class NoteViewHolder(private val binding: ItemContainerNoteBinding) :
+        RecyclerView.ViewHolder(binding.root) {
 
         init {
             binding.layoutNote.setOnClickListener {
@@ -44,10 +48,10 @@ class NoteAdapter (
                     } else {
                         checkList.remove(layoutPosition)
                     }
-                    checkClickListener.invoke(checkList)
+                    clickListener.checkClickListener(checkList)
 
                 } else {
-                    clickListener.invoke(
+                    clickListener.clickListener(
                         getItem(layoutPosition),
                         layoutPosition
                     )
@@ -55,58 +59,60 @@ class NoteAdapter (
             }
 
             binding.layoutNote.setOnLongClickListener {
-                if(!checkBox) {
+                if (!checkBox) {
                     editItemMode(true)
-                    longClickListener(checkBox)
+                    clickListener.longClickListener(checkBox)
                     binding.imgCheck.isActivated = !binding.imgCheck.isActivated
                 }
                 return@setOnLongClickListener true
             }
         }
-            fun bind(note: Note) {
-                binding.model = note
-                if(note.label.isNullOrEmpty()) {
-                    binding.txtLabel.visibility = View.GONE
-                }
 
-                if (note.imgPath!!.isEmpty()) {
-                    binding.imageNote.visibility = View.GONE
-                } else {
-                    binding.imageNote.visibility = View.VISIBLE
-                }
-                when {
-                    checkBox -> {
-                        binding.imgCheck.apply {
-                            visibility = View.VISIBLE
-                            isActivated = isSelectModeOn
-                        }
+        fun bind(note: Note) {
+            binding.model = note
+            if (note.label.isNullOrEmpty()) {
+                binding.txtLabel.visibility = View.GONE
+            }
+
+            if (note.imgPath!!.isEmpty()) {
+                binding.imageNote.visibility = View.GONE
+            } else {
+                binding.imageNote.visibility = View.VISIBLE
+            }
+            when {
+                checkBox -> {
+                    binding.imgCheck.apply {
+                        visibility = View.VISIBLE
+                        isActivated = isSelectModeOn
                     }
-                    else -> {
-                        binding.imgCheck.apply {
-                            visibility = View.GONE
-                            isActivated = false
-                        }
+                }
+                else -> {
+                    binding.imgCheck.apply {
+                        visibility = View.GONE
+                        isActivated = false
                     }
                 }
             }
         }
+    }
+
     fun editItemMode(chk: Boolean) {
         checkBox = chk
         notifyDataSetChanged()
     }
 
     fun selectAll(chk: Boolean) {
-        isSelectModeOn = if(chk) {
-            for(i in currentList.indices)
+        isSelectModeOn = if (chk) {
+            for (i in currentList.indices)
                 checkList[i] = currentList[i]
             true
         } else {
-            for(i in currentList.indices)
+            for (i in currentList.indices)
                 checkList.remove(i)
             false
         }
         notifyDataSetChanged()
-        checkClickListener.invoke(checkList)
+        clickListener.checkClickListener(checkList)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NoteViewHolder {
