@@ -14,13 +14,14 @@ import com.chs.readytonote.databinding.FragmentNoteBinding
 import com.chs.readytonote.entities.Note
 
 class HomeFragment : Fragment() {
-    private val viewModel: MainViewModel by activityViewModels()
+    private lateinit var viewModel: MainViewModel
     private var _binding: FragmentHomeBinding? = null
     private var notesAdapter: NoteAdapter? = null
     private val binding get() = _binding!!
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        viewModel = MainViewModel(requireActivity().application)
         viewModel.getAllNotes()
     }
 

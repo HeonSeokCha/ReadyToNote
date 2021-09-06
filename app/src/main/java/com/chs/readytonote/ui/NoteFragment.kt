@@ -14,6 +14,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
+import androidx.navigation.fragment.findNavController
 import com.chs.readytonote.R
 import com.chs.readytonote.Util
 import com.chs.readytonote.databinding.FragmentHomeBinding
@@ -54,7 +55,6 @@ class NoteFragment : Fragment() {
             Util.getRealPathFromURI(requireContext(), activityResult!!.data!!.data!!)!!
             bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
         }
-        // action to do something
     }
 
     override fun onCreateView(
@@ -90,23 +90,11 @@ class NoteFragment : Fragment() {
         }
 
         binding.imgBack.setOnClickListener {
-            // todo naviagteUp
+            findNavController().navigateUp()
         }
 
         binding.imgSave.setOnClickListener {
             with(binding.model) {
-                viewModel.insertNote(
-                    Note(
-                        this.title,
-                        this.label,
-                        this.dateTime,
-                        this.subtitle,
-                        this.noteText,
-                        this.imgPath,
-                        this.color,
-                        this.webLink
-                    )
-                )
                 // todo naviagteUp
             }
         }
@@ -120,5 +108,4 @@ class NoteFragment : Fragment() {
         super.onDestroyView()
         _binding = null
     }
-
 }
