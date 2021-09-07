@@ -34,7 +34,7 @@ data class Note(
     @ColumnInfo(name = "web_link")
     val webLink: String?
 
-): Parcelable {
+) : Parcelable {
     @PrimaryKey(autoGenerate = true)
     var id: Int = 0
 

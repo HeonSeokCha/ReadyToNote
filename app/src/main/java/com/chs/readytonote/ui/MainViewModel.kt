@@ -32,7 +32,7 @@ class MainViewModel(
         viewModelScope.launch {
             repository.getNotes().collect {
                 noteList.addAll(it)
-                _noteLiveData.value = noteList
+                _noteLiveData.postValue(noteList)
             }
         }
     }

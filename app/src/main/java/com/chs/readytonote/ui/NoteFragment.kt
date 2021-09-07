@@ -5,6 +5,7 @@ import android.app.Activity.RESULT_OK
 import android.content.Intent
 import android.os.Bundle
 import android.provider.MediaStore
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -15,17 +16,20 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
+import coil.load
 import com.chs.readytonote.R
 import com.chs.readytonote.Util
 import com.chs.readytonote.databinding.FragmentHomeBinding
 import com.chs.readytonote.databinding.FragmentNoteBinding
 import com.chs.readytonote.entities.Note
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
 
 class NoteFragment : Fragment() {
-    private val viewModel: MainViewModel by activityViewModels()
+    private lateinit var viewModel: MainViewModel
+    private lateinit var imgPath: String
     private var _binding: FragmentNoteBinding? = null
     private val binding get() = _binding!!
 
@@ -52,9 +56,15 @@ class NoteFragment : Fragment() {
         if (activityResult.resultCode == RESULT_OK && activityResult.data != null) {
             binding.imageNote.isVisible = true
             binding.imageDelete.isVisible = true
-            Util.getRealPathFromURI(requireContext(), activityResult!!.data!!.data!!)!!
+            imgPath = Util.getRealPathFromURI(requireContext(), activityResult!!.data!!.data!!)!!
+            binding.imageNote.load(File(imgPath))
             bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
         }
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        viewModel = MainViewModel(requireActivity().application)
     }
 
     override fun onCreateView(
@@ -94,9 +104,19 @@ class NoteFragment : Fragment() {
         }
 
         binding.imgSave.setOnClickListener {
-            with(binding.model) {
-                // todo naviagteUp
-            }
+            viewModel.insertNote(
+                Note(
+                    binding.inputNoteTitle.text.trim().toString(),
+                    "",
+                    binding.txtDateTime.text.trim().toString(),
+                    binding.inputNoteSubtitle.text.trim().toString(),
+                    binding.inputNoteText.text.trim().toString(),
+                    imgPath,
+                    "",
+                    ""
+                )
+            )
+            findNavController().navigateUp()
         }
 
         binding.layoutMiscellaneous.layoutAddImage.setOnClickListener {

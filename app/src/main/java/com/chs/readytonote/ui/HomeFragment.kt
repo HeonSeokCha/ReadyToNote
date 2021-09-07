@@ -68,7 +68,7 @@ class HomeFragment : Fragment() {
 
     private fun initObserver() {
         viewModel.noteLiveData.observe(viewLifecycleOwner, {
-            notesAdapter?.submitList(it)
+            notesAdapter?.submitList(it.toMutableList())
         })
     }
 
