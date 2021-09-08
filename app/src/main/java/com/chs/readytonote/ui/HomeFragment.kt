@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.chs.readytonote.R
 import com.chs.readytonote.adapter.NoteAdapter
 import com.chs.readytonote.databinding.FragmentHomeBinding
@@ -52,7 +53,8 @@ class HomeFragment : Fragment() {
         binding.RvNotes.apply {
             notesAdapter = NoteAdapter(object : NoteAdapter.ClickListener {
                 override fun clickListener(note: Note, position: Int) {
-                    TODO("Not yet implemented")
+                    val action = HomeFragmentDirections.actionHomeFragmentToNoteFragment()
+                    findNavController().navigate(action)
                 }
 
                 override fun checkClickListener(checkList: MutableMap<Int, Note>) {
@@ -63,12 +65,14 @@ class HomeFragment : Fragment() {
                     TODO("Not yet implemented")
                 }
             })
+            this.layoutManager = StaggeredGridLayoutManager(2, 1)
+            this.adapter = notesAdapter
         }
     }
 
     private fun initObserver() {
         viewModel.noteLiveData.observe(viewLifecycleOwner, {
-            notesAdapter?.submitList(it.toMutableList())
+            notesAdapter?.submitList(it)
         })
     }
 

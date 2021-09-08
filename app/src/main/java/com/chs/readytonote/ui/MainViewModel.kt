@@ -23,8 +23,8 @@ class MainViewModel(
         DataStoreModule(application)
     }
 
-    private val _noteLiveData = MutableLiveData<ArrayList<Note>>()
-    val noteLiveData: LiveData<ArrayList<Note>> get() = _noteLiveData
+    private val _noteLiveData = MutableLiveData<List<Note>>()
+    val noteLiveData: LiveData<List<Note>> get() = _noteLiveData
 
     private val noteList: ArrayList<Note> = arrayListOf()
 
@@ -32,7 +32,7 @@ class MainViewModel(
         viewModelScope.launch {
             repository.getNotes().collect {
                 noteList.addAll(it)
-                _noteLiveData.postValue(noteList)
+                _noteLiveData.value = noteList
             }
         }
     }

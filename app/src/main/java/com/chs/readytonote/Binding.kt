@@ -10,13 +10,14 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.databinding.BindingAdapter
 import coil.load
+import java.io.File
 
 object Binding {
     @BindingAdapter("imageSrc")
     @JvmStatic
     fun loadImage(imageView: ImageView, path: String?) {
         imageView.isVisible = !path.isNullOrEmpty()
-        imageView.load(path) {
+        imageView.load(File(path)) {
             crossfade(true)
             crossfade(400)
             error(R.drawable.ic_delete)
@@ -26,7 +27,7 @@ object Binding {
     @BindingAdapter("dateSplit")
     @JvmStatic
     fun setDate(textView: TextView, date: String) {
-        textView.text = date.split("년 ")[1]
+//        textView.text = date.split("년 ")[1]
     }
 
     @BindingAdapter("setCardColor")
@@ -42,7 +43,7 @@ object Binding {
                 }
             }
         } else {
-            cardView.setCardBackgroundColor(Color.parseColor(color))
+//            cardView.setCardBackgroundColor(Color.parseColor(color))
         }
     }
 

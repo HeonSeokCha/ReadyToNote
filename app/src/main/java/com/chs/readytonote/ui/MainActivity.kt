@@ -36,7 +36,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun checkTheme() {
-        runBlocking {
+        runBlocking { // todo 과연 이게 맞을까?
             when (this@MainActivity.dataStore.data.first()
                     [stringPreferencesKey(Constants.UI_STATUS)]
             ) {
