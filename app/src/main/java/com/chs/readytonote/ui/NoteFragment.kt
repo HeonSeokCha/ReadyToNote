@@ -72,8 +72,10 @@ class NoteFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        _binding =
-            FragmentNoteBinding.bind(inflater.inflate(R.layout.fragment_note, container, false))
+        if (_binding == null) {
+            _binding =
+                FragmentNoteBinding.bind(inflater.inflate(R.layout.fragment_note, container, false))
+        }
         return binding.root
     }
 
@@ -86,6 +88,9 @@ class NoteFragment : Fragment() {
     private fun initView() {
         bottomSheetBehavior = BottomSheetBehavior.from(binding.layoutMiscellaneous.root)
         binding.txtDateTime.text = SimpleDateFormat("yyyy년 MM월 dd일 E", Locale.KOREA).format(Date())
+        if (NoteFragmentArgs.fromBundle(requireArguments()).note != null) {
+            binding.model = NoteFragmentArgs.fromBundle(requireArguments()).note
+        }
     }
 
     private fun initClick() {

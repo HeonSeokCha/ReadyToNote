@@ -18,5 +18,10 @@
         android:id="@+id/noteFragment"
         android:name="com.chs.readytonote.ui.NoteFragment"
         android:label="NoteFragment"
-        tools:layout="@layout/fragment_note"/>
+        tools:layout="@layout/fragment_note">
+        <argument
+            android:name="note"
+            app:argType="com.chs.readytonote.entities.Note"
+            app:nullable="true" />
+    </fragment>
 </navigation>

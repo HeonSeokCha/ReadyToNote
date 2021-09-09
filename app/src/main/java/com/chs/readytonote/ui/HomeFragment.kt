@@ -30,8 +30,10 @@ class HomeFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        _binding =
-            FragmentHomeBinding.bind(inflater.inflate(R.layout.fragment_home, container, false))
+        if (_binding == null) {
+            _binding =
+                FragmentHomeBinding.bind(inflater.inflate(R.layout.fragment_home, container, false))
+        }
         return binding.root
     }
 
@@ -44,7 +46,7 @@ class HomeFragment : Fragment() {
 
     private fun initClick() {
         binding.imgAddNoteMain.setOnClickListener {
-            val action = HomeFragmentDirections.actionHomeFragmentToNoteFragment()
+            val action = HomeFragmentDirections.actionHomeFragmentToNoteFragment(null)
             findNavController().navigate(action)
         }
     }
@@ -53,7 +55,7 @@ class HomeFragment : Fragment() {
         binding.RvNotes.apply {
             notesAdapter = NoteAdapter(object : NoteAdapter.ClickListener {
                 override fun clickListener(note: Note, position: Int) {
-                    val action = HomeFragmentDirections.actionHomeFragmentToNoteFragment()
+                    val action = HomeFragmentDirections.actionHomeFragmentToNoteFragment(note)
                     findNavController().navigate(action)
                 }
 
