@@ -17,6 +17,7 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import coil.load
+import com.chs.readytonote.Constants
 import com.chs.readytonote.R
 import com.chs.readytonote.Util
 import com.chs.readytonote.databinding.FragmentHomeBinding
@@ -30,6 +31,8 @@ import java.util.*
 class NoteFragment : Fragment() {
     private lateinit var viewModel: MainViewModel
     private lateinit var imgPath: String
+    private lateinit var webLink: String
+    private var noteColor: String = Constants.NOTE_DEFAULT_COLOR
     private var _binding: FragmentNoteBinding? = null
     private val binding get() = _binding!!
 
@@ -71,7 +74,6 @@ class NoteFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
         if (_binding == null) {
             _binding =
                 FragmentNoteBinding.bind(inflater.inflate(R.layout.fragment_note, container, false))
@@ -87,9 +89,16 @@ class NoteFragment : Fragment() {
 
     private fun initView() {
         bottomSheetBehavior = BottomSheetBehavior.from(binding.layoutMiscellaneous.root)
-        binding.txtDateTime.text = SimpleDateFormat("yyyy년 MM월 dd일 E", Locale.KOREA).format(Date())
+        binding.txtDateTime.text =
+            SimpleDateFormat(Constants.DATE_PATTERN, Locale.KOREA).format(Date())
+
+
         if (NoteFragmentArgs.fromBundle(requireArguments()).note != null) {
-            binding.model = NoteFragmentArgs.fromBundle(requireArguments()).note
+            with(NoteFragmentArgs.fromBundle(requireArguments()).note) {
+                binding.model = this
+                imgPath = this!!.imgPath.toString()
+            }
+            binding.layoutMiscellaneous.layoutDeleteNote.isVisible = true
         }
     }
 
@@ -117,7 +126,7 @@ class NoteFragment : Fragment() {
                     binding.inputNoteSubtitle.text.trim().toString(),
                     binding.inputNoteText.text.trim().toString(),
                     imgPath,
-                    "",
+                    noteColor,
                     ""
                 )
             )
@@ -126,6 +135,18 @@ class NoteFragment : Fragment() {
 
         binding.layoutMiscellaneous.layoutAddImage.setOnClickListener {
             requestPermission.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
+        }
+
+        binding.imageDelete.setOnClickListener {
+            imgPath = ""
+            binding.imageNote.isVisible = false
+            binding.imageDelete.isVisible = false
+        }
+
+        binding.imageDeleteUrl.setOnClickListener {
+            webLink = ""
+            binding.txtWebUrl.isVisible = false
+            binding.imageDeleteUrl.isVisible = false
         }
     }
 
