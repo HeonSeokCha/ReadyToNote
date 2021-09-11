@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="match_parent"
     android:background="@drawable/background_decorations"
     app:behavior_peekHeight="30dp"
     app:layout_behavior="@string/bottom_sheet_behavior">
@@ -22,106 +22,55 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/layoutNoteColor"
-        android:layout_width="match_parent"
+    <RadioGroup
+        android:id="@+id/radioGroup2"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="10dp"
-        android:layout_marginStart="10dp"
-        android:layout_marginEnd="9dp"
+        android:layout_marginTop="16dp"
+        android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textMiscellaneous">
 
-        <ImageView
-            android:id="@+id/imageColorDefault"
-            android:layout_width="35dp"
-            android:layout_height="35dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="8dp"
+        <RadioButton
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="24dp"
             android:layout_marginBottom="8dp"
             android:background="@drawable/background_note_color_default"
-            android:padding="10dp"
-            android:src="@drawable/ic_done"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:button="@drawable/selector_color_radio" />
 
-        <ImageView
-            android:id="@+id/imageColorYellow"
-            android:layout_width="35dp"
-            android:layout_height="35dp"
-            android:layout_marginStart="24dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp"
+        <RadioButton
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginRight="24dp"
             android:background="@drawable/background_note_color_yellow"
-            android:padding="10dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/imageColorDefault"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:button="@drawable/selector_color_radio" />
 
-        <ImageView
-            android:id="@+id/imageColorRed"
-            android:layout_width="35dp"
-            android:layout_height="35dp"
-            android:layout_marginStart="24dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp"
+        <RadioButton
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginRight="24dp"
             android:background="@drawable/background_note_color_red"
-            android:padding="10dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/imageColorYellow"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:button="@drawable/selector_color_radio" />
 
-        <ImageView
-            android:id="@+id/imageColorBlue"
-            android:layout_width="35dp"
-            android:layout_height="35dp"
-            android:layout_marginStart="24dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp"
+        <RadioButton
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginRight="24dp"
             android:background="@drawable/background_note_color_blue"
-            android:padding="10dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/imageColorRed"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:button="@drawable/selector_color_radio" />
 
-        <ImageView
-            android:id="@+id/imageColorPurple"
-            android:layout_width="35dp"
-            android:layout_height="35dp"
-            android:layout_marginStart="24dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp"
+        <RadioButton
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginRight="10dp"
             android:background="@drawable/background_note_color_purple"
-            android:padding="10dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/imageColorBlue"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:button="@drawable/selector_color_radio" />
 
-        <TextView
-            android:id="@+id/textView4"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Pick Color"
-            android:textColor="@color/colorTextHint"
-            android:textSize="13sp"
-            android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/imageColorPurple"
-            app:layout_constraintTop_toTopOf="parent" />
 
-        <View
-            android:id="@+id/view"
-            android:layout_width="0dp"
-            android:layout_height="2dp"
-            android:layout_marginTop="4dp"
-            android:background="@color/colorTextHint"
-            app:layout_constraintEnd_toEndOf="@+id/textView4"
-            app:layout_constraintStart_toStartOf="@+id/textView4"
-            app:layout_constraintTop_toBottomOf="@+id/textView4" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    </RadioGroup>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/layoutAddImage"
@@ -130,7 +79,7 @@
         android:layout_margin="10dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/layoutNoteColor">
+        app:layout_constraintTop_toBottomOf="@+id/radioGroup2">
 
         <ImageView
             android:id="@+id/imageView2"

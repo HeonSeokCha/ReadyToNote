@@ -77,7 +77,7 @@ class CreateNoteActivity : AppCompatActivity() {
         if (intent.getBooleanExtra("shortCutImage", false)) {
             checkPermImage()
         }
-        initMiscellaneous()
+//        initMiscellaneous()
         setSubtitleIndicator()
         bottomSheetBehavior = BottomSheetBehavior.from(binding.layoutMiscellaneous.root)
         binding.txtDateTime.text = SimpleDateFormat(
@@ -224,71 +224,71 @@ class CreateNoteActivity : AppCompatActivity() {
         }
     }
 
-    private fun initMiscellaneous() {
-        with(binding.layoutMiscellaneous) {
-            imageColorDefault.setOnClickListener {
-                noteColor = "#333333"
-                imageColorDefault.setImageResource(R.drawable.ic_done)
-                imageColorYellow.setImageResource(0)
-                imageColorRed.setImageResource(0)
-                imageColorBlue.setImageResource(0)
-                imageColorPurple.setImageResource(0)
-                setSubtitleIndicator()
-            }
-
-            imageColorYellow.setOnClickListener {
-                noteColor = "#FDBE3B"
-                imageColorDefault.setImageResource(0)
-                imageColorYellow.setImageResource(R.drawable.ic_done)
-                imageColorRed.setImageResource(0)
-                imageColorBlue.setImageResource(0)
-                imageColorPurple.setImageResource(0)
-                setSubtitleIndicator()
-            }
-
-            imageColorRed.setOnClickListener {
-                noteColor = "#FF4842"
-                imageColorDefault.setImageResource(0)
-                imageColorYellow.setImageResource(0)
-                imageColorRed.setImageResource(R.drawable.ic_done)
-                imageColorBlue.setImageResource(0)
-                imageColorPurple.setImageResource(0)
-                setSubtitleIndicator()
-            }
-
-            imageColorBlue.setOnClickListener {
-                noteColor = "#3A52FC"
-                imageColorDefault.setImageResource(0)
-                imageColorYellow.setImageResource(0)
-                imageColorRed.setImageResource(0)
-                imageColorBlue.setImageResource(R.drawable.ic_done)
-                imageColorPurple.setImageResource(0)
-                setSubtitleIndicator()
-            }
-
-            imageColorPurple.setOnClickListener {
-                noteColor = "#967FFA"
-                imageColorDefault.setImageResource(0)
-                imageColorYellow.setImageResource(0)
-                imageColorRed.setImageResource(0)
-                imageColorBlue.setImageResource(0)
-                imageColorPurple.setImageResource(R.drawable.ic_done)
-                setSubtitleIndicator()
-            }
-
-            if (::alreadyAvailableNote.isInitialized
-                && alreadyAvailableNote.color!!.isNotEmpty()
-            ) {
-                when (alreadyAvailableNote.color) {
-                    "#333333" -> imageColorDefault.performClick()
-                    "#FDBE3B" -> imageColorYellow.performClick()
-                    "#FF4842" -> imageColorRed.performClick()
-                    "#3A52FC" -> imageColorBlue.performClick()
-                    "#967FFA" -> imageColorPurple.performClick()
-                }
-            }
-        }
-    }
+//    private fun initMiscellaneous() {
+//        with(binding.layoutMiscellaneous) {
+//            imageColorDefault.setOnClickListener {
+//                noteColor = "#333333"
+//                imageColorDefault.setImageResource(R.drawable.ic_done)
+//                imageColorYellow.setImageResource(0)
+//                imageColorRed.setImageResource(0)
+//                imageColorBlue.setImageResource(0)
+//                imageColorPurple.setImageResource(0)
+//                setSubtitleIndicator()
+//            }
+//
+//            imageColorYellow.setOnClickListener {
+//                noteColor = "#FDBE3B"
+//                imageColorDefault.setImageResource(0)
+//                imageColorYellow.setImageResource(R.drawable.ic_done)
+//                imageColorRed.setImageResource(0)
+//                imageColorBlue.setImageResource(0)
+//                imageColorPurple.setImageResource(0)
+//                setSubtitleIndicator()
+//            }
+//
+//            imageColorRed.setOnClickListener {
+//                noteColor = "#FF4842"
+//                imageColorDefault.setImageResource(0)
+//                imageColorYellow.setImageResource(0)
+//                imageColorRed.setImageResource(R.drawable.ic_done)
+//                imageColorBlue.setImageResource(0)
+//                imageColorPurple.setImageResource(0)
+//                setSubtitleIndicator()
+//            }
+//
+//            imageColorBlue.setOnClickListener {
+//                noteColor = "#3A52FC"
+//                imageColorDefault.setImageResource(0)
+//                imageColorYellow.setImageResource(0)
+//                imageColorRed.setImageResource(0)
+//                imageColorBlue.setImageResource(R.drawable.ic_done)
+//                imageColorPurple.setImageResource(0)
+//                setSubtitleIndicator()
+//            }
+//
+//            imageColorPurple.setOnClickListener {
+//                noteColor = "#967FFA"
+//                imageColorDefault.setImageResource(0)
+//                imageColorYellow.setImageResource(0)
+//                imageColorRed.setImageResource(0)
+//                imageColorBlue.setImageResource(0)
+//                imageColorPurple.setImageResource(R.drawable.ic_done)
+//                setSubtitleIndicator()
+//            }
+//
+//            if (::alreadyAvailableNote.isInitialized
+//                && alreadyAvailableNote.color!!.isNotEmpty()
+//            ) {
+//                when (alreadyAvailableNote.color) {
+//                    "#333333" -> imageColorDefault.performClick()
+//                    "#FDBE3B" -> imageColorYellow.performClick()
+//                    "#FF4842" -> imageColorRed.performClick()
+//                    "#3A52FC" -> imageColorBlue.performClick()
+//                    "#967FFA" -> imageColorPurple.performClick()
+//                }
+//            }
+//        }
+//    }
 
     private fun showAddUrlDialog() {
         val builder: AlertDialog.Builder = AlertDialog.Builder(this)

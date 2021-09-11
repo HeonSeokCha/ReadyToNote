@@ -15,6 +15,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import coil.load
 import com.chs.readytonote.Constants
@@ -24,6 +25,7 @@ import com.chs.readytonote.databinding.FragmentHomeBinding
 import com.chs.readytonote.databinding.FragmentNoteBinding
 import com.chs.readytonote.entities.Note
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import kotlinx.coroutines.launch
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
@@ -91,7 +93,6 @@ class NoteFragment : Fragment() {
         bottomSheetBehavior = BottomSheetBehavior.from(binding.layoutMiscellaneous.root)
         binding.txtDateTime.text =
             SimpleDateFormat(Constants.DATE_PATTERN, Locale.KOREA).format(Date())
-
 
         if (NoteFragmentArgs.fromBundle(requireArguments()).note != null) {
             with(NoteFragmentArgs.fromBundle(requireArguments()).note) {
