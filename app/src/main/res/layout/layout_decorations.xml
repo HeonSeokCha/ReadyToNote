@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:background="@drawable/background_decorations"
     app:behavior_peekHeight="30dp"
     app:layout_behavior="@string/bottom_sheet_behavior">
@@ -28,46 +28,51 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:orientation="horizontal"
+        android:gravity="center"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textMiscellaneous">
 
         <RadioButton
-            android:layout_width="48dp"
-            android:layout_height="48dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_marginLeft="16dp"
             android:layout_marginRight="24dp"
-            android:layout_marginBottom="8dp"
             android:background="@drawable/background_note_color_default"
-            android:button="@drawable/selector_color_radio" />
+            android:button="@drawable/selector_color_radio"
+            android:buttonTint="@color/colorBlack" />
 
         <RadioButton
-            android:layout_width="48dp"
-            android:layout_height="48dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_marginRight="24dp"
             android:background="@drawable/background_note_color_yellow"
-            android:button="@drawable/selector_color_radio" />
+            android:button="@drawable/selector_color_radio"
+            android:buttonTint="@color/colorBlack" />
 
         <RadioButton
-            android:layout_width="48dp"
-            android:layout_height="48dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_marginRight="24dp"
             android:background="@drawable/background_note_color_red"
-            android:button="@drawable/selector_color_radio" />
+            android:button="@drawable/selector_color_radio"
+            android:buttonTint="@color/colorBlack" />
 
         <RadioButton
-            android:layout_width="48dp"
-            android:layout_height="48dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_marginRight="24dp"
             android:background="@drawable/background_note_color_blue"
-            android:button="@drawable/selector_color_radio" />
+            android:button="@drawable/selector_color_radio"
+            android:buttonTint="@color/colorBlack" />
 
         <RadioButton
-            android:layout_width="48dp"
-            android:layout_height="48dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_marginRight="10dp"
             android:background="@drawable/background_note_color_purple"
-            android:button="@drawable/selector_color_radio" />
+            android:button="@drawable/selector_color_radio"
+            android:buttonTint="@color/colorBlack" />
 
 
     </RadioGroup>

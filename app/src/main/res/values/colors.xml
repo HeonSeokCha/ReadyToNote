@@ -19,5 +19,6 @@
     <color name="colorNoteBlue">#3A52FC</color>
     <color name="colorNotePurple">#967FFA</color>
     <color name="colorDelete">#FF4842</color>
+    <color name="transparent">#00000000</color>
     <color name="colorSearchBackground">#CCCCCC</color>
 </resources>
