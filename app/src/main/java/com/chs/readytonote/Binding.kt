@@ -3,6 +3,8 @@ package com.chs.readytonote
 import android.annotation.SuppressLint
 import android.content.res.Configuration
 import android.graphics.Color
+import android.graphics.drawable.GradientDrawable
+import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.cardview.widget.CardView
@@ -44,6 +46,18 @@ object Binding {
             }
         } else {
 //            cardView.setCardBackgroundColor(Color.parseColor(color))
+        }
+    }
+
+    @BindingAdapter("setIndicatorColor")
+    @JvmStatic
+    fun setIndicatorColor(view: View, color: String?) {
+        if (color == "#333333") {
+            (view.background as GradientDrawable).setColor(
+                view.context.getColor(R.color.colorNoteDefaultColor)
+            )
+        } else {
+            (view.background as GradientDrawable).setColor(Color.parseColor(color))
         }
     }
 

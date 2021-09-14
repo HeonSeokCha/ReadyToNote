@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout>
+
     <data>
+
         <variable
             name="model"
             type="com.chs.readytonote.entities.Note" />
     </data>
-    <androidx.coordinatorlayout.widget.CoordinatorLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
+
+    <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
@@ -57,11 +59,11 @@
                     android:layout_marginEnd="12dp"
                     android:background="@null"
                     android:hint="Note Title"
-                    android:text="@{model.title}"
                     android:imeOptions="actionDone"
                     android:importantForAutofill="no"
                     android:includeFontPadding="false"
                     android:inputType="text"
+                    android:text="@{model.title}"
                     android:textColor="@color/colorText"
                     android:textColorHint="@color/colorTextHint"
                     android:textSize="18sp"
@@ -74,9 +76,9 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:includeFontPadding="false"
+                    android:text="@{model.dateTime}"
                     android:textColor="@color/colorTextSubtitle"
                     android:textSize="10sp"
-                    android:text="@{model.dateTime}"
                     app:layout_constraintEnd_toEndOf="@+id/inputNoteTitle"
                     app:layout_constraintStart_toStartOf="@+id/inputNoteTitle"
                     app:layout_constraintTop_toBottomOf="@+id/inputNoteTitle" />
@@ -90,12 +92,12 @@
                     android:layout_marginEnd="12dp"
                     android:background="@null"
                     android:hint="Note Subtitle"
-                    android:text="@{model.subtitle}"
                     android:imeOptions="actionDone"
                     android:importantForAutofill="no"
                     android:includeFontPadding="false"
                     android:paddingTop="8dp"
                     android:paddingBottom="8dp"
+                    android:text="@{model.subtitle}"
                     android:textColor="@color/colorTextSubtitle"
                     android:textColorHint="@color/colorTextHint"
                     android:textSize="16sp"
@@ -111,7 +113,8 @@
                     android:background="@drawable/background_subtitle_indicator"
                     app:layout_constraintBottom_toBottomOf="@+id/inputNoteSubtitle"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="@+id/inputNoteSubtitle" />
+                    app:layout_constraintTop_toTopOf="@+id/inputNoteSubtitle"
+                    app:setIndicatorColor="@{model.color}" />
 
                 <ImageView
                     android:id="@+id/imageNote"
@@ -133,10 +136,10 @@
                     android:layout_height="25dp"
                     android:layout_marginTop="8dp"
                     android:layout_marginEnd="8dp"
+                    android:background="@drawable/background_delete"
+                    android:padding="3dp"
                     android:src="@drawable/ic_delete"
                     android:visibility="gone"
-                    android:padding="3dp"
-                    android:background="@drawable/background_delete"
                     app:layout_constraintEnd_toEndOf="@+id/imageNote"
                     app:layout_constraintTop_toTopOf="@+id/imageNote"
                     app:tint="@color/colorWhite" />
@@ -159,13 +162,13 @@
                     android:id="@+id/imageDeleteUrl"
                     android:layout_width="25dp"
                     android:layout_height="25dp"
-                    android:visibility="gone"
                     android:layout_marginEnd="12dp"
                     android:src="@drawable/ic_delete"
-                    app:tint="@color/colorDelete"
+                    android:visibility="gone"
                     app:layout_constraintBottom_toBottomOf="@+id/txtWebUrl"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="@+id/txtWebUrl" />
+                    app:layout_constraintTop_toTopOf="@+id/txtWebUrl"
+                    app:tint="@color/colorDelete" />
 
                 <EditText
                     android:id="@+id/inputNoteText"
@@ -177,11 +180,11 @@
                     android:background="@null"
                     android:gravity="top"
                     android:hint="Type note here..."
-                    android:text="@{model.noteText}"
                     android:importantForAutofill="no"
                     android:includeFontPadding="false"
                     android:inputType="textMultiLine"
                     android:minHeight="100dp"
+                    android:text="@{model.noteText}"
                     android:textColor="@color/colorText"
                     android:textColorHint="@color/colorTextHint"
                     android:textSize="16sp"
@@ -194,7 +197,8 @@
 
         </ScrollView>
 
-        <include android:id="@+id/layoutMiscellaneous"
+        <include
+            android:id="@+id/layoutMiscellaneous"
             layout="@layout/layout_decorations" />
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 </layout>

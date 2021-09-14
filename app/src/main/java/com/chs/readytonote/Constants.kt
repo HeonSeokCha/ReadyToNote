@@ -11,7 +11,14 @@ object Constants {
     const val NOTE_DEFAULT_COLOR: String = "#333333"
     const val NOTE_YELLOW_COLOR: String = "#FDBE3B"
     const val NOTE_RED_COLOR: String = "#FF4842"
-    const val NOTE_BLUE: String = "#3A52FC"
+    const val NOTE_BLUE_COLOR: String = "#3A52FC"
     const val NOTE_PURPLE_COLOR: String = "#967FFA"
 
+    val NOTE_COLOR_LIST: List<String> = listOf(
+        NOTE_DEFAULT_COLOR,
+        NOTE_YELLOW_COLOR,
+        NOTE_RED_COLOR,
+        NOTE_BLUE_COLOR,
+        NOTE_PURPLE_COLOR
+    )
 }

@@ -13,6 +13,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.view.get
 import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
@@ -98,6 +99,8 @@ class NoteFragment : Fragment() {
             with(NoteFragmentArgs.fromBundle(requireArguments()).note) {
                 binding.model = this
                 imgPath = this!!.imgPath.toString()
+                noteColor = this.color!!
+                binding.layoutMiscellaneous.radioGroup2[Constants.NOTE_COLOR_LIST.indexOf(this.color)]
             }
             binding.layoutMiscellaneous.layoutDeleteNote.isVisible = true
         }
@@ -148,6 +151,23 @@ class NoteFragment : Fragment() {
             webLink = ""
             binding.txtWebUrl.isVisible = false
             binding.imageDeleteUrl.isVisible = false
+        }
+
+        binding.layoutMiscellaneous.rdoNoteDefault.setOnClickListener {
+            noteColor = Constants.NOTE_DEFAULT_COLOR
+        }
+
+        binding.layoutMiscellaneous.rdoNoteYellow.setOnClickListener {
+            noteColor = Constants.NOTE_YELLOW_COLOR
+        }
+        binding.layoutMiscellaneous.rdoNoteRed.setOnClickListener {
+            noteColor = Constants.NOTE_RED_COLOR
+        }
+        binding.layoutMiscellaneous.rdoNoteBlue.setOnClickListener {
+            noteColor = Constants.NOTE_BLUE_COLOR
+        }
+        binding.layoutMiscellaneous.rdoNotePurple.setOnClickListener {
+            noteColor = Constants.NOTE_PURPLE_COLOR
         }
     }
 
