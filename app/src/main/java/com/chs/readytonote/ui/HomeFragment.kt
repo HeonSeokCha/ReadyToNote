@@ -84,5 +84,6 @@ class HomeFragment : Fragment() {
         super.onDestroyView()
         notesAdapter = null
         _binding = null
+        Log.e("HomeFragment", "onDestroyView")
     }
 }

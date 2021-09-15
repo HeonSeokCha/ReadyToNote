@@ -19,10 +19,12 @@ object Binding {
     @JvmStatic
     fun loadImage(imageView: ImageView, path: String?) {
         imageView.isVisible = !path.isNullOrEmpty()
-        imageView.load(File(path)) {
-            crossfade(true)
-            crossfade(400)
-            error(R.drawable.ic_delete)
+        if (path != null) {
+            imageView.load(File(path)) {
+                crossfade(true)
+                crossfade(400)
+                error(R.drawable.ic_delete)
+            }
         }
     }
 
@@ -52,12 +54,14 @@ object Binding {
     @BindingAdapter("setIndicatorColor")
     @JvmStatic
     fun setIndicatorColor(view: View, color: String?) {
-        if (color == "#333333") {
-            (view.background as GradientDrawable).setColor(
-                view.context.getColor(R.color.colorNoteDefaultColor)
-            )
-        } else {
-            (view.background as GradientDrawable).setColor(Color.parseColor(color))
+        if (color != null) {
+            if (color == "#333333") {
+                (view.background as GradientDrawable).setColor(
+                    view.context.getColor(R.color.colorNoteDefaultColor)
+                )
+            } else {
+                (view.background as GradientDrawable).setColor(Color.parseColor(color))
+            }
         }
     }
 

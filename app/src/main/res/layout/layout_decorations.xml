@@ -39,6 +39,7 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="16dp"
             android:layout_marginRight="24dp"
+            android:checked="true"
             android:background="@drawable/background_note_color_default"
             android:button="@drawable/selector_color_radio"
             android:buttonTint="@color/colorBlack" />

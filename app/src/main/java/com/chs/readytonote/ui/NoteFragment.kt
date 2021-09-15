@@ -1,8 +1,11 @@
 package com.chs.readytonote.ui
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Activity.RESULT_OK
 import android.content.Intent
+import android.graphics.Color
+import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
@@ -33,8 +36,8 @@ import java.util.*
 
 class NoteFragment : Fragment() {
     private lateinit var viewModel: MainViewModel
-    private lateinit var imgPath: String
-    private lateinit var webLink: String
+    private var imgPath: String = ""
+    private var webLink: String = ""
     private var noteColor: String = Constants.NOTE_DEFAULT_COLOR
     private var _binding: FragmentNoteBinding? = null
     private val binding get() = _binding!!
@@ -100,7 +103,11 @@ class NoteFragment : Fragment() {
                 binding.model = this
                 imgPath = this!!.imgPath.toString()
                 noteColor = this.color!!
-                binding.layoutMiscellaneous.radioGroup2[Constants.NOTE_COLOR_LIST.indexOf(this.color)]
+                binding.layoutMiscellaneous.radioGroup2.check(
+                    binding.layoutMiscellaneous.radioGroup2.getChildAt(
+                        Constants.NOTE_COLOR_LIST.indexOf(noteColor)
+                    ).id
+                )
             }
             binding.layoutMiscellaneous.layoutDeleteNote.isVisible = true
         }
@@ -155,21 +162,40 @@ class NoteFragment : Fragment() {
 
         binding.layoutMiscellaneous.rdoNoteDefault.setOnClickListener {
             noteColor = Constants.NOTE_DEFAULT_COLOR
+            setIndicatorColor(noteColor)
         }
 
         binding.layoutMiscellaneous.rdoNoteYellow.setOnClickListener {
             noteColor = Constants.NOTE_YELLOW_COLOR
+            setIndicatorColor(noteColor)
         }
         binding.layoutMiscellaneous.rdoNoteRed.setOnClickListener {
             noteColor = Constants.NOTE_RED_COLOR
+            setIndicatorColor(noteColor)
         }
         binding.layoutMiscellaneous.rdoNoteBlue.setOnClickListener {
             noteColor = Constants.NOTE_BLUE_COLOR
+            setIndicatorColor(noteColor)
         }
         binding.layoutMiscellaneous.rdoNotePurple.setOnClickListener {
             noteColor = Constants.NOTE_PURPLE_COLOR
+            setIndicatorColor(noteColor)
         }
     }
+
+    @SuppressLint("ResourceType")
+    private fun setIndicatorColor(noteColor: String) {
+        if (noteColor == Constants.NOTE_DEFAULT_COLOR) {
+            (binding.viewSubtitleIndicator.background as GradientDrawable).setColor(
+                binding.viewSubtitleIndicator.context.getColor(R.color.colorNoteDefaultColor)
+            )
+        } else {
+            (binding.viewSubtitleIndicator.background as GradientDrawable).setColor(
+                Color.parseColor(noteColor)
+            )
+        }
+    }
+
 
     override fun onDestroyView() {
         super.onDestroyView()
