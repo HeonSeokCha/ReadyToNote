@@ -47,7 +47,7 @@ object Binding {
                 }
             }
         } else {
-//            cardView.setCardBackgroundColor(Color.parseColor(color))
+            cardView.setCardBackgroundColor(Color.parseColor(color))
         }
     }
 

@@ -24,7 +24,6 @@ class HomeFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewModel = MainViewModel(requireActivity().application)
-        viewModel.getAllNotes()
     }
 
     override fun onCreateView(
@@ -75,8 +74,10 @@ class HomeFragment : Fragment() {
 
     private fun initObserver() {
         viewModel.noteLiveData.observe(viewLifecycleOwner, {
-            Log.e("NoteList", it.toString())
-            notesAdapter?.submitList(it.toMutableList())
+            Log.e("NoteList", it.size.toString())
+            requireActivity().runOnUiThread {
+                notesAdapter?.submitList(it)
+            }
         })
     }
 

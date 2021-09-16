@@ -23,19 +23,8 @@ class MainViewModel(
         DataStoreModule(application)
     }
 
-    private val _noteLiveData = MutableLiveData<List<Note>>()
-    val noteLiveData: LiveData<List<Note>> get() = _noteLiveData
+    val noteLiveData: LiveData<List<Note>> = repository.getNotes().asLiveData()
 
-    private val noteList: ArrayList<Note> = arrayListOf()
-
-    fun getAllNotes() {
-        viewModelScope.launch {
-            repository.getNotes().collect {
-                noteList.addAll(it)
-                _noteLiveData.value = noteList
-            }
-        }
-    }
 
     fun insertNote(note: Note): LiveData<Long> {
         val lastId = MutableLiveData<Long>()
@@ -43,8 +32,6 @@ class MainViewModel(
             val id = repository.insertNote(note)
             lastId.postValue(id)
         }
-        noteList.add(note)
-        _noteLiveData.value = noteList
         return lastId
     }
 
@@ -54,8 +41,6 @@ class MainViewModel(
         viewModelScope.launch {
             repository.deleteNote(note)
         }
-        noteList.remove(note)
-        _noteLiveData.value = noteList
     }
 
     fun getAllLabel() = repository.getLabels().asLiveData()

@@ -129,18 +129,7 @@ class NoteFragment : Fragment() {
         }
 
         binding.imgSave.setOnClickListener {
-            viewModel.insertNote(
-                Note(
-                    binding.inputNoteTitle.text.trim().toString(),
-                    "",
-                    binding.txtDateTime.text.trim().toString(),
-                    binding.inputNoteSubtitle.text.trim().toString(),
-                    binding.inputNoteText.text.trim().toString(),
-                    imgPath,
-                    noteColor,
-                    ""
-                )
-            )
+            saveNote()
             findNavController().navigateUp()
         }
 
@@ -194,6 +183,23 @@ class NoteFragment : Fragment() {
                 Color.parseColor(noteColor)
             )
         }
+    }
+
+    private fun saveNote() {
+        val note: Note = Note(
+            binding.inputNoteTitle.text.trim().toString(),
+            "",
+            binding.txtDateTime.text.trim().toString(),
+            binding.inputNoteSubtitle.text.trim().toString(),
+            binding.inputNoteText.text.trim().toString(),
+            imgPath,
+            noteColor,
+            ""
+        )
+        if (NoteFragmentArgs.fromBundle(requireArguments()).note != null) {
+            note.id = NoteFragmentArgs.fromBundle(requireArguments()).note!!.id
+        }
+        viewModel.insertNote(note)
     }
 
 
