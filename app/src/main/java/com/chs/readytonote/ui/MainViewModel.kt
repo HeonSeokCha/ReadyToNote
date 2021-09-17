@@ -8,6 +8,8 @@ import com.chs.readytonote.entities.LabelCheck
 import com.chs.readytonote.repository.NoteRepository
 import com.chs.readytonote.entities.Note
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
@@ -23,7 +25,20 @@ class MainViewModel(
         DataStoreModule(application)
     }
 
-    val noteLiveData: LiveData<List<Note>> = repository.getNotes().asLiveData()
+    private var noteList: List<Note> = listOf()
+
+    private val _noteLiveData = MutableLiveData<List<Note>>()
+    val noteLiveData: LiveData<List<Note>> get() = _noteLiveData
+
+    fun getAllNote() {
+        viewModelScope.launch {
+            repository.getNotes().catch {
+                _noteLiveData.value = listOf()
+            }.collect {
+                _noteLiveData.value = it
+            }
+        }
+    }
 
 
     fun insertNote(note: Note): LiveData<Long> {

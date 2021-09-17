@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.chs.readytonote.R
@@ -14,6 +15,8 @@ import com.chs.readytonote.adapter.NoteAdapter
 import com.chs.readytonote.databinding.FragmentHomeBinding
 import com.chs.readytonote.databinding.FragmentNoteBinding
 import com.chs.readytonote.entities.Note
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 
 class HomeFragment : Fragment() {
     private lateinit var viewModel: MainViewModel
@@ -39,6 +42,7 @@ class HomeFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        viewModel.getAllNote()
         initClick()
         initRecyclerView()
         initObserver()
@@ -73,12 +77,11 @@ class HomeFragment : Fragment() {
     }
 
     private fun initObserver() {
-        viewModel.noteLiveData.observe(viewLifecycleOwner, {
-            Log.e("NoteList", it.size.toString())
-            requireActivity().runOnUiThread {
+        lifecycleScope.launch {
+            viewModel.noteLiveData.observe(viewLifecycleOwner, {
                 notesAdapter?.submitList(it)
-            }
-        })
+            })
+        }
     }
 
     override fun onDestroyView() {
