@@ -7,29 +7,22 @@ import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
-import android.provider.MediaStore
-import android.util.Log
-import androidx.fragment.app.Fragment
+import android.provider.MediaStore import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.view.get
 import androidx.core.view.isVisible
-import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import coil.load
 import com.chs.readytonote.Constants
 import com.chs.readytonote.R
 import com.chs.readytonote.Util
-import com.chs.readytonote.databinding.FragmentHomeBinding
 import com.chs.readytonote.databinding.FragmentNoteBinding
 import com.chs.readytonote.entities.Note
 import com.google.android.material.bottomsheet.BottomSheetBehavior
-import kotlinx.coroutines.launch
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
@@ -137,6 +130,10 @@ class NoteFragment : Fragment() {
             requestPermission.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
         }
 
+        binding.layoutMiscellaneous.layoutDeleteNote.setOnClickListener {
+            deleteNote()
+        }
+
         binding.imageDelete.setOnClickListener {
             imgPath = ""
             binding.imageNote.isVisible = false
@@ -200,6 +197,13 @@ class NoteFragment : Fragment() {
             note.id = NoteFragmentArgs.fromBundle(requireArguments()).note!!.id
         }
         viewModel.insertNote(note)
+    }
+
+    private fun deleteNote() {
+        if (NoteFragmentArgs.fromBundle(requireArguments()).note != null) {
+            viewModel.deleteNote(NoteFragmentArgs.fromBundle(requireArguments()).note!!)
+            findNavController().navigateUp()
+        }
     }
 
 
