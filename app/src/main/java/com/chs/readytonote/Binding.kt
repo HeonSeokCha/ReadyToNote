@@ -51,20 +51,6 @@ object Binding {
         }
     }
 
-    @BindingAdapter("setIndicatorColor")
-    @JvmStatic
-    fun setIndicatorColor(view: View, color: String?) {
-        if (color != null) {
-            if (color == "#333333") {
-                (view.background as GradientDrawable).setColor(
-                    view.context.getColor(R.color.colorNoteDefaultColor)
-                )
-            } else {
-                (view.background as GradientDrawable).setColor(Color.parseColor(color))
-            }
-        }
-    }
-
     @SuppressLint("ResourceAsColor")
     @BindingAdapter("textColor")
     @JvmStatic

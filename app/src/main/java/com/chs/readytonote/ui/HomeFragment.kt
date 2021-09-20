@@ -6,6 +6,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -79,6 +80,7 @@ class HomeFragment : Fragment() {
     private fun initObserver() {
         lifecycleScope.launch {
             viewModel.noteLiveData.observe(viewLifecycleOwner, {
+                binding.layoutEmptyNote.root.isVisible = it.isEmpty()
                 notesAdapter?.submitList(it)
             })
         }

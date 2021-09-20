@@ -105,6 +105,7 @@
                 android:id="@+id/Rv_notes"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
+
         </androidx.core.widget.NestedScrollView>
 
         <com.google.android.material.bottomappbar.BottomAppBar

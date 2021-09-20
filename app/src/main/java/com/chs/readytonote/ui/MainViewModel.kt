@@ -21,12 +21,6 @@ class MainViewModel(
         NoteRepository(application)
     }
 
-    private val dataStore by lazy {
-        DataStoreModule(application)
-    }
-
-    private var noteList: List<Note> = listOf()
-
     private val _noteLiveData = MutableLiveData<List<Note>>()
     val noteLiveData: LiveData<List<Note>> get() = _noteLiveData
 
@@ -40,7 +34,6 @@ class MainViewModel(
         }
     }
 
-
     fun insertNote(note: Note): LiveData<Long> {
         val lastId = MutableLiveData<Long>()
         viewModelScope.launch(Dispatchers.IO) {
@@ -50,7 +43,11 @@ class MainViewModel(
         return lastId
     }
 
-    fun searchNotes(searchWord: String) = repository.searchNotes(searchWord).asLiveData()
+    fun searchNotes(searchWord: String) {
+        viewModelScope.launch {
+            repository.searchNotes(searchWord)
+        }
+    }
 
     fun deleteNote(note: Note) {
         viewModelScope.launch {
@@ -76,15 +73,5 @@ class MainViewModel(
 
     fun updateCheckLabel(labelCheck: LabelCheck) = viewModelScope.launch(Dispatchers.IO) {
         repository.updateCheckLabel(labelCheck)
-    }
-
-    fun setUiMode(uiStatus: String) {
-        viewModelScope.launch(Dispatchers.IO) {
-            dataStore.setUIStatus(uiStatus)
-        }
-    }
-
-    fun destroyView() {
-
     }
 }

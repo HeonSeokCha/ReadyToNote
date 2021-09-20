@@ -30,7 +30,7 @@ class NoteAdapter(
 
     interface ClickListener {
         fun clickListener(note: Note, position: Int)
-        fun checkClickListener(checkList: MutableMap<Int, Note>)
+        fun checkClickListener(checkList: MutableMap<Int, Note>) // todo Map 써야하는 이유는?
         fun longClickListener(chkState: Boolean)
     }
 
