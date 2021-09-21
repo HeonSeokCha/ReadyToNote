@@ -23,6 +23,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat.getSystemService
 import androidx.core.view.isVisible
+import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import coil.load
 import com.chs.readytonote.Constants
@@ -44,12 +45,12 @@ class NoteFragment : Fragment() {
     private var noteColor: String = Constants.NOTE_DEFAULT_COLOR
     private var _binding: FragmentNoteBinding? = null
     private val binding get() = _binding!!
+    private val viewModel by activityViewModels<MainViewModel>()
 
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<ConstraintLayout>
     private lateinit var dialogUrlAdd: AlertDialog
     private lateinit var dialogDelete: AlertDialog
     private lateinit var dialogLabelAdd: AlertDialog
-    private lateinit var viewModel: MainViewModel
 
     private val requestPermission = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
@@ -78,10 +79,6 @@ class NoteFragment : Fragment() {
         }
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        viewModel = MainViewModel(requireActivity().application)
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

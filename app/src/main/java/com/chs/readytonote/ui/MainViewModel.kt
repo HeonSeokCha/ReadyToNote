@@ -2,6 +2,7 @@ package com.chs.readytonote.ui
 
 import android.app.Application
 import androidx.lifecycle.*
+import com.chs.readytonote.Constants
 import com.chs.readytonote.DataStoreModule
 import com.chs.readytonote.entities.Label
 import com.chs.readytonote.entities.LabelCheck
@@ -13,9 +14,9 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
-class MainViewModel(
-    application: Application
-) : ViewModel() {
+class MainViewModel(application: Application) : ViewModel() {
+
+    var selectUI: String = Constants.DEFAULT_MODE
 
     private val repository by lazy {
         NoteRepository(application)

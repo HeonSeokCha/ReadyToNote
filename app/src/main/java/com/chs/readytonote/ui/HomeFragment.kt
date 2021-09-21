@@ -1,5 +1,7 @@
 package com.chs.readytonote.ui
 
+import android.app.AlertDialog
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -7,28 +9,29 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
+import com.chs.readytonote.Constants
 import com.chs.readytonote.R
 import com.chs.readytonote.adapter.NoteAdapter
+import com.chs.readytonote.dataStore
 import com.chs.readytonote.databinding.FragmentHomeBinding
 import com.chs.readytonote.databinding.FragmentNoteBinding
+import com.chs.readytonote.databinding.LayoutThemeSelectBinding
 import com.chs.readytonote.entities.Note
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 class HomeFragment : Fragment() {
-    private lateinit var viewModel: MainViewModel
+    private val viewModel by activityViewModels<MainViewModel>()
     private var _binding: FragmentHomeBinding? = null
     private var notesAdapter: NoteAdapter? = null
+    private lateinit var dialogTheme: AlertDialog
     private val binding get() = _binding!!
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        viewModel = MainViewModel(requireActivity().application)
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -53,6 +56,10 @@ class HomeFragment : Fragment() {
         binding.imgAddNoteMain.setOnClickListener {
             val action = HomeFragmentDirections.actionHomeFragmentToNoteFragment(null)
             findNavController().navigate(action)
+        }
+
+        binding.btnSelectTheme.setOnClickListener {
+            showThemeDialog()
         }
     }
 
@@ -85,6 +92,51 @@ class HomeFragment : Fragment() {
             })
         }
     }
+
+    private fun showThemeDialog() {
+        val builder: AlertDialog.Builder = AlertDialog.Builder(requireContext())
+        val dialogView = LayoutThemeSelectBinding.inflate(LayoutInflater.from(requireContext()))
+        builder.setView(dialogView.root)
+        dialogTheme = builder.create()
+        if (dialogTheme.window != null) {
+            dialogTheme.window!!.setBackgroundDrawable(ColorDrawable(0))
+        }
+        when (viewModel.selectUI) {
+            Constants.WHITE_MODE -> dialogView.rdoWhite.isChecked = true
+            Constants.DARK_MODE -> dialogView.rdoDark.isChecked = true
+            Constants.DEFAULT_MODE -> dialogView.rdoDefault.isChecked = true
+        }
+
+        dialogView.radioGroup.setOnCheckedChangeListener { _, checkedId ->
+            when (checkedId) {
+                R.id.rdo_white -> {
+                    updateTheme(Constants.WHITE_MODE)
+                }
+                R.id.rdo_dark -> {
+                    updateTheme(Constants.DARK_MODE)
+                }
+                R.id.rdo_default -> {
+                    updateTheme(Constants.DEFAULT_MODE)
+                }
+            }
+        }
+        dialogView.btnOk.setOnClickListener {
+            dialogTheme.dismiss()
+        }
+        dialogView.btnCancel.setOnClickListener {
+            dialogTheme.dismiss()
+        }
+        dialogTheme.show()
+    }
+
+    private fun updateTheme(value: String) {
+        lifecycleScope.launch {
+            requireActivity().dataStore.edit {
+                it[stringPreferencesKey(Constants.UI_STATUS)] = value
+            }
+        }
+    }
+
 
     override fun onDestroyView() {
         super.onDestroyView()

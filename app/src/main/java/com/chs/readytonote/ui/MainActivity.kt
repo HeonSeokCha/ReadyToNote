@@ -2,10 +2,14 @@ package com.chs.readytonote.ui
 
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
+import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.datastore.preferences.core.stringPreferencesKey
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.Navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
@@ -23,9 +27,15 @@ import kotlinx.coroutines.runBlocking
 class MainActivity : AppCompatActivity() {
     private var _binding: ActivityMainBinding? = null
     private val binding get() = _binding!!
-    private var selectUI: String = Constants.DEFAULT_MODE
     private lateinit var navController: NavController
     private lateinit var appBarConfiguration: AppBarConfiguration
+    private val viewModel by viewModels<MainViewModel> {
+        object : ViewModelProvider.Factory {
+            override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+                return MainViewModel(application) as T
+            }
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         checkTheme()
@@ -44,13 +54,13 @@ class MainActivity : AppCompatActivity() {
                     AppCompatDelegate.setDefaultNightMode(
                         AppCompatDelegate.MODE_NIGHT_NO
                     )
-                    selectUI = Constants.WHITE_MODE
+                    viewModel.selectUI = Constants.WHITE_MODE
                 }
                 Constants.DARK_MODE -> {
                     AppCompatDelegate.setDefaultNightMode(
                         AppCompatDelegate.MODE_NIGHT_YES
                     )
-                    selectUI = Constants.DARK_MODE
+                    viewModel.selectUI = Constants.DARK_MODE
                 }
                 Constants.DEFAULT_MODE -> {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
@@ -62,7 +72,7 @@ class MainActivity : AppCompatActivity() {
                             AppCompatDelegate.MODE_NIGHT_AUTO_BATTERY
                         )
                     }
-                    selectUI = Constants.DEFAULT_MODE
+                    viewModel.selectUI = Constants.DEFAULT_MODE
                 }
             }
         }
