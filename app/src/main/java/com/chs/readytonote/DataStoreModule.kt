@@ -23,7 +23,7 @@ class DataStoreModule(private val context: Context) {
 
     val getUIStatus: Flow<String> = context.dataStore.data
         .map { preferences ->
-            preferences[uiKey] ?: Constants.WHITE_MODE
+            preferences[uiKey] ?: Constants.DEFAULT_MODE
         }
 
     suspend fun setUIStatus(uiValue: String) {

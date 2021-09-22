@@ -82,9 +82,11 @@
                     android:text="@{model.subtitle}"
                     android:textColor="@color/colorText"
                     android:textSize="14dp"
+                    app:layout_constraintBottom_toTopOf="@+id/txtDateTime"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/txtTitle"
+                    app:layout_constraintVertical_bias="0.0"
                     app:textColor="@{model.color}"
                     tools:text="LoremIpsum" />
 
@@ -102,8 +104,6 @@
                     app:dateSplit="@{model.dateTime}"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/txtSubtitle"
-                    app:textColor="@{model.color}"
                     tools:text="2020/11/30" />
 
                 <ImageView

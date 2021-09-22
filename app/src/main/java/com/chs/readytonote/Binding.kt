@@ -31,7 +31,7 @@ object Binding {
     @BindingAdapter("dateSplit")
     @JvmStatic
     fun setDate(textView: TextView, date: String) {
-//        textView.text = date.split("년 ")[1]
+        textView.text = date.split("년 ")[1]
     }
 
     @BindingAdapter("setCardColor")

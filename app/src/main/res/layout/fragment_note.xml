@@ -76,7 +76,6 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:includeFontPadding="false"
-                    android:text="@{model.dateTime}"
                     android:textColor="@color/colorTextSubtitle"
                     android:textSize="10sp"
                     app:layout_constraintEnd_toEndOf="@+id/inputNoteTitle"
