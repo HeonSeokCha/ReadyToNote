@@ -1,17 +1,15 @@
-package com.chs.readytonote
+package com.chs.readytonote.util
 
 import android.annotation.SuppressLint
 import android.content.res.Configuration
 import android.graphics.Color
-import android.graphics.drawable.GradientDrawable
-import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.cardview.widget.CardView
-import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.databinding.BindingAdapter
 import coil.load
+import com.chs.readytonote.R
 import java.io.File
 
 object Binding {

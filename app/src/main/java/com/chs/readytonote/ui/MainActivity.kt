@@ -2,30 +2,20 @@ package com.chs.readytonote.ui
 
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.viewModels
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.asLiveData
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
-import androidx.navigation.Navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
-import com.chs.readytonote.Constants
-import com.chs.readytonote.DataStoreModule
-import com.chs.readytonote.R
-import com.chs.readytonote.adapter.NoteAdapter
-import com.chs.readytonote.dataStore
+import com.chs.readytonote.util.Constants
+import com.chs.readytonote.util.Util.dataStore
 import com.chs.readytonote.databinding.ActivityMainBinding
-import com.chs.readytonote.entities.Note
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 
 class MainActivity : AppCompatActivity() {

@@ -1,9 +1,12 @@
-package com.chs.readytonote
+package com.chs.readytonote.util
 
 import android.content.Context
 import android.net.Uri
+import androidx.datastore.preferences.preferencesDataStore
 
 object Util {
+    val Context.dataStore by preferencesDataStore(name = Constants.DATA_STORE)
+
     fun getRealPathFromURI(
         mContext: Context,
         contentUri: Uri

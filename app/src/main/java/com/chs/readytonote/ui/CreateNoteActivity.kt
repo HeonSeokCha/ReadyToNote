@@ -29,7 +29,7 @@ import androidx.core.content.ContextCompat.checkSelfPermission
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import coil.load
-import com.chs.readytonote.Util
+import com.chs.readytonote.util.Util
 import com.chs.readytonote.adapter.LabelAdapter
 import com.chs.readytonote.databinding.*
 import com.chs.readytonote.entities.Label
@@ -65,7 +65,6 @@ class CreateNoteActivity : AppCompatActivity() {
         viewModel = MainViewModel(application)
         initView()
         initClick()
-        getCheckLabel()
     }
 
     private fun initView() {
@@ -393,33 +392,7 @@ class CreateNoteActivity : AppCompatActivity() {
         }
     }
 
-    private fun getLabel() {
-        viewModel.getAllLabel().observe(this@CreateNoteActivity, { labelList ->
-            labelList.filter { it.id == checkLabel.checkedLabelId }
-                .forEach { it.checked = true }
-            labelAdapter.submitList(labelList)
-        })
-    }
 
-    private fun getCheckLabel() {
-        viewModel.getCheckLabel(noteId).observe(this, {
-            checkLabel = it ?: LabelCheck(noteId, 0)
-        })
-    }
-
-    private fun searchLabel(view: LayoutLabelBinding) {
-        view.inputLabel.addTextChangedListener(object : TextWatcher {
-            override fun afterTextChanged(s: Editable?) {
-                labelAdapter.searchLabel(s.toString())
-            }
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                labelAdapter.cancelTimer()
-            }
-
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-        })
-    }
 
     private fun closeKeyboard() {
         if (this.currentFocus != null) {

@@ -1,4 +1,4 @@
-package com.chs.readytonote
+package com.chs.readytonote.util
 
 object Constants {
     const val DATA_STORE: String = "DataStore"

@@ -18,17 +18,17 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.content.ContextCompat.getSystemService
 import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import coil.load
-import com.chs.readytonote.Constants
+import com.chs.readytonote.util.Constants
 import com.chs.readytonote.R
-import com.chs.readytonote.Util
+import com.chs.readytonote.util.Util
 import com.chs.readytonote.databinding.FragmentNoteBinding
 import com.chs.readytonote.databinding.LayoutAddUrlBinding
 import com.chs.readytonote.databinding.LayoutDeleteNoteBinding
@@ -47,6 +47,7 @@ class NoteFragment : Fragment() {
     private val binding get() = _binding!!
     private val viewModel by activityViewModels<MainViewModel>()
 
+    private lateinit var callback: OnBackPressedCallback
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<ConstraintLayout>
     private lateinit var dialogUrlAdd: AlertDialog
     private lateinit var dialogDelete: AlertDialog
@@ -77,6 +78,20 @@ class NoteFragment : Fragment() {
             binding.imageNote.load(File(imgPath))
             bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
         }
+    }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        callback = object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                if (bottomSheetBehavior.state == BottomSheetBehavior.STATE_EXPANDED) {
+                    bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+                } else {
+                    findNavController().navigateUp()
+                }
+            }
+        }
+        requireActivity().onBackPressedDispatcher.addCallback(this, callback)
     }
 
 
@@ -139,18 +154,22 @@ class NoteFragment : Fragment() {
         }
 
         binding.layoutMiscellaneous.layoutAddImage.setOnClickListener {
+            bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
             requestPermission.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
         }
 
         binding.layoutMiscellaneous.layoutDeleteNote.setOnClickListener {
+            bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
             showDeleteDialog()
         }
 
         binding.layoutMiscellaneous.layoutAddLabel.setOnClickListener {
+            bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
 
         }
 
         binding.layoutMiscellaneous.layoutAddUrl.setOnClickListener {
+            bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
             showAddUrlDialog()
         }
 
@@ -309,8 +328,8 @@ class NoteFragment : Fragment() {
         _binding = null
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        Log.e("NoteFragment", "onDestroy")
+    override fun onDetach() {
+        super.onDetach()
+        callback.remove()
     }
 }
