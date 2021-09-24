@@ -165,7 +165,7 @@ class NoteFragment : Fragment() {
 
         binding.layoutMiscellaneous.layoutAddLabel.setOnClickListener {
             bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
-
+            showLabelDialog()
         }
 
         binding.layoutMiscellaneous.layoutAddUrl.setOnClickListener {
@@ -292,6 +292,12 @@ class NoteFragment : Fragment() {
             dialogUrlAdd.dismiss()
         }
         dialogUrlAdd.show()
+    }
+
+    private fun showLabelDialog() {
+        LabelDialog() { selectLabel ->
+            label = selectLabel
+        }.show(this.childFragmentManager, "LabelDialog")
     }
 
     private fun showDeleteDialog() {
