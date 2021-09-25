@@ -14,6 +14,8 @@ object Constants {
     const val NOTE_BLUE_COLOR: String = "#3A52FC"
     const val NOTE_PURPLE_COLOR: String = "#967FFA"
 
+    const val TAG_LABEL_DIALOG: String = "TAG_LABEL_DIALOG"
+
     val NOTE_COLOR_LIST: List<String> = listOf(
         NOTE_DEFAULT_COLOR,
         NOTE_YELLOW_COLOR,

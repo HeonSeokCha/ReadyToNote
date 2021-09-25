@@ -1,10 +1,10 @@
 package com.chs.readytonote.ui
 
-import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -40,7 +40,12 @@ class LabelDialog(
 
     override fun onResume() {
         super.onResume()
-        dialog?.window?.setLayout(800, 1000)
+        val params: ViewGroup.LayoutParams = dialog!!.window!!.attributes.apply {
+            this.width = WindowManager.LayoutParams.MATCH_PARENT
+            this.height = WindowManager.LayoutParams.WRAP_CONTENT
+        }
+        this.isCancelable = false
+        dialog!!.window!!.attributes = params as WindowManager.LayoutParams
     }
 
     private fun initObserver() {

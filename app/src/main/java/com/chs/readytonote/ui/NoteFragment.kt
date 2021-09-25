@@ -297,7 +297,7 @@ class NoteFragment : Fragment() {
     private fun showLabelDialog() {
         LabelDialog() { selectLabel ->
             label = selectLabel
-        }.show(this.childFragmentManager, "LabelDialog")
+        }.show(this.childFragmentManager, Constants.TAG_LABEL_DIALOG)
     }
 
     private fun showDeleteDialog() {
