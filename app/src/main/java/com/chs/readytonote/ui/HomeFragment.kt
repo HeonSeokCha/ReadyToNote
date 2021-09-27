@@ -11,9 +11,11 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
 import androidx.core.view.isVisible
+import androidx.core.widget.doAfterTextChanged
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
@@ -32,6 +34,7 @@ class HomeFragment : Fragment() {
     private val viewModel by activityViewModels<MainViewModel>()
     private var _binding: FragmentHomeBinding? = null
     private var notesAdapter: NoteAdapter? = null
+    private val editTextLiveData: MutableLiveData<String> = MutableLiveData()
     private lateinit var callback: OnBackPressedCallback
     private lateinit var dialogTheme: AlertDialog
 
@@ -59,9 +62,16 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         viewModel.getAllNote()
+        initView()
         initClick()
         initRecyclerView()
         initObserver()
+    }
+
+    private fun initView() {
+        binding.inputSearch.doAfterTextChanged {
+            viewModel.searchNotes(it!!.trim().toString())
+        }
     }
 
     private fun initClick() {
@@ -97,12 +107,13 @@ class HomeFragment : Fragment() {
     }
 
     private fun initObserver() {
-        lifecycleScope.launch {
-            viewModel.noteLiveData.observe(viewLifecycleOwner, {
-                binding.layoutEmptyNote.root.isVisible = it.isEmpty()
-                notesAdapter?.submitList(it)
-            })
-        }
+        viewModel.noteLiveData.observe(viewLifecycleOwner, {
+            binding.layoutEmptyNote.root.isVisible = it.isEmpty()
+            notesAdapter?.submitList(it)
+        })
+    }
+
+    private fun searchObserver(keyword: String) {
     }
 
     private fun showThemeDialog() {

@@ -1,5 +1,7 @@
 package com.chs.readytonote.ui
 
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -8,6 +10,7 @@ import android.view.WindowManager
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.chs.readytonote.R
 import com.chs.readytonote.adapter.LabelAdapter
 import com.chs.readytonote.databinding.LayoutLabelBinding
 import com.chs.readytonote.entities.Label

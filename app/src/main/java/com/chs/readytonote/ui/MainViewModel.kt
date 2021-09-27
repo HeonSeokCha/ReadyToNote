@@ -44,7 +44,11 @@ class MainViewModel(application: Application) : ViewModel() {
 
     fun searchNotes(searchWord: String) {
         viewModelScope.launch {
-            repository.searchNotes(searchWord)
+            repository.searchNotes(searchWord).catch {
+                _noteLiveData.value = listOf()
+            }.collect {
+                _noteLiveData.value = it
+            }
         }
     }
 
