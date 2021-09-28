@@ -15,6 +15,7 @@ import kotlinx.coroutines.launch
 class MainViewModel(application: Application) : ViewModel() {
 
     var selectUI: String = Constants.DEFAULT_MODE
+    var currentList: List<Note> = listOf()
 
     private val repository by lazy {
         NoteRepository(application)
@@ -28,6 +29,7 @@ class MainViewModel(application: Application) : ViewModel() {
             repository.getNotes().catch {
                 _noteLiveData.value = listOf()
             }.collect {
+                currentList = it
                 _noteLiveData.value = it
             }
         }
@@ -44,10 +46,14 @@ class MainViewModel(application: Application) : ViewModel() {
 
     fun searchNotes(searchWord: String) {
         viewModelScope.launch {
-            repository.searchNotes(searchWord).catch {
-                _noteLiveData.value = listOf()
-            }.collect {
-                _noteLiveData.value = it
+            if (searchWord.length >= 2) {
+                repository.searchNotes(searchWord).catch {
+                    _noteLiveData.value = listOf()
+                }.collect {
+                    _noteLiveData.value = it
+                }
+            } else {
+                _noteLiveData.value = currentList
             }
         }
     }

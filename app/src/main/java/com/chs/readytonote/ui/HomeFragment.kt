@@ -28,6 +28,7 @@ import com.chs.readytonote.databinding.LayoutThemeSelectBinding
 import com.chs.readytonote.entities.Note
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import kotlinx.coroutines.launch
+import kotlin.concurrent.timer
 
 class HomeFragment : Fragment() {
     private val binding get() = _binding!!
@@ -38,8 +39,8 @@ class HomeFragment : Fragment() {
     private lateinit var callback: OnBackPressedCallback
     private lateinit var dialogTheme: AlertDialog
 
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
         callback = object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
 
@@ -71,6 +72,7 @@ class HomeFragment : Fragment() {
     private fun initView() {
         binding.inputSearch.doAfterTextChanged {
             viewModel.searchNotes(it!!.trim().toString())
+            Log.e("doAfterTextChanged", it.toString())
         }
     }
 
@@ -111,9 +113,6 @@ class HomeFragment : Fragment() {
             binding.layoutEmptyNote.root.isVisible = it.isEmpty()
             notesAdapter?.submitList(it)
         })
-    }
-
-    private fun searchObserver(keyword: String) {
     }
 
     private fun showThemeDialog() {
