@@ -18,6 +18,9 @@ class LabelAdapter(
     private val clickListener: LabelClickListener
 ) : ListAdapter<Label, RecyclerView.ViewHolder>(LabelDiffUtilCallback()) {
 
+    private val VIEW_TYPE_LABEL: Int = 0
+    private val VIEW_TYPE_ADD: Int = 1
+
     interface LabelClickListener {
         fun clickListener(label: Label)
         fun addClickListener(title: String)
@@ -27,8 +30,8 @@ class LabelAdapter(
         RecyclerView.ViewHolder(binding.root) {
         init {
             binding.root.setOnClickListener {
-                binding.txtLabelTitle.isChecked = true
-                clickListener.clickListener(getItem(layoutPosition))
+                binding.txtLabelTitle.isChecked = !binding.txtLabelTitle.isChecked
+                clickListener.clickListener(getItem(layoutPosition)!!)
             }
         }
 
@@ -46,8 +49,16 @@ class LabelAdapter(
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder) {
             is LabelViewHolder -> {
-                holder.bind(getItem(position))
+                holder.bind(getItem(position)!!)
             }
+        }
+    }
+
+    override fun getItemViewType(position: Int): Int {
+        return if (getItem(position) != null) {
+            VIEW_TYPE_LABEL
+        } else {
+            VIEW_TYPE_ADD
         }
     }
 }

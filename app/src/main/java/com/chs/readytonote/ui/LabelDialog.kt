@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
+import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -36,6 +37,8 @@ class LabelDialog(
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        viewModel.getAllLabel()
+        initView()
         initClick()
         initRecyclerView()
         initObserver()
@@ -52,9 +55,15 @@ class LabelDialog(
     }
 
     private fun initObserver() {
-        viewModel.getAllLabel().observe(viewLifecycleOwner, {
+        viewModel.labelLiveData.observe(this, {
             labelAdapter.submitList(it)
         })
+    }
+
+    private fun initView() {
+        binding.inputLabel.doAfterTextChanged {
+            viewModel.searchLabel(it?.trim().toString())
+        }
     }
 
     private fun initClick() {
@@ -75,7 +84,7 @@ class LabelDialog(
                 }
 
                 override fun addClickListener(title: String) {
-                    TODO("Not yet implemented")
+                    viewModel.insertLabel(Label(title))
                 }
             })
             this.adapter = labelAdapter

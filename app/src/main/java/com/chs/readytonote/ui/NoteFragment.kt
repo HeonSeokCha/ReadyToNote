@@ -24,6 +24,8 @@ import androidx.appcompat.app.AlertDialog
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import coil.load
 import com.chs.readytonote.util.Constants
@@ -45,7 +47,13 @@ class NoteFragment : Fragment() {
     private var noteColor: String = Constants.NOTE_DEFAULT_COLOR
     private var _binding: FragmentNoteBinding? = null
     private val binding get() = _binding!!
-    private val viewModel by activityViewModels<MainViewModel>()
+    private val viewModel: MainViewModel by activityViewModels {
+        object : ViewModelProvider.Factory {
+            override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+                return MainViewModel(requireActivity().application) as T
+            }
+        }
+    }
 
     private lateinit var callback: OnBackPressedCallback
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<ConstraintLayout>

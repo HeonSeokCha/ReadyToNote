@@ -21,6 +21,8 @@ class NoteRepository(application: Application) {
 
     fun getLabels(): Flow<List<Label>> = dao.getAllLabels()
 
+    fun searchLabel(searchWord: String): Flow<List<Label>> = dao.searchLabel(searchWord)
+
     fun getCheckLabel(noteId: Int): Flow<LabelCheck> = dao.getCheckedLabel(noteId)
 
     suspend fun insertNote(note: Note): Long = dao.insertNote(note)

@@ -24,6 +24,9 @@ class MainViewModel(application: Application) : ViewModel() {
     private val _noteLiveData = MutableLiveData<List<Note>>()
     val noteLiveData: LiveData<List<Note>> get() = _noteLiveData
 
+    private val _labelLiveData = MutableLiveData<List<Label>>()
+    val labelLiveData: LiveData<List<Label>> get() = _labelLiveData
+
     fun getAllNote() {
         viewModelScope.launch {
             repository.getNotes().catch {
@@ -64,7 +67,29 @@ class MainViewModel(application: Application) : ViewModel() {
         }
     }
 
-    fun getAllLabel() = repository.getLabels().asLiveData()
+    fun getAllLabel() {
+        viewModelScope.launch {
+            repository.getLabels().catch {
+                _labelLiveData.value = listOf()
+            }.collect {
+                _labelLiveData.value = it
+            }
+        }
+    }
+
+    fun searchLabel(keyword: String) {
+        viewModelScope.launch {
+            repository.searchLabel(keyword).catch {
+                _labelLiveData.value = listOf()
+            }.collect {
+                if (it.isNotEmpty()) {
+                    _labelLiveData.value = it
+                } else {
+                    _labelLiveData.value = listOf(Label(keyword))
+                }
+            }
+        }
+    }
 
     fun insertLabel(label: Label) = viewModelScope.launch(Dispatchers.IO) {
         repository.insertLabel(label)

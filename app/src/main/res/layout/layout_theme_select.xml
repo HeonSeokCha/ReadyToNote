@@ -17,8 +17,7 @@
         android:layout_marginTop="8dp"
         android:src="@drawable/ic_darkmode_white"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:tint="@color/colorWhite" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/textView2"
@@ -26,7 +25,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:text="Theme"
-        android:textColor="@color/colorWhite"
+        android:textColor="@color/colorIcons"
         android:textSize="14sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="@+id/imageAddUrl"

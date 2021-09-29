@@ -23,10 +23,10 @@ class MainActivity : AppCompatActivity() {
     private lateinit var navController: NavController
     private lateinit var appBarConfiguration: AppBarConfiguration
 
-    private val viewModel by viewModels<MainViewModel> {
+    private val viewModel: MainViewModel by viewModels {
         object : ViewModelProvider.Factory {
             override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-                return MainViewModel(application) as T
+                return MainViewModel(this@MainActivity.application) as T
             }
         }
     }

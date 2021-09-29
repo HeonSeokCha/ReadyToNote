@@ -18,10 +18,7 @@ interface NoteDao {
     @Update
     suspend fun updateNote(note: Note)
 
-    @Query(
-        "SELECT * FROM notes where UPPER(title) LIKE '%'||UPPER(:searchWord)||'%' " +
-                "or UPPER(subtitle) LIKE '%'||UPPER(:searchWord)||'%'"
-    )
+    @Query("SELECT * FROM notes where UPPER(title) LIKE '%'||UPPER(:searchWord)||'%' or UPPER(subtitle) LIKE '%'||UPPER(:searchWord)||'%'")
     fun searchNotes(searchWord: String): Flow<List<Note>>
 
     @Delete
@@ -32,6 +29,9 @@ interface NoteDao {
 
     @Query("SELECT * FROM label")
     fun getAllLabels(): Flow<List<Label>>
+
+    @Query("SELECT * FROM label where UPPER(title) LIKE '%'||UPPER(:searchWord)||'%'")
+    fun searchLabel(searchWord: String): Flow<List<Label>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertLabel(label: Label)

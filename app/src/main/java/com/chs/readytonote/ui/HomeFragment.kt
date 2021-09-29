@@ -16,6 +16,8 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
@@ -32,7 +34,13 @@ import kotlin.concurrent.timer
 
 class HomeFragment : Fragment() {
     private val binding get() = _binding!!
-    private val viewModel by activityViewModels<MainViewModel>()
+    private val viewModel: MainViewModel by activityViewModels {
+        object : ViewModelProvider.Factory {
+            override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+                return MainViewModel(requireActivity().application) as T
+            }
+        }
+    }
     private var _binding: FragmentHomeBinding? = null
     private var notesAdapter: NoteAdapter? = null
     private val editTextLiveData: MutableLiveData<String> = MutableLiveData()
@@ -46,7 +54,7 @@ class HomeFragment : Fragment() {
 
             }
         }
-        requireActivity().onBackPressedDispatcher.addCallback(this, callback)
+//        requireActivity().onBackPressedDispatcher.addCallback(this, callback)
     }
 
     override fun onCreateView(
@@ -71,8 +79,10 @@ class HomeFragment : Fragment() {
 
     private fun initView() {
         binding.inputSearch.doAfterTextChanged {
-            viewModel.searchNotes(it!!.trim().toString())
-            Log.e("doAfterTextChanged", it.toString())
+            if (it?.trim().toString().length >= 2) {
+                viewModel.searchNotes(it!!.trim().toString())
+                Log.e("doAfterTextChanged", it.toString())
+            }
         }
     }
 
