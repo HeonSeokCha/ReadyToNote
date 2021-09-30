@@ -45,8 +45,16 @@ class NoteFragment : Fragment() {
     private var webLink: String = ""
     private var label: String = ""
     private var noteColor: String = Constants.NOTE_DEFAULT_COLOR
+    private var isUpdateNote: Boolean = false
     private var _binding: FragmentNoteBinding? = null
     private val binding get() = _binding!!
+
+    private lateinit var callback: OnBackPressedCallback
+    private lateinit var bottomSheetBehavior: BottomSheetBehavior<ConstraintLayout>
+    private lateinit var dialogUrlAdd: AlertDialog
+    private lateinit var dialogDelete: AlertDialog
+    private lateinit var dialogLabelAdd: AlertDialog
+
     private val viewModel: MainViewModel by activityViewModels {
         object : ViewModelProvider.Factory {
             override fun <T : ViewModel?> create(modelClass: Class<T>): T {
@@ -54,12 +62,6 @@ class NoteFragment : Fragment() {
             }
         }
     }
-
-    private lateinit var callback: OnBackPressedCallback
-    private lateinit var bottomSheetBehavior: BottomSheetBehavior<ConstraintLayout>
-    private lateinit var dialogUrlAdd: AlertDialog
-    private lateinit var dialogDelete: AlertDialog
-    private lateinit var dialogLabelAdd: AlertDialog
 
     private val requestPermission = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
@@ -137,6 +139,7 @@ class NoteFragment : Fragment() {
                 )
             }
             binding.layoutMiscellaneous.layoutDeleteNote.isVisible = true
+            isUpdateNote = true
         }
         setIndicatorColor(noteColor)
     }
@@ -240,7 +243,7 @@ class NoteFragment : Fragment() {
             }
 
             else -> {
-                val note: Note = Note(
+                val note = Note(
                     binding.inputNoteTitle.text.trim().toString(),
                     label,
                     binding.txtDateTime.text.trim().toString(),
@@ -250,20 +253,20 @@ class NoteFragment : Fragment() {
                     noteColor,
                     webLink
                 )
-                if (NoteFragmentArgs.fromBundle(requireArguments()).note != null) {
+                if (isUpdateNote) {
                     note.id = NoteFragmentArgs.fromBundle(requireArguments()).note!!.id
+                    viewModel.updateNote(note)
+                } else {
+                    viewModel.insertNote(note)
                 }
-                viewModel.insertNote(note)
                 findNavController().navigateUp()
             }
         }
     }
 
     private fun deleteNote() {
-        if (NoteFragmentArgs.fromBundle(requireArguments()).note != null) {
-            viewModel.deleteNote(NoteFragmentArgs.fromBundle(requireArguments()).note!!)
-            findNavController().navigateUp()
-        }
+        viewModel.deleteNote(NoteFragmentArgs.fromBundle(requireArguments()).note!!)
+        findNavController().navigateUp()
     }
 
     private fun showToast(msg: String) {

@@ -27,24 +27,17 @@ class NoteRepository(application: Application) {
 
     suspend fun insertNote(note: Note): Long = dao.insertNote(note)
 
-    suspend fun deleteNote(note: Note) {
-        dao.deleteNote(note)
-    }
+    suspend fun updateNote(note: Note) = dao.updateNote(note)
 
-    suspend fun insertLabel(label: Label) {
-        dao.insertLabel(label)
-    }
+    suspend fun deleteNote(note: Note) = dao.deleteNote(note)
 
-    suspend fun insertCheckLabel(labelCheck: LabelCheck) {
-        dao.insertLabelCheck(labelCheck)
-    }
+    suspend fun insertLabel(label: Label) = dao.insertLabel(label)
 
-    suspend fun deleteCheckLabel(noteId: Int) {
-        dao.deleteLabelCheck(noteId)
-    }
+    suspend fun insertCheckLabel(labelCheck: LabelCheck) = dao.insertLabelCheck(labelCheck)
 
-    suspend fun updateCheckLabel(labelCheck: LabelCheck) {
-        dao.updateLabelCheck(labelCheck)
-    }
+    suspend fun deleteCheckLabel(noteId: Int) = dao.deleteLabelCheck(noteId)
+
+    suspend fun updateCheckLabel(labelCheck: LabelCheck) = dao.updateLabelCheck(labelCheck)
+
 }
 

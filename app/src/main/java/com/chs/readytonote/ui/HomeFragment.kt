@@ -49,6 +49,7 @@ class HomeFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        viewModel.getAllNote()
         callback = object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
 
@@ -70,7 +71,6 @@ class HomeFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel.getAllNote()
         initView()
         initClick()
         initRecyclerView()
@@ -79,10 +79,7 @@ class HomeFragment : Fragment() {
 
     private fun initView() {
         binding.inputSearch.doAfterTextChanged {
-            if (it?.trim().toString().length >= 2) {
-                viewModel.searchNotes(it!!.trim().toString())
-                Log.e("doAfterTextChanged", it.toString())
-            }
+            viewModel.searchNotes(it!!.trim().toString())
         }
     }
 
@@ -90,6 +87,7 @@ class HomeFragment : Fragment() {
         binding.imgAddNoteMain.setOnClickListener {
             val action = HomeFragmentDirections.actionHomeFragmentToNoteFragment(null)
             findNavController().navigate(action)
+            binding.inputSearch.text.clear()
         }
 
         binding.btnSelectTheme.setOnClickListener {

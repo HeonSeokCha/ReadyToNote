@@ -47,6 +47,12 @@ class MainViewModel(application: Application) : ViewModel() {
         return lastId
     }
 
+    fun updateNote(note: Note) {
+        viewModelScope.launch {
+            repository.updateNote(note)
+        }
+    }
+
     fun searchNotes(searchWord: String) {
         viewModelScope.launch {
             if (searchWord.length >= 2) {

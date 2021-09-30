@@ -102,6 +102,7 @@
                     android:textColor="@color/colorText"
                     android:textSize="12dp"
                     app:dateSplit="@{model.dateTime}"
+                    app:textColor="@{model.color}"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     tools:text="2020/11/30" />
