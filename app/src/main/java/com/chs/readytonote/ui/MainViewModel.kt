@@ -88,11 +88,7 @@ class MainViewModel(application: Application) : ViewModel() {
             repository.searchLabel(keyword).catch {
                 _labelLiveData.value = listOf()
             }.collect {
-                if (it.isNotEmpty()) {
-                    _labelLiveData.value = it
-                } else {
-                    _labelLiveData.value = listOf(Label(keyword))
-                }
+                _labelLiveData.value = it
             }
         }
     }

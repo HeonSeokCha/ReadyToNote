@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
+import androidx.core.view.isVisible
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
@@ -21,6 +22,7 @@ class LabelDialog(
 ) : DialogFragment() {
     private val viewModel by activityViewModels<MainViewModel>()
     private var _binding: LayoutLabelBinding? = null
+    private var addLabelTitle: String = ""
     private lateinit var selectLabel: Label
     private val binding get() = _binding!!
 
@@ -57,12 +59,15 @@ class LabelDialog(
     private fun initObserver() {
         viewModel.labelLiveData.observe(this, {
             labelAdapter.submitList(it)
+            binding.layoutAddLabel.isVisible = it.isEmpty()
         })
     }
 
     private fun initView() {
         binding.inputLabel.doAfterTextChanged {
             viewModel.searchLabel(it?.trim().toString())
+            binding.txtAddLabelTitle.text = "'${it?.trim()}' 라벨 만들기"
+            addLabelTitle = it?.trim().toString()
         }
     }
 
@@ -73,6 +78,12 @@ class LabelDialog(
 
         binding.textCancel.setOnClickListener {
             this.dismiss()
+            addLabelTitle = ""
+        }
+
+        binding.layoutAddLabel.setOnClickListener {
+            viewModel.insertLabel(Label(addLabelTitle))
+            binding.inputLabel.text.clear()
         }
     }
 
