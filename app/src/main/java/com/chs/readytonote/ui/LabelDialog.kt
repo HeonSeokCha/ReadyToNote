@@ -3,6 +3,8 @@ package com.chs.readytonote.ui
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.util.DisplayMetrics
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -74,6 +76,7 @@ class LabelDialog(
     private fun initClick() {
         binding.textAdd.setOnClickListener {
             labelListener.invoke(selectLabel.title ?: "")
+            this.dismiss()
         }
 
         binding.textCancel.setOnClickListener {
