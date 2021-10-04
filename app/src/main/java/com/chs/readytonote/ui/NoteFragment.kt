@@ -10,7 +10,6 @@ import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.provider.MediaStore
-import android.util.Log
 import android.util.Patterns
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -34,16 +33,19 @@ import com.chs.readytonote.util.Util
 import com.chs.readytonote.databinding.FragmentNoteBinding
 import com.chs.readytonote.databinding.LayoutAddUrlBinding
 import com.chs.readytonote.databinding.LayoutDeleteNoteBinding
+import com.chs.readytonote.entities.Label
 import com.chs.readytonote.entities.Note
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.collections.ArrayList
 
 class NoteFragment : Fragment() {
     private var imgPath: String = ""
     private var webLink: String = ""
     private var label: String = ""
+    private var checkedLabelList: ArrayList<Int> = arrayListOf()
     private var noteColor: String = Constants.NOTE_DEFAULT_COLOR
     private var isUpdateNote: Boolean = false
     private var _binding: FragmentNoteBinding? = null
@@ -53,7 +55,6 @@ class NoteFragment : Fragment() {
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<ConstraintLayout>
     private lateinit var dialogUrlAdd: AlertDialog
     private lateinit var dialogDelete: AlertDialog
-    private lateinit var dialogLabelAdd: AlertDialog
 
     private val viewModel: MainViewModel by activityViewModels {
         object : ViewModelProvider.Factory {
@@ -132,6 +133,7 @@ class NoteFragment : Fragment() {
                 binding.model = this
                 imgPath = this!!.imgPath.toString()
                 noteColor = this.color!!
+                checkedLabelList = this.checkedLabel
                 binding.layoutMiscellaneous.radioGroup2.check(
                     binding.layoutMiscellaneous.radioGroup2.getChildAt(
                         Constants.NOTE_COLOR_LIST.indexOf(noteColor)
@@ -246,6 +248,7 @@ class NoteFragment : Fragment() {
                 val note = Note(
                     binding.inputNoteTitle.text.trim().toString(),
                     label,
+                    checkedLabelList,
                     binding.txtDateTime.text.trim().toString(),
                     binding.inputNoteSubtitle.text.trim().toString(),
                     binding.inputNoteText.text.trim().toString(),
@@ -306,8 +309,8 @@ class NoteFragment : Fragment() {
     }
 
     private fun showLabelDialog() {
-        LabelDialog() { selectLabel ->
-            label = selectLabel
+        LabelDialog(checkedLabelList) {
+            checkedLabelList = it
         }.show(this.childFragmentManager, Constants.TAG_LABEL_DIALOG)
     }
 

@@ -5,6 +5,7 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import kotlinx.parcelize.Parcelize
+import kotlinx.serialization.Serializable
 
 @Entity(tableName = "notes")
 @Parcelize
@@ -14,6 +15,9 @@ data class Note(
 
     @ColumnInfo(name = "label")
     val label: String?,
+
+    @ColumnInfo(name = "checked_label")
+    val checkedLabel: ArrayList<Int> = arrayListOf(),
 
     @ColumnInfo(name = "date_time")
     val dateTime: String?,

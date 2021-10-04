@@ -8,11 +8,12 @@ import com.chs.readytonote.databinding.ItemContainerLabelBinding
 import com.chs.readytonote.entities.Label
 
 class LabelAdapter(
+    private val checkedLabelList: List<Int>,
     private val clickListener: LabelClickListener
 ) : ListAdapter<Label, LabelAdapter.LabelViewHolder>(LabelDiffUtilCallback()) {
 
     interface LabelClickListener {
-        fun clickListener(label: Label)
+        fun clickListener(label: Label, checked: Boolean)
         fun addClickListener(title: String)
     }
 
@@ -21,11 +22,19 @@ class LabelAdapter(
         init {
             binding.root.setOnClickListener {
                 binding.txtLabelTitle.isChecked = !binding.txtLabelTitle.isChecked
-                clickListener.clickListener(getItem(layoutPosition)!!)
+                clickListener.clickListener(
+                    getItem(layoutPosition),
+                    binding.txtLabelTitle.isChecked
+                )
             }
         }
 
         fun bind(label: Label) {
+            if (checkedLabelList.isNotEmpty()) {
+                if (checkedLabelList.any { it == label.id }) {
+                    label.checked = true
+                }
+            }
             binding.model = label
         }
     }

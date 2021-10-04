@@ -1,10 +1,6 @@
 package com.chs.readytonote.ui
 
-import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import android.util.DisplayMetrics
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,21 +10,25 @@ import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.chs.readytonote.R
 import com.chs.readytonote.adapter.LabelAdapter
 import com.chs.readytonote.databinding.LayoutLabelBinding
 import com.chs.readytonote.entities.Label
 
 class LabelDialog(
-    private val labelListener: (label: String) -> Unit
+    private val noteLabelList: ArrayList<Int>,
+    private val labelListener: (label: ArrayList<Int>) -> Unit
 ) : DialogFragment() {
     private val viewModel by activityViewModels<MainViewModel>()
     private var _binding: LayoutLabelBinding? = null
     private var addLabelTitle: String = ""
-    private lateinit var selectLabel: Label
+    private var selectLabelList: ArrayList<Int> = arrayListOf()
     private val binding get() = _binding!!
 
     private lateinit var labelAdapter: LabelAdapter
+
+    init {
+        selectLabelList = noteLabelList
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -75,13 +75,12 @@ class LabelDialog(
 
     private fun initClick() {
         binding.textAdd.setOnClickListener {
-            labelListener.invoke(selectLabel.title ?: "")
+            labelListener.invoke(selectLabelList)
             this.dismiss()
         }
 
         binding.textCancel.setOnClickListener {
             this.dismiss()
-            addLabelTitle = ""
         }
 
         binding.layoutAddLabel.setOnClickListener {
@@ -92,9 +91,14 @@ class LabelDialog(
 
     private fun initRecyclerView() {
         binding.RvLabel.apply {
-            labelAdapter = LabelAdapter(object : LabelAdapter.LabelClickListener {
-                override fun clickListener(label: Label) {
-                    selectLabel = label
+            labelAdapter = LabelAdapter(selectLabelList, object : LabelAdapter.LabelClickListener {
+                override fun clickListener(label: Label, checked: Boolean) {
+                    if (checked) {
+                        selectLabelList.add(label.id)
+
+                    } else {
+                        selectLabelList.remove(label.id)
+                    }
                 }
 
                 override fun addClickListener(title: String) {
