@@ -70,10 +70,9 @@ class NoteAdapter(
 
         fun bind(note: Note) {
             binding.model = note
-            if (note.label.isNullOrEmpty()) {
+            if (note.labelTitle.isNullOrEmpty()) {
                 binding.txtLabel.visibility = View.GONE
             }
-
             if (note.imgPath!!.isEmpty()) {
                 binding.imageNote.visibility = View.GONE
             } else {

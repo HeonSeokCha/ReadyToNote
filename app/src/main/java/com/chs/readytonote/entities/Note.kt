@@ -14,10 +14,7 @@ data class Note(
     val title: String?,
 
     @ColumnInfo(name = "label")
-    val label: String?,
-
-    @ColumnInfo(name = "checked_label")
-    val checkedLabel: ArrayList<Int> = arrayListOf(),
+    val labelTitle: String?,
 
     @ColumnInfo(name = "date_time")
     val dateTime: String?,

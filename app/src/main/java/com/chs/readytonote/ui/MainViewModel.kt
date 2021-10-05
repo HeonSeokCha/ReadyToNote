@@ -1,6 +1,7 @@
 package com.chs.readytonote.ui
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.*
 import com.chs.readytonote.util.Constants
 import com.chs.readytonote.entities.Label
@@ -28,7 +29,8 @@ class MainViewModel(application: Application) : ViewModel() {
 
     fun getAllNote() {
         viewModelScope.launch {
-            repository.getNotes().catch {
+            repository.getNotes().catch { e ->
+                Log.e("NoteCatch", e.message.toString())
                 _noteLiveData.value = listOf()
             }.collect {
                 currentList = it

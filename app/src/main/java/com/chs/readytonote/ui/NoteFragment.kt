@@ -45,7 +45,7 @@ class NoteFragment : Fragment() {
     private var imgPath: String = ""
     private var webLink: String = ""
     private var label: String = ""
-    private var checkedLabelList: ArrayList<Int> = arrayListOf()
+    private var checkedLabelTitle: String? = ""
     private var noteColor: String = Constants.NOTE_DEFAULT_COLOR
     private var isUpdateNote: Boolean = false
     private var _binding: FragmentNoteBinding? = null
@@ -133,7 +133,7 @@ class NoteFragment : Fragment() {
                 binding.model = this
                 imgPath = this!!.imgPath.toString()
                 noteColor = this.color!!
-                checkedLabelList = this.checkedLabel
+                checkedLabelTitle = this.labelTitle
                 binding.layoutMiscellaneous.radioGroup2.check(
                     binding.layoutMiscellaneous.radioGroup2.getChildAt(
                         Constants.NOTE_COLOR_LIST.indexOf(noteColor)
@@ -247,8 +247,7 @@ class NoteFragment : Fragment() {
             else -> {
                 val note = Note(
                     binding.inputNoteTitle.text.trim().toString(),
-                    label,
-                    checkedLabelList,
+                    checkedLabelTitle,
                     binding.txtDateTime.text.trim().toString(),
                     binding.inputNoteSubtitle.text.trim().toString(),
                     binding.inputNoteText.text.trim().toString(),
@@ -309,8 +308,8 @@ class NoteFragment : Fragment() {
     }
 
     private fun showLabelDialog() {
-        LabelDialog(checkedLabelList) {
-            checkedLabelList = it
+        LabelDialog(checkedLabelTitle) {
+            checkedLabelTitle = it
         }.show(this.childFragmentManager, Constants.TAG_LABEL_DIALOG)
     }
 

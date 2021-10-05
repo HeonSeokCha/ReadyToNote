@@ -15,20 +15,16 @@ import com.chs.readytonote.databinding.LayoutLabelBinding
 import com.chs.readytonote.entities.Label
 
 class LabelDialog(
-    private val noteLabelList: ArrayList<Int>,
-    private val labelListener: (label: ArrayList<Int>) -> Unit
+    private val noteLabelTitle: String?,
+    private val labelListener: (labelTitle: String?) -> Unit
 ) : DialogFragment() {
     private val viewModel by activityViewModels<MainViewModel>()
     private var _binding: LayoutLabelBinding? = null
     private var addLabelTitle: String = ""
-    private var selectLabelList: ArrayList<Int> = arrayListOf()
+    private var selectLabelList: String? = noteLabelTitle
     private val binding get() = _binding!!
 
     private lateinit var labelAdapter: LabelAdapter
-
-    init {
-        selectLabelList = noteLabelList
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -75,6 +71,7 @@ class LabelDialog(
 
     private fun initClick() {
         binding.textAdd.setOnClickListener {
+            //todo 클릭한 아이템이 없으면 비활성화
             labelListener.invoke(selectLabelList)
             this.dismiss()
         }
@@ -92,12 +89,11 @@ class LabelDialog(
     private fun initRecyclerView() {
         binding.RvLabel.apply {
             labelAdapter = LabelAdapter(selectLabelList, object : LabelAdapter.LabelClickListener {
-                override fun clickListener(label: Label, checked: Boolean) {
-                    if (checked) {
-                        selectLabelList.add(label.id)
-
+                override fun clickListener(LabelTitle: String, checked: Boolean) {
+                    selectLabelList = if (checked) {
+                        LabelTitle
                     } else {
-                        selectLabelList.remove(label.id)
+                        null
                     }
                 }
 

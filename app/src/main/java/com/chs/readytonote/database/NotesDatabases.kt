@@ -8,7 +8,6 @@ import androidx.room.TypeConverters
 import com.chs.readytonote.dao.NoteDao
 import com.chs.readytonote.entities.Label
 import com.chs.readytonote.entities.Note
-import com.chs.readytonote.util.Converter
 
 @Database(
     entities = [
@@ -18,7 +17,6 @@ import com.chs.readytonote.util.Converter
     version = 1,
     exportSchema = false
 )
-@TypeConverters(Converter::class)
 abstract class NotesDatabases : RoomDatabase() {
 
     abstract fun noteDao(): NoteDao
