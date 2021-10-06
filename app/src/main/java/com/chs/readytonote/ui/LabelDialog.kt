@@ -22,6 +22,7 @@ class LabelDialog(
     private var _binding: LayoutLabelBinding? = null
     private var addLabelTitle: String = ""
     private var selectLabelList: String? = noteLabelTitle
+    private var isInit: Boolean = false
     private val binding get() = _binding!!
 
     private lateinit var labelAdapter: LabelAdapter
@@ -57,7 +58,7 @@ class LabelDialog(
     private fun initObserver() {
         viewModel.labelLiveData.observe(this, {
             labelAdapter.submitList(it)
-            binding.layoutAddLabel.isVisible = it.isEmpty()
+            binding.layoutAddLabel.isVisible = binding.inputLabel.text.isNotBlank() && it.isEmpty()
         })
     }
 
@@ -83,6 +84,7 @@ class LabelDialog(
         binding.layoutAddLabel.setOnClickListener {
             viewModel.insertLabel(Label(addLabelTitle))
             binding.inputLabel.text.clear()
+            viewModel.getAllLabel()
         }
     }
 
