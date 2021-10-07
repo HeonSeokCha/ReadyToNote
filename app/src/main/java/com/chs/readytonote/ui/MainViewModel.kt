@@ -76,7 +76,8 @@ class MainViewModel(application: Application) : ViewModel() {
 
     fun getAllLabel() {
         viewModelScope.launch {
-            repository.getLabels().catch {
+            repository.getLabels().catch { e ->
+                Log.e("LabelCatch", e.message.toString())
                 _labelLiveData.value = listOf()
             }.collect {
                 _labelLiveData.value = it
@@ -86,7 +87,8 @@ class MainViewModel(application: Application) : ViewModel() {
 
     fun searchLabel(keyword: String) {
         viewModelScope.launch {
-            repository.searchLabel(keyword).catch {
+            repository.searchLabel(keyword).catch { e ->
+                Log.e("LabelSearchCatch", e.message.toString())
                 _labelLiveData.value = listOf()
             }.collect {
                 _labelLiveData.value = it

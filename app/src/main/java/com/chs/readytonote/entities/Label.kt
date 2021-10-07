@@ -12,7 +12,6 @@ import kotlinx.serialization.Serializable
 data class Label(
     @ColumnInfo(name = "title")
     val title: String?,
-    @ColumnInfo(name = "checked")
     var checked: Boolean = false
 ) : Parcelable {
     @PrimaryKey(autoGenerate = true)

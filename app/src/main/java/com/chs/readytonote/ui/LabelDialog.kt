@@ -1,6 +1,7 @@
 package com.chs.readytonote.ui
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,7 +16,7 @@ import com.chs.readytonote.databinding.LayoutLabelBinding
 import com.chs.readytonote.entities.Label
 
 class LabelDialog(
-    private val noteLabelTitle: String?,
+    noteLabelTitle: String?,
     private val labelListener: (labelTitle: String?) -> Unit
 ) : DialogFragment() {
     private val viewModel by activityViewModels<MainViewModel>()
@@ -25,7 +26,12 @@ class LabelDialog(
     private var isInit: Boolean = false
     private val binding get() = _binding!!
 
-    private lateinit var labelAdapter: LabelAdapter
+    private var labelAdapter: LabelAdapter? = null
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        viewModel.getAllLabel()
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -38,7 +44,6 @@ class LabelDialog(
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel.getAllLabel()
         initView()
         initClick()
         initRecyclerView()
@@ -57,7 +62,8 @@ class LabelDialog(
 
     private fun initObserver() {
         viewModel.labelLiveData.observe(this, {
-            labelAdapter.submitList(it)
+            Log.e("NoteList", it.size.toString())
+            labelAdapter?.submitList(it)
             binding.layoutAddLabel.isVisible = binding.inputLabel.text.isNotBlank() && it.isEmpty()
         })
     }
@@ -84,7 +90,6 @@ class LabelDialog(
         binding.layoutAddLabel.setOnClickListener {
             viewModel.insertLabel(Label(addLabelTitle))
             binding.inputLabel.text.clear()
-            viewModel.getAllLabel()
         }
     }
 
@@ -111,5 +116,6 @@ class LabelDialog(
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+        labelAdapter = null
     }
 }
