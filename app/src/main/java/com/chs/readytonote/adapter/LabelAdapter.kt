@@ -13,7 +13,7 @@ class LabelAdapter(
     private val clickListener: LabelClickListener
 ) : ListAdapter<Label, LabelAdapter.LabelViewHolder>(LabelDiffUtilCallback()) {
 
-    private var selectLabelPosition: Int? = null
+    private var selectLabelPosition: Int = -1
 
     interface LabelClickListener {
         fun clickListener(LabelTitle: String, checked: Boolean)
@@ -23,34 +23,25 @@ class LabelAdapter(
     inner class LabelViewHolder(private val binding: ItemContainerLabelBinding) :
         RecyclerView.ViewHolder(binding.root) {
         init {
-
-            binding.root.setOnClickListener {
-                if (binding.txtLabelTitle.isChecked) {
-                    binding.txtLabelTitle.isChecked = false
-                    selectLabelPosition = null
-                } else {
-                    binding.txtLabelTitle.isChecked = true
-                    Log.e("selectLabelPosition", selectLabelPosition.toString())
-                    if (selectLabelPosition != null) {
-                        getItem(selectLabelPosition!!).checked = false
-                    }
-                    selectLabelPosition = layoutPosition
-                    notifyDataSetChanged()
-                }
-                clickListener.clickListener(
-                    getItem(layoutPosition).title!!,
-                    binding.txtLabelTitle.isChecked
-                )
+            if (checkedLabelTitle != null) {
+                selectLabelPosition = currentList.indexOfFirst { it.title == checkedLabelTitle }
+                currentList[selectLabelPosition!!].checked = true
             }
         }
 
-        fun bind(label: Label) {
-            if (checkedLabelTitle != null) {
-                if (checkedLabelTitle == label.title) {
-                    label.checked = true
-                }
-            }
+        fun bind(label: Label, position: Int) {
             binding.model = label
+            binding.root.setOnClickListener {
+                binding.txtLabelTitle.isChecked = currentList[layoutPosition].checked
+                for (i in currentList.indices) {
+                    currentList[i].checked = i == layoutPosition
+                }
+                clickListener.clickListener(
+                    getItem(layoutPosition).title!!,
+                    getItem(layoutPosition).checked
+                )
+                notifyDataSetChanged()
+            }
         }
     }
 
@@ -61,6 +52,6 @@ class LabelAdapter(
     }
 
     override fun onBindViewHolder(holder: LabelViewHolder, position: Int) {
-        holder.bind(getItem(position)!!)
+        holder.bind(getItem(position), position)
     }
 }
