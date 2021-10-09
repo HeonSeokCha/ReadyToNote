@@ -23,7 +23,6 @@ class LabelDialog(
     private var _binding: LayoutLabelBinding? = null
     private var addLabelTitle: String = ""
     private var selectLabelList: String? = noteLabelTitle
-    private var isInit: Boolean = false
     private val binding get() = _binding!!
 
     private var labelAdapter: LabelAdapter? = null
@@ -61,10 +60,13 @@ class LabelDialog(
     }
 
     private fun initObserver() {
-        viewModel.labelLiveData.observe(this, {
-            Log.e("NoteList", it.size.toString())
-            labelAdapter?.submitList(it)
-            binding.layoutAddLabel.isVisible = binding.inputLabel.text.isNotBlank() && it.isEmpty()
+        viewModel.labelLiveData.observe(this, { labelList ->
+            if (selectLabelList != null) {
+                labelList[labelList.indexOfFirst { it.title == selectLabelList!! }].checked = true
+            }
+            labelAdapter?.submitList(labelList)
+            binding.layoutAddLabel.isVisible =
+                binding.inputLabel.text.isNotBlank() && labelList.isEmpty()
         })
     }
 
@@ -95,19 +97,14 @@ class LabelDialog(
 
     private fun initRecyclerView() {
         binding.RvLabel.apply {
-            labelAdapter = LabelAdapter(selectLabelList, object : LabelAdapter.LabelClickListener {
-                override fun clickListener(LabelTitle: String, checked: Boolean) {
-                    selectLabelList = if (checked) {
-                        LabelTitle
-                    } else {
-                        null
-                    }
+            labelAdapter = LabelAdapter { title, checked ->
+                selectLabelList = if (checked) {
+                    title
+                } else {
+                    null
                 }
+            }
 
-                override fun addClickListener(title: String) {
-                    viewModel.insertLabel(Label(title))
-                }
-            })
             this.adapter = labelAdapter
             this.layoutManager = LinearLayoutManager(requireContext())
         }
