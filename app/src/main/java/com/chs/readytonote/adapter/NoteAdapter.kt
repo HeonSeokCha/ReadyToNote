@@ -8,6 +8,7 @@ import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.chs.readytonote.R
@@ -21,10 +22,7 @@ class NoteAdapter(
     private val clickListener: ClickListener
 ) : ListAdapter<Note, NoteAdapter.NoteViewHolder>(NoteDiffUtilCallback()) {
 
-    private lateinit var temp: MutableList<Note>
-    private lateinit var timerTask: TimerTask
     private val checkList: MutableMap<Int, Note> by lazy { mutableMapOf() }
-    private val searchList: List<Note> by lazy { currentList }
     private var checkBox: Boolean = false
     private var isSelectModeOn: Boolean = false
 
@@ -40,10 +38,10 @@ class NoteAdapter(
         init {
             binding.layoutNote.setOnClickListener {
                 if (checkBox) {
-                    binding.imgCheck.apply {
-                        isActivated = !this.isActivated
+                    binding.btnCheck.apply {
+                        isChecked = !this.isChecked
                     }
-                    if (binding.imgCheck.isActivated) {
+                    if (binding.btnCheck.isActivated) {
                         checkList[layoutPosition] = getItem(layoutPosition)
                     } else {
                         checkList.remove(layoutPosition)
@@ -62,7 +60,7 @@ class NoteAdapter(
                 if (!checkBox) {
                     editItemMode(true)
                     clickListener.longClickListener(checkBox)
-                    binding.imgCheck.isActivated = !binding.imgCheck.isActivated
+                    binding.btnCheck.isChecked = !binding.btnCheck.isChecked
                 }
                 return@setOnLongClickListener true
             }
@@ -80,15 +78,15 @@ class NoteAdapter(
             }
             when {
                 checkBox -> {
-                    binding.imgCheck.apply {
-                        visibility = View.VISIBLE
-                        isActivated = isSelectModeOn
+                    binding.btnCheck.apply {
+                        isVisible = true
+                        isChecked = isSelectModeOn
                     }
                 }
                 else -> {
-                    binding.imgCheck.apply {
-                        visibility = View.GONE
-                        isActivated = false
+                    binding.btnCheck.apply {
+                        isVisible = false
+                        isChecked = false
                     }
                 }
             }
@@ -100,23 +98,9 @@ class NoteAdapter(
         notifyDataSetChanged()
     }
 
-    fun selectAll(chk: Boolean) {
-        isSelectModeOn = if (chk) {
-            for (i in currentList.indices)
-                checkList[i] = currentList[i]
-            true
-        } else {
-            for (i in currentList.indices)
-                checkList.remove(i)
-            false
-        }
-        notifyDataSetChanged()
-        clickListener.checkClickListener(checkList)
-    }
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NoteViewHolder {
-        val inflate = LayoutInflater.from(parent.context)
-        val view = ItemContainerNoteBinding.inflate(inflate, parent, false)
+        val view =
+            ItemContainerNoteBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return NoteViewHolder(view)
     }
 

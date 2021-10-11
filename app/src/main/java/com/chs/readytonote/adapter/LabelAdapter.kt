@@ -1,6 +1,5 @@
 package com.chs.readytonote.adapter
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.ListAdapter
@@ -12,11 +11,12 @@ class LabelAdapter(
     private val clickListener: (LabelTitle: String, checked: Boolean) -> Unit
 ) : ListAdapter<Label, LabelAdapter.LabelViewHolder>(LabelDiffUtilCallback()) {
 
-    internal var selectLabelPosition: Int = -1
+    private var selectLabelPosition: Int = -1
 
 
     inner class LabelViewHolder(private val binding: ItemContainerLabelBinding) :
         RecyclerView.ViewHolder(binding.root) {
+
         init {
             currentList.forEachIndexed { index, label ->
                 if (label.checked) {
@@ -38,6 +38,7 @@ class LabelAdapter(
                     selectLabelPosition = layoutPosition
                     notifyItemChanged(layoutPosition)
                 }
+
                 clickListener.invoke(
                     currentList[layoutPosition].title!!,
                     currentList[layoutPosition].checked

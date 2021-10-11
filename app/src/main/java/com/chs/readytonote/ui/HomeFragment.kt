@@ -104,12 +104,12 @@ class HomeFragment : Fragment() {
                     findNavController().navigate(action)
                 }
 
-                override fun checkClickListener(checkList: MutableMap<Int, Note>) {
-                    TODO("Not yet implemented")
+                override fun checkClickListener(checkList: MutableMap<Int, Note>) { //체크모드 활성화시
+
                 }
 
-                override fun longClickListener(chkState: Boolean) {
-                    TODO("Not yet implemented")
+                override fun longClickListener(chkState: Boolean) { //체크모드 활성화
+                    TODO("FAB Image Change")
                 }
             })
             this.layoutManager = StaggeredGridLayoutManager(2, 1)

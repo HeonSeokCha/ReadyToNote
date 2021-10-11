@@ -45,7 +45,7 @@ class NoteFragment : Fragment() {
     private var imgPath: String = ""
     private var webLink: String = ""
     private var label: String = ""
-    private var checkedLabelTitle: String? = ""
+    private var checkedLabelTitle: String? = null
     private var noteColor: String = Constants.NOTE_DEFAULT_COLOR
     private var isUpdateNote: Boolean = false
     private var _binding: FragmentNoteBinding? = null

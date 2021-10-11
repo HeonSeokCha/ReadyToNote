@@ -1,5 +1,7 @@
 package com.chs.readytonote.ui
 
+import android.annotation.SuppressLint
+import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -11,6 +13,7 @@ import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.chs.readytonote.R
 import com.chs.readytonote.adapter.LabelAdapter
 import com.chs.readytonote.databinding.LayoutLabelBinding
 import com.chs.readytonote.entities.Label
@@ -80,7 +83,6 @@ class LabelDialog(
 
     private fun initClick() {
         binding.textAdd.setOnClickListener {
-            //todo 클릭한 아이템이 없으면 비활성화
             labelListener.invoke(selectLabelList)
             this.dismiss()
         }
@@ -104,7 +106,6 @@ class LabelDialog(
                     null
                 }
             }
-
             this.adapter = labelAdapter
             this.layoutManager = LinearLayoutManager(requireContext())
         }
