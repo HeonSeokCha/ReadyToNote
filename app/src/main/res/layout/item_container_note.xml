@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+        <import type="android.view.View"/>
         <variable
             name="model"
             type="com.chs.readytonote.entities.Note" />
@@ -115,8 +116,7 @@
                     android:minWidth="0dp"
                     android:minHeight="0dp"
                     android:layout_marginEnd="8dp"
-                    android:visibility="gone"
-                    tools:visibility="visible"
+                    android:visibility="@{model.showSelected ? View.VISIBLE : View.GONE}"
                     app:layout_constraintBottom_toBottomOf="@+id/txtTitle"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="@+id/txtTitle"

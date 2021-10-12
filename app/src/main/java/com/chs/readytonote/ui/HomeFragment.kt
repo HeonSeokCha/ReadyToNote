@@ -108,8 +108,9 @@ class HomeFragment : Fragment() {
 
                 }
 
-                override fun longClickListener(chkState: Boolean) { //체크모드 활성화
-                    TODO("FAB Image Change")
+                override fun longClickListener() { //체크모드 활성화
+                    viewModel.setCheckMode()
+                    notesAdapter?.notifyDataSetChanged()
                 }
             })
             this.layoutManager = StaggeredGridLayoutManager(2, 1)

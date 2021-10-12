@@ -34,9 +34,9 @@ data class Note(
     @ColumnInfo(name = "web_link")
     val webLink: String?,
 
-    val isSelected: Boolean = false,
+    var isSelected: Boolean = false,
 
-    val showSelected: Boolean = false,
+    var showSelected: Boolean = false,
 
     ) : Parcelable {
     @PrimaryKey(autoGenerate = true)

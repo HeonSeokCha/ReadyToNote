@@ -29,7 +29,7 @@ class NoteAdapter(
     interface ClickListener {
         fun clickListener(note: Note, position: Int)
         fun checkClickListener(checkList: MutableMap<Int, Note>) // todo Map 써야하는 이유는?
-        fun longClickListener(chkState: Boolean)
+        fun longClickListener()
     }
 
     inner class NoteViewHolder(private val binding: ItemContainerNoteBinding) :
@@ -57,11 +57,7 @@ class NoteAdapter(
             }
 
             binding.layoutNote.setOnLongClickListener {
-                if (!checkBox) {
-                    editItemMode(true)
-                    clickListener.longClickListener(checkBox)
-                    binding.btnCheck.isChecked = !binding.btnCheck.isChecked
-                }
+                clickListener.longClickListener()
                 return@setOnLongClickListener true
             }
         }
@@ -91,11 +87,6 @@ class NoteAdapter(
                 }
             }
         }
-    }
-
-    fun editItemMode(chk: Boolean) {
-        checkBox = chk
-        notifyDataSetChanged()
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NoteViewHolder {

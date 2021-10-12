@@ -39,6 +39,13 @@ class MainViewModel(application: Application) : ViewModel() {
         }
     }
 
+    fun setCheckMode() {
+        currentList.forEach {
+            it.showSelected = true
+        }
+        _noteLiveData.value = currentList
+    }
+
     fun insertNote(note: Note): LiveData<Long> {
         val lastId = MutableLiveData<Long>()
         viewModelScope.launch(Dispatchers.IO) {
