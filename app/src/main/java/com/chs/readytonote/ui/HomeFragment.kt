@@ -44,7 +44,7 @@ class HomeFragment : Fragment() {
     }
     private var _binding: FragmentHomeBinding? = null
     private var notesAdapter: NoteAdapter? = null
-    private val editTextLiveData: MutableLiveData<String> = MutableLiveData()
+    private var notesCheckList: List<Int> = listOf()
     private lateinit var callback: OnBackPressedCallback
     private lateinit var dialogTheme: AlertDialog
 
@@ -53,10 +53,14 @@ class HomeFragment : Fragment() {
         viewModel.getAllNote()
         callback = object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-
+                if (notesAdapter?.isSelectModeOn == true) {
+                    checkMode(false)
+                } else {
+                    requireActivity().finish()
+                }
             }
         }
-//        requireActivity().onBackPressedDispatcher.addCallback(this, callback)
+        requireActivity().onBackPressedDispatcher.addCallback(this, callback)
     }
 
     override fun onCreateView(
@@ -86,9 +90,14 @@ class HomeFragment : Fragment() {
 
     private fun initClick() {
         binding.imgAddNoteMain.setOnClickListener {
-            val action = HomeFragmentDirections.actionHomeFragmentToNoteFragment(null)
-            findNavController().navigate(action)
-            binding.inputSearch.text.clear()
+            if (notesAdapter?.isSelectModeOn == true) {
+                viewModel.checkDeleteNote(notesCheckList)
+                checkMode(false)
+            } else {
+                val action = HomeFragmentDirections.actionHomeFragmentToNoteFragment(null)
+                findNavController().navigate(action)
+                binding.inputSearch.text.clear()
+            }
         }
 
         binding.btnSelectTheme.setOnClickListener {
@@ -104,13 +113,12 @@ class HomeFragment : Fragment() {
                     findNavController().navigate(action)
                 }
 
-                override fun checkClickListener(checkList: MutableMap<Int, Note>) { //체크모드 활성화시
-
+                override fun checkClickListener(checkList: List<Int>) {
+                    notesCheckList = checkList
                 }
 
                 override fun longClickListener() { //체크모드 활성화
-                    viewModel.setCheckMode()
-                    notesAdapter?.notifyDataSetChanged()
+                    checkMode(true)
                 }
             })
             this.layoutManager = StaggeredGridLayoutManager(2, 1)
@@ -124,6 +132,15 @@ class HomeFragment : Fragment() {
             notesAdapter?.submitList(it)
         })
     }
+
+    private fun checkMode(state: Boolean) {
+        notesAdapter?.apply {
+            this.isSelectModeOn = state
+            this.checkMode()
+            this.notifyDataSetChanged()
+        }
+    }
+
 
     private fun showThemeDialog() {
         val builder: AlertDialog.Builder = AlertDialog.Builder(requireContext())

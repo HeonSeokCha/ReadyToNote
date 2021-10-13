@@ -15,6 +15,7 @@ import com.chs.readytonote.R
 import com.chs.readytonote.databinding.ItemContainerNoteBinding
 import com.chs.readytonote.entities.Note
 import java.util.*
+import kotlin.collections.ArrayList
 import kotlin.concurrent.schedule
 
 
@@ -22,13 +23,13 @@ class NoteAdapter(
     private val clickListener: ClickListener
 ) : ListAdapter<Note, NoteAdapter.NoteViewHolder>(NoteDiffUtilCallback()) {
 
-    private val checkList: MutableMap<Int, Note> by lazy { mutableMapOf() }
+    private var checkList: ArrayList<Int> = arrayListOf()
     private var checkBox: Boolean = false
-    private var isSelectModeOn: Boolean = false
+    internal var isSelectModeOn: Boolean = false
 
     interface ClickListener {
         fun clickListener(note: Note, position: Int)
-        fun checkClickListener(checkList: MutableMap<Int, Note>) // todo Map 써야하는 이유는?
+        fun checkClickListener(checkList: List<Int>)
         fun longClickListener()
     }
 
@@ -37,14 +38,12 @@ class NoteAdapter(
 
         init {
             binding.layoutNote.setOnClickListener {
-                if (checkBox) {
-                    binding.btnCheck.apply {
-                        isChecked = !this.isChecked
-                    }
-                    if (binding.btnCheck.isActivated) {
-                        checkList[layoutPosition] = getItem(layoutPosition)
+                if (isSelectModeOn) {
+                    binding.btnCheck.isChecked = !binding.btnCheck.isChecked
+                    if (binding.btnCheck.isChecked) {
+                        checkList.add(currentList[layoutPosition].id)
                     } else {
-                        checkList.remove(layoutPosition)
+                        checkList.remove(currentList[layoutPosition].id)
                     }
                     clickListener.checkClickListener(checkList)
 
@@ -86,6 +85,12 @@ class NoteAdapter(
                     }
                 }
             }
+        }
+    }
+
+    internal fun checkMode() {
+        currentList.forEach {
+            it.showSelected = isSelectModeOn
         }
     }
 

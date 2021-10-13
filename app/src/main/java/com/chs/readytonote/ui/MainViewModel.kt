@@ -39,13 +39,6 @@ class MainViewModel(application: Application) : ViewModel() {
         }
     }
 
-    fun setCheckMode() {
-        currentList.forEach {
-            it.showSelected = true
-        }
-        _noteLiveData.value = currentList
-    }
-
     fun insertNote(note: Note): LiveData<Long> {
         val lastId = MutableLiveData<Long>()
         viewModelScope.launch(Dispatchers.IO) {
@@ -78,6 +71,14 @@ class MainViewModel(application: Application) : ViewModel() {
     fun deleteNote(note: Note) {
         viewModelScope.launch {
             repository.deleteNote(note)
+        }
+    }
+
+    fun checkDeleteNote(selectList: List<Int>) {
+        viewModelScope.launch {
+            selectList.forEach { notesId ->
+                repository.deleteNote(currentList.find { it.id == notesId }!!)
+            }
         }
     }
 
