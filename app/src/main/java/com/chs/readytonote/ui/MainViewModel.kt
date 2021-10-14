@@ -68,6 +68,13 @@ class MainViewModel(application: Application) : ViewModel() {
         }
     }
 
+    fun checkMode(state: Boolean) {
+        currentList.forEach {
+            it.showSelected = state
+        }
+        _noteLiveData.value = currentList
+    }
+
     fun deleteNote(note: Note) {
         viewModelScope.launch {
             repository.deleteNote(note)

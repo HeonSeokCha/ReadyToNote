@@ -55,6 +55,8 @@ class HomeFragment : Fragment() {
             override fun handleOnBackPressed() {
                 if (notesAdapter?.isSelectModeOn == true) {
                     checkMode(false)
+                    notesAdapter?.isSelectModeOn = false
+                    notesAdapter?.notifyDataSetChanged()
                 } else {
                     requireActivity().finish()
                 }
@@ -93,6 +95,7 @@ class HomeFragment : Fragment() {
             if (notesAdapter?.isSelectModeOn == true) {
                 viewModel.checkDeleteNote(notesCheckList)
                 checkMode(false)
+                notesAdapter?.notifyDataSetChanged()
             } else {
                 val action = HomeFragmentDirections.actionHomeFragmentToNoteFragment(null)
                 findNavController().navigate(action)
@@ -121,6 +124,8 @@ class HomeFragment : Fragment() {
                     checkMode(true)
                 }
             })
+            notesAdapter?.setHasStableIds(true)
+            this.setHasFixedSize(true)
             this.layoutManager = StaggeredGridLayoutManager(2, 1)
             this.adapter = notesAdapter
         }
@@ -134,11 +139,7 @@ class HomeFragment : Fragment() {
     }
 
     private fun checkMode(state: Boolean) {
-        notesAdapter?.apply {
-            this.isSelectModeOn = state
-            this.checkMode()
-            this.notifyDataSetChanged()
-        }
+        viewModel.checkMode(state)
     }
 
 

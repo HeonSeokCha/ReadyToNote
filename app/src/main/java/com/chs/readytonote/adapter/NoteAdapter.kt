@@ -57,6 +57,8 @@ class NoteAdapter(
 
             binding.layoutNote.setOnLongClickListener {
                 clickListener.longClickListener()
+                isSelectModeOn = true
+                notifyDataSetChanged()
                 return@setOnLongClickListener true
             }
         }
@@ -65,25 +67,6 @@ class NoteAdapter(
             binding.model = note
             if (note.labelTitle.isNullOrEmpty()) {
                 binding.txtLabel.visibility = View.GONE
-            }
-            if (note.imgPath!!.isEmpty()) {
-                binding.imageNote.visibility = View.GONE
-            } else {
-                binding.imageNote.visibility = View.VISIBLE
-            }
-            when {
-                checkBox -> {
-                    binding.btnCheck.apply {
-                        isVisible = true
-                        isChecked = isSelectModeOn
-                    }
-                }
-                else -> {
-                    binding.btnCheck.apply {
-                        isVisible = false
-                        isChecked = false
-                    }
-                }
             }
         }
     }
