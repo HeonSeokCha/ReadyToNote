@@ -3,6 +3,7 @@ package com.chs.readytonote.ui
 import android.app.AlertDialog
 import android.content.Context
 import android.graphics.drawable.ColorDrawable
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -11,6 +12,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import androidx.activity.OnBackPressedCallback
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.view.isVisible
 import androidx.core.widget.doAfterTextChanged
 import androidx.datastore.preferences.core.edit
@@ -55,8 +57,6 @@ class HomeFragment : Fragment() {
             override fun handleOnBackPressed() {
                 if (notesAdapter?.isSelectModeOn == true) {
                     checkMode(false)
-                    notesAdapter?.isSelectModeOn = false
-                    notesAdapter?.notifyDataSetChanged()
                 } else {
                     requireActivity().finish()
                 }
@@ -133,13 +133,32 @@ class HomeFragment : Fragment() {
 
     private fun initObserver() {
         viewModel.noteLiveData.observe(viewLifecycleOwner, {
-            binding.layoutEmptyNote.root.isVisible = it.isEmpty()
+            if (binding.inputSearch.text.isEmpty()) {
+                binding.layoutEmptyNote.root.isVisible = it.isEmpty()
+            }
             notesAdapter?.submitList(it)
         })
     }
 
     private fun checkMode(state: Boolean) {
         viewModel.checkMode(state)
+        notesAdapter?.isSelectModeOn = state
+        if (state) {
+            binding.imgAddNoteMain.setImageDrawable(
+                requireActivity().resources.getDrawable(
+                    R.drawable.ic_delete,
+                    null
+                )
+            )
+        } else {
+            binding.imgAddNoteMain.setImageDrawable(
+                requireActivity().resources.getDrawable(
+                    R.drawable.ic_add,
+                    null
+                )
+            )
+        }
+        notesAdapter?.notifyDataSetChanged()
     }
 
 
@@ -159,18 +178,35 @@ class HomeFragment : Fragment() {
 
         dialogView.radioGroup.setOnCheckedChangeListener { _, checkedId ->
             when (checkedId) {
-                R.id.rdo_white -> {
-                    updateTheme(Constants.WHITE_MODE)
-                }
-                R.id.rdo_dark -> {
-                    updateTheme(Constants.DARK_MODE)
-                }
-                R.id.rdo_default -> {
-                    updateTheme(Constants.DEFAULT_MODE)
-                }
+                R.id.rdo_white -> updateTheme(Constants.WHITE_MODE)
+                R.id.rdo_dark -> updateTheme(Constants.DARK_MODE)
+                R.id.rdo_default -> updateTheme(Constants.DEFAULT_MODE)
             }
         }
         dialogView.btnOk.setOnClickListener {
+            when (viewModel.selectUI) {
+                Constants.WHITE_MODE -> {
+                    AppCompatDelegate.setDefaultNightMode(
+                        AppCompatDelegate.MODE_NIGHT_NO
+                    )
+                }
+                Constants.DARK_MODE -> {
+                    AppCompatDelegate.setDefaultNightMode(
+                        AppCompatDelegate.MODE_NIGHT_YES
+                    )
+                }
+                Constants.DEFAULT_MODE -> {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                        AppCompatDelegate.setDefaultNightMode(
+                            AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
+                        )
+                    } else {
+                        AppCompatDelegate.setDefaultNightMode(
+                            AppCompatDelegate.MODE_NIGHT_AUTO_BATTERY
+                        )
+                    }
+                }
+            }
             dialogTheme.dismiss()
         }
         dialogView.btnCancel.setOnClickListener {
@@ -185,6 +221,7 @@ class HomeFragment : Fragment() {
                 it[stringPreferencesKey(Constants.UI_STATUS)] = value
             }
         }
+        viewModel.selectUI = value
     }
 
     override fun onDestroyView() {

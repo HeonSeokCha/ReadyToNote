@@ -64,16 +64,15 @@ class NoteAdapter(
         }
 
         fun bind(note: Note) {
-            binding.model = note
-            if (note.labelTitle.isNullOrEmpty()) {
-                binding.txtLabel.visibility = View.GONE
+            with(binding) {
+                this.model = note
+                this.btnCheck.isVisible = note.showSelected
+                this.model = note
+                this.btnCheck.isVisible = note.showSelected
+                if (note.labelTitle.isNullOrEmpty()) {
+                    this.txtLabel.visibility = View.GONE
+                }
             }
-        }
-    }
-
-    internal fun checkMode() {
-        currentList.forEach {
-            it.showSelected = isSelectModeOn
         }
     }
 
