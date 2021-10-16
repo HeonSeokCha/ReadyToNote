@@ -37,6 +37,12 @@ import kotlin.concurrent.timer
 
 class HomeFragment : Fragment() {
     private val binding get() = _binding!!
+    private var _binding: FragmentHomeBinding? = null
+    private var notesAdapter: NoteAdapter? = null
+    private var notesCheckList: List<Int> = listOf()
+    private lateinit var callback: OnBackPressedCallback
+    private lateinit var dialogTheme: AlertDialog
+
     private val viewModel: MainViewModel by activityViewModels {
         object : ViewModelProvider.Factory {
             override fun <T : ViewModel?> create(modelClass: Class<T>): T {
@@ -44,11 +50,6 @@ class HomeFragment : Fragment() {
             }
         }
     }
-    private var _binding: FragmentHomeBinding? = null
-    private var notesAdapter: NoteAdapter? = null
-    private var notesCheckList: List<Int> = listOf()
-    private lateinit var callback: OnBackPressedCallback
-    private lateinit var dialogTheme: AlertDialog
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -158,7 +159,6 @@ class HomeFragment : Fragment() {
                 )
             )
         }
-        notesAdapter?.notifyDataSetChanged()
     }
 
 
