@@ -64,7 +64,9 @@ class LabelDialog(
 
     private fun initObserver() {
         viewModel.labelLiveData.observe(this, { labelList ->
-            if (selectLabelList != null) {
+            if (selectLabelList != null
+                && labelList.indexOfFirst { it.title == selectLabelList!! } != -1
+            ) {
                 labelList[labelList.indexOfFirst { it.title == selectLabelList!! }].checked = true
             }
             labelAdapter?.submitList(labelList)
@@ -94,6 +96,7 @@ class LabelDialog(
         binding.layoutAddLabel.setOnClickListener {
             viewModel.insertLabel(Label(addLabelTitle))
             binding.inputLabel.text.clear()
+            viewModel.getAllLabel()
         }
     }
 

@@ -125,10 +125,9 @@ class HomeFragment : Fragment() {
                     checkMode(true)
                 }
             })
-            notesAdapter?.setHasStableIds(true)
+            this.adapter = notesAdapter
             this.setHasFixedSize(true)
             this.layoutManager = StaggeredGridLayoutManager(2, 1)
-            this.adapter = notesAdapter
         }
     }
 

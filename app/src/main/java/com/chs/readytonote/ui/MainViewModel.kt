@@ -15,7 +15,8 @@ import kotlinx.coroutines.launch
 class MainViewModel(application: Application) : ViewModel() {
 
     var selectUI: String = Constants.DEFAULT_MODE
-    var currentList: List<Note> = listOf()
+    var currentNoteList: List<Note> = listOf()
+    var currentLabelList: ArrayList<Label> = arrayListOf()
 
     private val repository by lazy {
         NoteRepository(application)
@@ -33,7 +34,7 @@ class MainViewModel(application: Application) : ViewModel() {
                 Log.e("NoteCatch", e.message.toString())
                 _noteLiveData.value = listOf()
             }.collect {
-                currentList = it
+                currentNoteList = it
                 _noteLiveData.value = it
             }
         }
@@ -63,16 +64,16 @@ class MainViewModel(application: Application) : ViewModel() {
                     _noteLiveData.value = it
                 }
             } else {
-                _noteLiveData.value = currentList
+                _noteLiveData.value = currentNoteList
             }
         }
     }
 
     fun checkMode(state: Boolean) {
-        currentList.forEach {
+        currentNoteList.forEach {
             it.showSelected = state
         }
-        _noteLiveData.value = currentList
+        _noteLiveData.value = currentNoteList
     }
 
     fun deleteNote(note: Note) {
@@ -84,7 +85,7 @@ class MainViewModel(application: Application) : ViewModel() {
     fun checkDeleteNote(selectList: List<Int>) {
         viewModelScope.launch {
             selectList.forEach { notesId ->
-                repository.deleteNote(currentList.find { it.id == notesId }!!)
+                repository.deleteNote(currentNoteList.find { it.id == notesId }!!)
             }
         }
     }
@@ -96,6 +97,8 @@ class MainViewModel(application: Application) : ViewModel() {
                 _labelLiveData.value = listOf()
             }.collect {
                 _labelLiveData.value = it
+                currentLabelList.clear()
+                currentLabelList.addAll(it)
             }
         }
     }
@@ -111,7 +114,9 @@ class MainViewModel(application: Application) : ViewModel() {
         }
     }
 
-    fun insertLabel(label: Label) = viewModelScope.launch(Dispatchers.IO) {
+    fun insertLabel(label: Label) = viewModelScope.launch {
         repository.insertLabel(label)
+        currentLabelList.add(label)
+        _labelLiveData.value = currentLabelList
     }
 }
