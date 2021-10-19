@@ -8,6 +8,7 @@ import com.chs.readytonote.entities.Label
 import com.chs.readytonote.repository.NoteRepository
 import com.chs.readytonote.entities.Note
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
@@ -16,7 +17,7 @@ class MainViewModel(application: Application) : ViewModel() {
 
     var selectUI: String = Constants.DEFAULT_MODE
     var currentNoteList: List<Note> = listOf()
-    var currentLabelList: ArrayList<Label> = arrayListOf()
+    var currentLabelList: List<Label> = listOf()
 
     private val repository by lazy {
         NoteRepository(application)
@@ -97,26 +98,28 @@ class MainViewModel(application: Application) : ViewModel() {
                 _labelLiveData.value = listOf()
             }.collect {
                 _labelLiveData.value = it
-                currentLabelList.clear()
-                currentLabelList.addAll(it)
+                currentLabelList = it
             }
         }
     }
 
     fun searchLabel(keyword: String) {
         viewModelScope.launch {
-            repository.searchLabel(keyword).catch { e ->
-                Log.e("LabelSearchCatch", e.message.toString())
-                _labelLiveData.value = listOf()
-            }.collect {
-                _labelLiveData.value = it
+            delay(100L)
+            if (keyword.length >= 2) {
+                repository.searchLabel(keyword).catch { e ->
+                    Log.e("LabelSearchCatch", e.message.toString())
+                    _labelLiveData.value = listOf()
+                }.collect {
+                    _labelLiveData.value = it
+                }
+            } else {
+                _labelLiveData.value = currentLabelList
             }
         }
     }
 
     fun insertLabel(label: Label) = viewModelScope.launch {
         repository.insertLabel(label)
-        currentLabelList.add(label)
-        _labelLiveData.value = currentLabelList
     }
 }

@@ -96,7 +96,7 @@ class LabelDialog(
         binding.layoutAddLabel.setOnClickListener {
             viewModel.insertLabel(Label(addLabelTitle))
             binding.inputLabel.text.clear()
-            viewModel.getAllLabel()
+            viewModel.searchLabel("")
         }
     }
 

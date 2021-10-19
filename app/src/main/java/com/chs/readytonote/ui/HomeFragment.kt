@@ -58,6 +58,7 @@ class HomeFragment : Fragment() {
             override fun handleOnBackPressed() {
                 if (notesAdapter?.isSelectModeOn == true) {
                     checkMode(false)
+                    notesAdapter?.notifyDataSetChanged()
                 } else {
                     requireActivity().finish()
                 }
@@ -126,7 +127,6 @@ class HomeFragment : Fragment() {
                 }
             })
             this.adapter = notesAdapter
-            this.setHasFixedSize(true)
             this.layoutManager = StaggeredGridLayoutManager(2, 1)
         }
     }
